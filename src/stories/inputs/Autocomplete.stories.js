@@ -1,4 +1,4 @@
-/** INPUTS / Autocomplete → Quasar: QSelect use-input @filter (wrap as BirdieAutocomplete) */
+/** INPUTS / Autocomplete → Quasar: QSelect use-input @filter (wrap as PrestoAutocomplete) */
 import { ref } from 'vue'
 const destinations = ['New York, USA', 'Paris, France', 'Tokyo, Japan', 'London, UK', 'Rome, Italy', 'Barcelona, Spain', 'Dubai, UAE', 'Sydney, Australia', 'Cancún, Mexico']
 export default {
@@ -20,7 +20,7 @@ the destination/city/hotel search field at the top of every booking flow.
 - **Loading** remote results → set \`loading\` while fetching.
 
 ## Quasar mapping
-\`Autocomplete → QSelect use-input @filter\`. Recommended wrapper \`BirdieAutocomplete\`.
+\`Autocomplete → QSelect use-input @filter\`. Recommended wrapper \`PrestoAutocomplete\`.
 ` } } },
 }
 

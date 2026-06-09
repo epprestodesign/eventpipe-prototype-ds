@@ -1,4 +1,4 @@
-/** FEEDBACK / Drawer → Quasar: QDrawer (needs QLayout; wrap as BirdieDrawer) */
+/** FEEDBACK / Drawer → Quasar: QDrawer (needs QLayout; wrap as PrestoDrawer) */
 import { ref } from 'vue'
 export default {
   title: 'Feedback/Drawer',
@@ -18,7 +18,7 @@ QDrawer must live inside a **QLayout**. Below it is shown \`container\`-scoped s
 fits the story frame.
 
 ## Quasar mapping
-\`Drawer → QDrawer\` (native, in QLayout). Recommended wrapper \`BirdieDrawer\`.
+\`Drawer → QDrawer\` (native, in QLayout). Recommended wrapper \`PrestoDrawer\`.
 ` } } },
 }
 export const RightPanel = {

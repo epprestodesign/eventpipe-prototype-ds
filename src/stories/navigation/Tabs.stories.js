@@ -1,4 +1,4 @@
-/** NAVIGATION / Tabs → Quasar: QTabs + QTab + QTabPanels (wrap as BirdieTabs) */
+/** NAVIGATION / Tabs → Quasar: QTabs + QTab + QTabPanels (wrap as PrestoTabs) */
 import { ref } from 'vue'
 export default {
   title: 'Navigation/Tabs',
@@ -14,7 +14,7 @@ Switch between related views within the same context, without navigating away.
 - Top-level app sections → **App Navigation**. Sequential flow → **Stepper**.
 
 ## Quasar mapping
-\`Tabs → QTabs + QTab + QTabPanels\` (native compound). Recommended wrapper \`BirdieTabs\`.
+\`Tabs → QTabs + QTab + QTabPanels\` (native compound). Recommended wrapper \`PrestoTabs\`.
 ` } } },
 }
 export const Basic = {

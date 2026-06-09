@@ -1,7 +1,7 @@
 # Presto DS
 
 A **Quasar + Vue 3 design system**, documented and QA'd in **Storybook**, themed
-for a consumer **hotel booking & reservation** experience ("Birdie Stays").
+for a consumer **hotel booking & reservation** experience ("Presto Stays").
 
 - **Stack:** Vue 3 · Quasar 2 · Storybook 8 · Vite 6 · pnpm
 - **Font:** Poppins

@@ -15,7 +15,7 @@ export const FullShell = {
     <q-layout view="lHh Lpr lFf" container style="height:460px" class="shadow-2 rounded-borders">
       <q-header class="bg-primary text-white"><q-toolbar>
         <q-btn flat dense round icon="menu" @click="drawer = !drawer" />
-        <q-toolbar-title>Birdie Stays</q-toolbar-title>
+        <q-toolbar-title>Presto Stays</q-toolbar-title>
         <q-btn flat dense round icon="favorite" />
         <q-btn flat dense round icon="account_circle" />
       </q-toolbar></q-header>
@@ -31,6 +31,6 @@ export const FullShell = {
         <p class="text-grey-8 text-body2">Search hotels by destination, dates, and guests.</p>
         <q-btn color="primary" icon="search" label="Start a search" />
       </q-page></q-page-container>
-      <q-footer class="bg-grey-2 text-grey-8"><q-toolbar><q-toolbar-title class="text-caption">© 2026 Birdie Stays</q-toolbar-title></q-toolbar></q-footer>
+      <q-footer class="bg-grey-2 text-grey-8"><q-toolbar><q-toolbar-title class="text-caption">© 2026 Presto Stays</q-toolbar-title></q-toolbar></q-footer>
     </q-layout>` }),
 }

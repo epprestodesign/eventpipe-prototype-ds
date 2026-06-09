@@ -44,7 +44,7 @@ export const LandingPage = {
     template: `
       <section :style="style">
         <div style="padding:0 24px; max-width:620px">
-          <div class="text-overline" style="color:#5EEAD4; letter-spacing:.16em">Birdie Stays</div>
+          <div class="text-overline" style="color:#5EEAD4; letter-spacing:.16em">Presto Stays</div>
           <div class="text-h3" style="font-weight:700; line-height:1.1; margin:8px 0 12px">Find your next stay</div>
           <div class="text-body1" style="color:#D4D4D8; max-width:460px; margin:0 auto">Book hand-picked hotels with free cancellation and member rates.</div>
         </div>
@@ -62,7 +62,7 @@ export const HotelListings = {
         <div style="padding:0 24px; max-width:760px">
           <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px">
             <q-icon name="golf_course" size="22px" style="color:#5EEAD4" />
-            <span style="font-weight:700; letter-spacing:.02em; font-size:1.0625rem">Birdie Stays</span>
+            <span style="font-weight:700; letter-spacing:.02em; font-size:1.0625rem">Presto Stays</span>
           </div>
           <div class="text-h5" style="font-weight:700; line-height:1.15; margin-bottom:4px">Hotels for your tournament weekend</div>
           <div class="text-body2" style="color:#D4D4D8">Team rates, free cancellation, and stays near the fields.</div>

@@ -14,7 +14,7 @@ const meta = {
       description: {
         component: `
 ## Overview
-One breakpoint system across every Birdie Stays surface. Quasar's reactive
+One breakpoint system across every Presto Stays surface. Quasar's reactive
 \`$q.screen\` drives responsive logic in JS; \`*-<bp>-*\` classes handle layout.
 
 | Name | Range (px) | Target surface |

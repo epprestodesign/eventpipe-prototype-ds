@@ -1,4 +1,4 @@
-/** FEEDBACK / Dialog → Quasar: QDialog (native; wrap as BirdieDialog) */
+/** FEEDBACK / Dialog → Quasar: QDialog (native; wrap as PrestoDialog) */
 import { ref } from 'vue'
 export default {
   title: 'Feedback/Dialog',
@@ -17,7 +17,7 @@ Modal surface for focused tasks or decisions that interrupt the main flow.
 Trap focus, support Esc to close, return focus to the trigger on close (QDialog handles this).
 
 ## Quasar mapping
-\`Dialog → QDialog\` (native). Recommended wrapper \`BirdieDialog\` for standard header/actions.
+\`Dialog → QDialog\` (native). Recommended wrapper \`PrestoDialog\` for standard header/actions.
 ` } } },
 }
 export const Basic = {

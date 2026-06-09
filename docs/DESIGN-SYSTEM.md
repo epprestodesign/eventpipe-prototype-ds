@@ -1,6 +1,6 @@
-# Birdie Design System — Architecture
+# Presto Design System — Architecture
 
-Design system for **Birdie POS, Golf Course Management, Tee Sheets,
+Design system for **Presto POS, Golf Course Management, Tee Sheets,
 Reservations, F&B Ordering, Mobile, Kiosk, and Admin Dashboards**.
 Stack: Vue 3 · Quasar · Storybook · Vite.
 
@@ -28,8 +28,8 @@ Order is enforced via `options.storySort` in `.storybook/preview.js`.
 | --- | --- | --- |
 | Story title | `Category/Component` (2 levels; Patterns may add a 3rd) | `Inputs/Button` |
 | Story file | `src/stories/<category>/<Component>.stories.js` | `inputs/Button.stories.js` |
-| Wrapper component | `Birdie` + PascalCase | `BirdieButton` |
-| Wrapper file | `src/components/<BirdieX>.vue` | `BirdieButton.vue` |
+| Wrapper component | `Presto` + PascalCase | `PrestoButton` |
+| Wrapper file | `src/components/<PrestoX>.vue` | `PrestoButton.vue` |
 | Composable | `use` + PascalCase | `useSnackbar` |
 | Token (CSS var) | `--ds-<group>-<step>` | `--ds-space-4` |
 | Story export | `Basic`, `Variants`, `States`, `Sizes`, … | — |
@@ -38,7 +38,7 @@ Order is enforced via `options.storySort` in `.storybook/preview.js`.
 
 - **Tier 1 — Native + tokens** (no wrapper): low-risk primitives themed globally.
   Divider, Icon, Avatar, Badge, Tooltip, Skeleton, Progress, Breadcrumbs.
-- **Tier 2 — `Birdie*` wrappers** (stable internal API, a11y, constrained props):
+- **Tier 2 — `Presto*` wrappers** (stable internal API, a11y, constrained props):
   Button, TextField, TextArea, Select, Autocomplete, Checkbox, RadioGroup, Switch,
   Slider, Rating, Chip, Dialog, Drawer, Tabs, Menu, Pagination, Stepper, Table.
 - **Tier 3 — Custom** (no Quasar equivalent): Stack, Box, Container, SectionHeader,
@@ -50,7 +50,7 @@ Order is enforced via `options.storySort` in `.storybook/preview.js`.
 
 ```
 src/
-  components/      Birdie* wrappers + Ds* primitives + index.js (barrel)
+  components/      Presto* wrappers + Ds* primitives + index.js (barrel)
   composables/     useSnackbar.js · useDialog.js · useBackdrop.js
   css/             quasar.variables.scss · tokens.scss · typography.scss · app.scss
   stories/

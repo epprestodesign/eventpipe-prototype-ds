@@ -1,4 +1,4 @@
-/** DATA DISPLAY / Table → Quasar: QTable (native; wrap as BirdieTable later) */
+/** DATA DISPLAY / Table → Quasar: QTable (native; wrap as PrestoTable later) */
 import { ref } from 'vue'
 const columns = [
   { name: 'guest', label: 'Guest', field: 'guest', align: 'left', sortable: true },
@@ -29,7 +29,7 @@ reservations list for guests' trips and host/admin management.
 - Simple single-column rows → **List**.
 
 ## Quasar mapping
-\`Table → QTable\` (native). Recommended wrapper \`BirdieTable\`; advanced recipes in
+\`Table → QTable\` (native). Recommended wrapper \`PrestoTable\`; advanced recipes in
 **Patterns / Data Tables**.
 ` } } },
 }

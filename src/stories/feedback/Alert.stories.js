@@ -1,4 +1,4 @@
-/** FEEDBACK / Alert → Quasar: QBanner (inline; wrap as BirdieAlert severity API) */
+/** FEEDBACK / Alert → Quasar: QBanner (inline; wrap as PrestoAlert severity API) */
 export default {
   title: 'Feedback/Alert',
   tags: ['autodocs'],
@@ -13,7 +13,7 @@ Inline, in-context message about the state of a task or region (not a global toa
 - Transient action confirmation → **Snackbar**. Page-wide announcement → **Banner**.
 
 ## Quasar mapping
-\`Alert → QBanner\` (inline). Recommended wrapper \`BirdieAlert\` mapping
+\`Alert → QBanner\` (inline). Recommended wrapper \`PrestoAlert\` mapping
 \`severity\` → color + icon.
 ` } } },
 }

@@ -1,4 +1,4 @@
-/** NAVIGATION / Stepper → Quasar: QStepper + QStep (wrap as BirdieStepper) */
+/** NAVIGATION / Stepper → Quasar: QStepper + QStep (wrap as PrestoStepper) */
 import { ref } from 'vue'
 export default {
   title: 'Navigation/Stepper',
@@ -14,7 +14,7 @@ Guides users through a sequential, multi-step task with clear progress.
 - Non-sequential views → **Tabs**.
 
 ## Quasar mapping
-\`Stepper → QStepper + QStep\` (native). Recommended wrapper \`BirdieStepper\`.
+\`Stepper → QStepper + QStep\` (native). Recommended wrapper \`PrestoStepper\`.
 ` } } },
 }
 export const Basic = {
