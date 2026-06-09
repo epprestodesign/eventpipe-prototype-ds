@@ -55,3 +55,31 @@ export const Default = {
 export const FewListings = {
   render: () => ({ components: { HotelMap }, setup: () => ({ hotels: hotels.slice(0, 2) }), template: '<hotel-map :hotels="hotels" height="440px" />' }),
 }
+
+// --- Dense dataset to demonstrate clustering ---
+const NAMES = ['The Westin', 'Thompson', 'Bobby Hotel', 'Noelle', 'Union Station', 'Holston House', '21c Museum', 'Dream Nashville', 'Aloft', 'Cambria', 'Hyatt Place', 'AC Hotel', 'Margaritaville', 'Fairlane', 'Drury Plaza', 'Kimpton Aertson', 'Graduate', 'Hutton', 'Sheraton Grand', 'Renaissance']
+let cid = 100
+// Build `n` hotels in a tight pocket around a center so they cluster.
+const pocket = (clat, clng, n) => Array.from({ length: n }, (_, i) => {
+  const a = (i / n) * Math.PI * 2
+  const r = 0.0006 + (i % 3) * 0.0004
+  cid += 1
+  return {
+    id: String(cid), name: NAMES[cid % NAMES.length], location: 'Nashville, TN',
+    lat: clat + Math.sin(a) * r, lng: clng + Math.cos(a) * r,
+    price: 180 + ((cid * 37) % 260), rating: 4 + (((cid * 13) % 10) / 10), reviews: 60 + (cid * 7) % 1500,
+    image: img(cid % 6), url: '#/hotels/' + cid,
+  }
+})
+const manyHotels = [
+  ...pocket(36.1585, -86.7770, 7), // downtown core
+  ...pocket(36.1510, -86.7900, 6), // The Gulch
+  ...pocket(36.1665, -86.7705, 5), // riverfront / east
+  ...pocket(36.1700, -86.7500, 3), // farther east
+]
+
+/** Many hotels grouped into black count bubbles; click a cluster to zoom in &
+ *  expand it into individual price pills. */
+export const Clustered = {
+  render: () => ({ components: { HotelMap }, setup: () => ({ hotels: manyHotels, eventLocation }), template: '<hotel-map :hotels="hotels" :event-location="eventLocation" :zoom="13" height="560px" />' }),
+}

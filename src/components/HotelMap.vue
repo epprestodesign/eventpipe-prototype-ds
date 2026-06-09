@@ -4,6 +4,7 @@
 // Auto-fits bounds to all pins. Falls back to a styled placeholder when no
 // Google Maps key is configured (see src/lib/googleMaps.js).
 import { ref, onMounted } from 'vue'
+import { MarkerClusterer } from '@googlemaps/markerclusterer'
 import { loadGoogleMaps, hasMapsKey } from '../lib/googleMaps'
 
 const props = defineProps({
@@ -17,6 +18,7 @@ const props = defineProps({
   mapId: { type: String, default: 'DEMO_MAP_ID' }, // required for AdvancedMarkerElement
   height: { type: String, default: '560px' },
   linkTarget: { type: String, default: '_self' }, // where the details link opens
+  cluster: { type: Boolean, default: true }, // group nearby hotels into count bubbles
 })
 
 const mapEl = ref(null)
@@ -24,6 +26,7 @@ const status = ref('loading') // loading | ready | nokey | error
 const selectedId = ref(null)
 let map = null
 let infoWindow = null
+let clusterer = null
 const markers = []
 
 const money = (n) => props.currency + Number(n).toLocaleString('en-US')
@@ -85,12 +88,15 @@ async function initMap (keyOverride) {
     map.addListener('click', () => { infoWindow.close(); select(null) })
 
     const bounds = new g.LatLngBounds()
+    const hotelMarkers = []
     props.hotels.forEach((h) => {
       const pillEl = document.createElement('div')
       pillEl.style.cssText = pillCss(false)
       pillEl.textContent = money(h.price)
       const marker = new g.marker.AdvancedMarkerElement({
-        map, position: { lat: h.lat, lng: h.lng }, content: pillEl, gmpClickable: true, title: h.name,
+        // When clustering, the clusterer controls map visibility (no `map` here).
+        ...(props.cluster ? {} : { map }),
+        position: { lat: h.lat, lng: h.lng }, content: pillEl, gmpClickable: true, title: h.name,
       })
       marker.addListener('click', () => {
         select(h.id)
@@ -98,8 +104,25 @@ async function initMap (keyOverride) {
         infoWindow.open({ map, anchor: marker })
       })
       markers.push({ hotel: h, marker, pillEl })
+      hotelMarkers.push(marker)
       bounds.extend({ lat: h.lat, lng: h.lng })
     })
+
+    if (props.cluster && hotelMarkers.length) {
+      // Black count bubbles for grouped hotels; click a cluster to zoom/expand.
+      const renderer = {
+        render: ({ count, position }) => {
+          const el = document.createElement('div')
+          const size = count < 10 ? 40 : count < 25 ? 48 : 56
+          el.style.cssText = `display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;` +
+            'border-radius:999px;background:#18181B;color:#fff;border:3px solid #fff;' +
+            'font:700 14px/1 Poppins,system-ui,sans-serif;box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer;'
+          el.textContent = String(count)
+          return new g.marker.AdvancedMarkerElement({ position, content: el, zIndex: 1000 + count })
+        },
+      }
+      clusterer = new MarkerClusterer({ map, markers: hotelMarkers, renderer })
+    }
 
     if (props.eventLocation) {
       // Pulsing iOS-style "my location" dot for the event venue.
