@@ -58,7 +58,7 @@ const preview = {
         order: [
           'Getting Started', ['Introduction', 'Story Template'],
           'Foundations', [
-            'Palette', 'Colors', 'Typography', 'Icons', 'Imagery', 'Elevation',
+            'Palette', 'Colors', 'Typography', 'Icons', 'Imagery', 'Hero Banner', 'Elevation',
             'Spacing', 'Border Radius', 'Breakpoints', 'Motion',
           ],
           'Inputs', [
