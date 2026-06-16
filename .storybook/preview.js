@@ -1,4 +1,4 @@
-import { setup } from '@storybook/vue3'
+import { setup } from '@storybook/vue3-vite'
 import { Quasar, Notify, Dialog, Loading } from 'quasar'
 import * as QComponents from 'quasar'
 
@@ -33,16 +33,15 @@ setup((app) => {
   }
 })
 
-/** @type { import('@storybook/vue3').Preview } */
+/** @type { import('@storybook/vue3-vite').Preview } */
 const preview = {
   parameters: {
     backgrounds: {
-      default: 'light',
-      values: [
-        { name: 'light', value: '#ffffff' },
-        { name: 'grey', value: '#f5f5f7' },
-        { name: 'dark', value: '#141218' },
-      ],
+      options: {
+        light: { name: 'light', value: '#ffffff' },
+        grey: { name: 'grey', value: '#f5f5f7' },
+        dark: { name: 'dark', value: '#141218' }
+      }
     },
     controls: {
       matchers: {
@@ -90,6 +89,12 @@ const preview = {
       },
     },
   },
+
+  initialGlobals: {
+    backgrounds: {
+      value: 'light'
+    }
+  }
 }
 
 export default preview

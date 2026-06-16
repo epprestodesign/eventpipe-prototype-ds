@@ -12,10 +12,7 @@ const config = {
     '../src/**/*.mdx',
     '../src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
-  addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-themes',
-  ],
+  addons: ['@storybook/addon-themes', '@storybook/addon-docs'],
   framework: {
     name: '@storybook/vue3-vite',
     options: {},
