@@ -98,7 +98,7 @@ watch([added, expected, contact, notHolding, groupBlockName], () => emit('update
       </label>
       <label class="gtb__field gtb__field--full">
         <span>Email <i class="gtb__req">*</i></span>
-        <input v-model="contact.email" type="email" placeholder="you@example.com" :class="{ 'is-error': cErr('email') }" @blur="touched.email = true" />
+        <input v-model="contact.email" type="email" placeholder="youraccount@eventpipe.com" :class="{ 'is-error': cErr('email') }" @blur="touched.email = true" />
         <small v-if="cErr('email')" class="gtb__errmsg">{{ cErr('email') }}</small>
       </label>
       <div class="gtb__field gtb__field--full">

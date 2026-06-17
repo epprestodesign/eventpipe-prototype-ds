@@ -31,6 +31,12 @@ variant we need, so no local wrapper is required.
 
 Our \`app.scss\` override removes UPPERCASE, softens the radius, and sets weight 500.
 
+## DS color treatments
+Beyond Quasar's \`color\`, two filled treatments cover the common cases (see
+**Variants**). They set color only, so they render at the button's normal size:
+- **Secondary** — \`.ds-btn--secondary\` (grey fill, dark text) for the lower-emphasis choice.
+- **Danger** — \`.ds-btn--danger\` (red fill) for destructive actions.
+
 ## UX guidance
 - One **primary (high-emphasis)** button per view — the main action.
 - Use **flat/outline** for secondary actions to keep hierarchy clear.
@@ -44,7 +50,7 @@ Our \`app.scss\` override removes UPPERCASE, softens the radius, and sets weight
 - ❌ Don't use color alone to signal danger — include a clear label.
 
 ## Quasar mapping
-\`Button → QBtn\` (direct). Button Group → \`QBtnGroup\`, FAB → \`QBtn\` with \`fab\`/\`round\`, Toggle Button → \`QBtnToggle\` (see their own pages).
+\`Button → QBtn\` (direct). For grouped buttons use \`QBtnGroup\`; FAB → \`QBtn\` with \`fab\`/\`round\`; Toggle → \`QBtnToggle\`.
 `,
       },
     },
@@ -88,17 +94,20 @@ export const States = {
   }),
 }
 
-/** Emphasis variants — from highest to lowest. */
+/** Variants — the DS color treatments (primary / secondary / danger) plus the
+ *  Quasar emphasis levels. The color classes (`ds-btn--secondary`,
+ *  `ds-btn--danger`) set color only, so they render at normal button size. */
 export const Variants = {
-  parameters: { docs: { description: { story: 'Emphasis levels: standard (filled) → unelevated → outline → flat.' } } },
+  parameters: { docs: { description: { story: 'DS treatments: **primary** (brand), **secondary** (grey), **danger** (red) — plus emphasis levels (outline / flat / rounded).' } } },
   render: () => ({
     template: `
       <div class="q-gutter-sm">
-        <q-btn color="primary" label="Standard" />
-        <q-btn unelevated color="primary" label="Unelevated" />
-        <q-btn outline color="primary" label="Outline" />
-        <q-btn flat color="primary" label="Flat" />
-        <q-btn rounded color="primary" icon="add" label="Rounded" />
+        <q-btn unelevated no-caps color="primary" label="Primary" />
+        <q-btn unelevated no-caps class="ds-btn--secondary" label="Secondary" />
+        <q-btn unelevated no-caps class="ds-btn--danger" label="Danger" />
+        <q-btn outline no-caps color="primary" label="Outline" />
+        <q-btn flat no-caps color="primary" label="Flat" />
+        <q-btn rounded no-caps color="primary" icon="add" label="Rounded" />
         <q-btn round color="primary" icon="favorite" />
       </div>`,
   }),

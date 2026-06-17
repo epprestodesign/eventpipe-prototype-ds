@@ -26,16 +26,17 @@ $q.notify({
 \`\`\`
 
 ## Color variants
-Map to Quasar's semantic types, themed with the DS palette:
+Tinted with the same **hue convention as Alerts** — a soft \`background.*\`
+surface, a matching \`background.*-bold\` border, and a \`text.*\` accent on the
+icon + message:
 
 | Variant | Class | Use |
 | --- | --- | --- |
-| Default | \`ds-toast--default\` | Neutral status (Zinc) |
-| Brand | \`ds-toast--brand\` | Brand-action confirmation |
+| Default | \`ds-toast--default\` | Neutral status (surface) |
 | Success | \`ds-toast--success\` | Completed action (Emerald) |
-| Error | \`ds-toast--error\` | Failure (Rose) |
-| Warning | \`ds-toast--warning\` | Caution (Amber) |
 | Info | \`ds-toast--info\` | Informational (Blue) |
+| Warning | \`ds-toast--warning\` | Caution (Amber) |
+| Error | \`ds-toast--error\` | Failure (Rose) |
 
 ## Guidance
 - Keep it short and action-oriented ("Saved", "Removed").
@@ -46,11 +47,10 @@ Map to Quasar's semantic types, themed with the DS palette:
 
 const VARIANTS = [
   { key: 'default', label: 'Default', icon: 'notifications', message: 'Here’s a quick update.' },
-  { key: 'brand', label: 'Brand', icon: 'bookmark', message: 'This property was saved to your Boston trip.' },
   { key: 'success', label: 'Success', icon: 'check_circle', message: 'Your changes were saved.' },
-  { key: 'error', label: 'Error', icon: 'error', message: 'Something went wrong. Try again.' },
-  { key: 'warning', label: 'Warning', icon: 'warning', message: 'Double-check your details before continuing.' },
   { key: 'info', label: 'Info', icon: 'info', message: 'New rates are available for your dates.' },
+  { key: 'warning', label: 'Warning', icon: 'warning', message: 'Double-check your details before continuing.' },
+  { key: 'error', label: 'Error', icon: 'error', message: 'Something went wrong. Try again.' },
 ]
 
 const fire = ($q, v) => $q.notify({
@@ -83,6 +83,9 @@ export const WithAction = {
   render: () => ({
     setup() {
       const $q = useQuasar()
+      // Same layout/config as Snackbar → Variants → "With Undo": bottom, 4s,
+      // progress bar + an Undo action. Undo uses a visible accent color (the
+      // light DS toast needs dark/brand text, not white).
       const remove = () => $q.notify({
         message: 'Hotel removed from your saves.',
         icon: 'delete',
@@ -90,7 +93,7 @@ export const WithAction = {
         position: 'bottom',
         timeout: 4000,
         progress: true,
-        actions: [{ label: 'Undo', color: 'white', handler: () => {} }],
+        actions: [{ label: 'Undo', color: 'primary', handler: () => {} }],
       })
       return { remove }
     },

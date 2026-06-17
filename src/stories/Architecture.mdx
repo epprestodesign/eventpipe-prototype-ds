@@ -1,0 +1,162 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Getting Started/Architecture & Conventions" />
+
+# Architecture & Conventions
+
+The machine-oriented map of this library. If you're an **AI agent** extending or
+editing the system, read this first — it tells you **where things live, what to
+reuse, and the conventions to match** so new work is indistinguishable from
+existing work.
+
+---
+
+## Reading the system efficiently
+
+1. **Find the surface** in the sidebar — primitives (`Foundations … Navigation`)
+   or experience flows (`Browse Hotels … Manage Booking`). See **Introduction**
+   for the category map.
+2. **Locate the source** — every story maps 1:1 to a component (table below).
+3. **Reuse before rebuilding** — check the *Shared building blocks* index; most
+   new screens compose existing pieces.
+4. **Match the conventions** — tokens, naming, and story shape below.
+
+---
+
+## Task → location
+
+| If you need to… | Go to | Reuse |
+| --- | --- | --- |
+| A surface card | `Layout / Card` | `DsCard` |
+| A slide-over / drawer | `Layout / Side Panel` | `DsSidePanel` |
+| A list / setting row | `Data Display / List Item` | `DsListItem` |
+| A review score (★ x/y) | `Data Display / Rating` | `DsRating` |
+| Expand/collapse rows | `Data Display / Accordion` | `DsAccordion` |
+| Chip toggle group | `Inputs / Choice Chips` | `DsChoiceChips` |
+| A dual-handle range | `Inputs / Range` | `DsRange` |
+| Nested checkboxes | `Inputs / Checkbox Tree` | `DsCheckboxTree` |
+| A toast / banner | `Feedback / Toast` · `Feedback / Banner` | `ds-toast--*` classes; Banner hue map |
+| Save/bookmark a hotel | `Browse Hotels / Hotel Listing Card` | `HotelListingCard` bookmark + toast |
+| Show saved hotels | `Your Trips / Saved Items` | `SavedItems`, `SavedFlyout` |
+| Filter or sort results | `Browse Hotels / Search & Filters` | `browse/Filter.vue` (`type` prop), `browse/SortDropdown.vue` |
+| A cart / order summary | `Checkout` & nav | `CartReview` (body) + `CartFlyout` (chrome) |
+| A stepped checkout | `Checkout Experience / *` | `checkout/CheckoutPage.vue` + `checkout/steps/*` |
+| A phone field w/ country code | (forms) | `checkout/PhoneField.vue` |
+| A quantity control | `Inputs / Quantity Stepper` | `QuantityStepper.vue` |
+| A payment card form / logos | `Checkout / Payment Dialogs` | `checkout/AddPaymentDialog.vue`, `lib/paymentLogos.js` |
+| A toast / snackbar | `Feedback / Toast` | `$q.notify({ classes: 'ds-toast ds-toast--success' })` |
+| A map with pins | `Browse Hotels / Hotel Map` | `HotelMap.vue` (+ `lib/googleMaps.js`) |
+| Hotel imagery | `Foundations / Imagery` | `lib/imagery.js` (`loadImagery()`) |
+| The account page | `Manage Booking / Account` | `managebooking/ManageBooking.vue` + `ProfileEditModal.vue` |
+
+---
+
+## File & folder layout
+
+| Path | Holds |
+| --- | --- |
+| `src/components/*.vue` | Top-level components — primitives (`Ds*`) and core booking pieces (`HotelListingCard`, `HotelMap`, `BookingWidget`, `CartReview`, `CartFlyout`, `GlobalNav`, `RoomBookingDialog`, `QuantityStepper`, `DateRangeCalendar`). |
+| `src/components/<area>/` | Flow components: `browse/`, `checkout/` (+ `steps/`), `confirmation/`, `yourtrips/`, `managebooking/`. |
+| `src/stories/<category>/*.stories.js` | One story file per component; the folder ≈ the sidebar category. |
+| `src/stories/*.mdx` | Docs-only pages (this file, Introduction). |
+| `src/lib/` | Non-visual helpers: `imagery.js`, `paymentLogos.js`, `googleMaps.js`, `unsplash.js`. |
+| `src/css/` | Theme: `ds-palette.scss` → `ds-color-tokens.scss` → `tokens.scss` (tokens), `quasar.variables.scss` (brand), `app.scss` (global + overrides), `typography.scss`. |
+| `.storybook/preview.js` | `storySort` controls sidebar order; global Quasar plugin + Q-component registration. |
+
+---
+
+## Design tokens & theming
+
+- **Always use DS tokens**, never hardcoded hex. Tokens are CSS custom properties
+  named `--ds-*`:
+  - Palette ramps: `--ds-palette-<hue>-<step>` (e.g. `--ds-palette-zinc-900`, `--ds-palette-emerald-600`).
+  - Semantic roles: `--ds-color-text`, `--ds-color-text-subtle`, `--ds-color-surface`, `--ds-color-border`, `--ds-color-border-bold`, `--ds-color-background-brand-bold`, `--ds-color-text-danger`, `--ds-color-text-success`.
+  - Scales: `--ds-radius-*`, `--ds-duration-fast`, `--ds-ease-standard`, `--ds-shadow-*`.
+- **Primary brand = Zinc** (near-black). Do **not** introduce blue as the action
+  color even when a reference uses it — map to `--ds-color-background-brand-bold`.
+- Page backgrounds use `--ds-palette-neutral-100`; foreground cards use
+  `--ds-color-surface` with a `--ds-color-border` outline (the checkout/account pattern).
+
+---
+
+## Component conventions
+
+- **Vue 3 SFC, `<script setup>`.** Props via `defineProps`, events via
+  `defineEmits`, imperative API via `defineExpose`.
+- **Quasar is globally registered** — use `<q-*>` tags directly (no per-file
+  import). Plugins available: `Notify`, `Dialog`, `Loading` (see `preview.js`).
+- **Scoped styles**, BEM-ish naming: one **prefix per component**, then
+  `prefix__element` / `prefix--modifier` (e.g. `.hlc__media`, `.mb__rowbox`,
+  `.flt__title`). Teleported content (menus, notifies) needs an **unscoped**
+  `<style>` block.
+- **State sync** patterns in use: `v-model:<name>` (e.g. `v-model:bookmarked`),
+  parent-owned reactive lists passed as props + `remove`/`update` events, and
+  `defineExpose({ … })` for things like `clear()` / `openSaved()`.
+- Match the **comment density and idiom** of the file you're editing.
+
+## Story conventions
+
+- One `*.stories.js` per component. `title: 'Category/Name'` decides placement;
+  add `tags: ['autodocs']` for a generated Docs tab.
+- **Variants are named exports** (`export const GroupHold = …`). Full-page
+  components set `parameters: { layout: 'fullscreen' }`.
+- Live/interactive demos use a `render()` with a `setup()` returning reactive
+  state (see `Your Trips / Saved Items → Save from listings`).
+- Sidebar order is **explicit** in `preview.js` `storySort` — add new categories
+  there (anything after `'*'` sorts last, e.g. `Manage Booking`).
+
+---
+
+## Shared building blocks (reuse these)
+
+### Standardized primitives (extracted from the booking flows)
+| Component | Path | Story |
+| --- | --- | --- |
+| `DsCard` | `components/DsCard.vue` | Layout / Card — the standard surface container |
+| `DsSidePanel` | `components/DsSidePanel.vue` | Layout / Side Panel — slide-over chrome (scrim + panel) |
+| `DsListItem` | `components/DsListItem.vue` | Data Display / List Item — leading + title/subtitle + trailing |
+| `DsRating` | `components/DsRating.vue` | Data Display / Rating — read-only review score |
+| `DsAccordion` | `components/DsAccordion.vue` | Data Display / Accordion — expand/collapse rows |
+| `DsChoiceChips` | `components/DsChoiceChips.vue` | Inputs / Choice Chips — single/multi chip toggle |
+| `DsRange` | `components/DsRange.vue` | Inputs / Range — dual-handle slider + readout |
+| `DsCheckboxTree` | `components/DsCheckboxTree.vue` | Inputs / Checkbox Tree — parent selects children |
+
+### Composite / domain building blocks
+| Component / lib | Path | What it is |
+| --- | --- | --- |
+| `CartReview` | `components/CartReview.vue` | Recyclable cart body (hold accordion / reserve summary); shared by the fly-out, checkout review step, and the rail. |
+| `CartFlyout` | `components/CartFlyout.vue` | Right slide-over chrome around `CartReview`. |
+| `SavedItems` / `SavedFlyout` | `components/yourtrips/` | "Saved Hotels" list (controlled) + its cart-style fly-out. |
+| `Filter` / `SortDropdown` | `components/browse/` | All filter types via `type`; results sort. |
+| `HotelListingCard` | `components/HotelListingCard.vue` | Result card; carousel, rating, price, `reserve`/`hold` booking, bookmark. |
+| `HotelMap` | `components/HotelMap.vue` | Google map w/ price pills, clustering, no-key fallback. |
+| `PhoneField` | `components/checkout/PhoneField.vue` | Phone input with country-code dropdown. |
+| `QuantityStepper` | `components/QuantityStepper.vue` | − / value / + with remove-at-min. |
+| `ProfileEditModal` | `components/managebooking/ProfileEditModal.vue` | Full-height edit modal using DS field styles. |
+| `lib/imagery` | `src/lib/imagery.js` | `loadImagery()` → categorized hotel photos (local fallback). |
+| `lib/paymentLogos` | `src/lib/paymentLogos.js` | `paymentLogo(name)` → card-brand SVG URL. |
+| `lib/googleMaps` | `src/lib/googleMaps.js` | `loadGoogleMaps()` + `hasMapsKey()`. |
+
+---
+
+## Adding a component (checklist)
+
+1. Create the SFC in `src/components/` (or the right `<area>/`).
+2. Use DS tokens + the prefix naming convention; reuse a shared block if one fits.
+3. Add `src/stories/<category>/Name.stories.js` with `title`, `tags: ['autodocs']`, and variants.
+4. If it's a new category, add it to `storySort` in `.storybook/preview.js`.
+5. Verify with `pnpm build-storybook` (the deploy gate).
+
+## Gotchas
+
+- **`<filter>` is a native SVG tag** — register components under a distinct tag
+  (e.g. `<browse-filter>`), or Vue renders an empty SVG element instead of your component.
+- **Notify/menus are teleported** — style them from an **unscoped** `<style>` or
+  global `app.scss` (e.g. `.ds-toast`, `.srt__menu`).
+- **Don't set `position` on a notification** (`.ds-toast`) — Quasar's leave
+  transition sets it to `position:absolute`, and an override (same specificity,
+  loaded later) breaks the exit animation (it jumps sideways). Its progress bar
+  also defaults to `left/right:-10px`; inset it to `0` to stay in the box.
+- **Maps need an API key** — `HotelMap` degrades to a placeholder; never assume a key exists.
+- **`references/` is local-only** (gitignored) — design screenshots live on disk, not in the repo.
+- **Run from a git branch**, not `main`; deploy happens automatically on merge to `main`.

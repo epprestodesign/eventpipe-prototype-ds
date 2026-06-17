@@ -4,38 +4,152 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # Presto Design System
 
-A **themed Quasar component library** for a consumer **hotel booking &
-reservation** experience, documented and QA'd in Storybook.
+A **themed [Quasar](https://quasar.dev) component library** for a consumer
+**hotel booking & reservation** experience, documented and QA'd in Storybook.
 
-Every example, label, and edge case is written around the booking journey:
-searching destinations, choosing dates and guests, comparing rooms and
-amenities, reviewing properties, paying, and managing trips. The library spans
-the **mobile booking app, desktop web, lobby check-in kiosks, and host/admin
-dashboards**.
+Every example, label, and edge case is written around the booking journey —
+searching destinations, comparing rooms and amenities, holding rooms for a group
+or making a single reservation, paying, confirming, and managing the booking
+afterward. The library spans the **mobile booking app, desktop web, and
+host/admin surfaces**.
 
-## The booking journey (how to read this library)
+> **Building with an AI agent?** Read **Getting Started → Architecture &
+> Conventions** first — it's the machine-oriented map (task → location,
+> conventions, and the shared components to reuse instead of rebuild).
 
-`Search` (Patterns) → `Results + Filters` → `Hotel detail` (Tabs) →
-`Choose room` (Inputs) → `Guest details` (Forms) → `Payment` →
-`Confirmation` (Confirmation Flows) → `My Trips` (Data Tables).
+---
+
+## How to read this library
+
+The sidebar is organized the way product and design think, not alphabetically.
+It has **two layers**:
+
+**1. Experience flows** — the booking journey, in order:
+
+`Browse Hotels` → `Your Trips` → `Checkout Experience` → `Confirmation` → `Manage Booking`
+
+**2. Primitives** — the design-system building blocks every flow is assembled
+from: **Foundations, Inputs, Data Display, Feedback, Layout, Navigation**.
+
+Two recurring **booking modes** run through the flows and you'll see them named
+everywhere:
+
+- **`reserve`** — a single **hotel reservation** (one stay, check-in/out, one guest party).
+- **`hold`** — **holding rooms for a group or team** (multiple hotels, rooms held per night, teams/block).
+
+---
+
+## Categories at a glance
+
+| Category | What it's for |
+| --- | --- |
+| **Foundations** | Design tokens made visible — palette, color, type, icons, imagery, elevation, spacing, radius, breakpoints, motion. |
+| **Inputs** | Form controls — buttons, fields, selects, pickers, toggles, steppers, **choice chips, range, checkbox tree, phone field**. |
+| **Data Display** | Read-only presentation — avatars, badges, chips, lists, **list item, accordion, rating**, tables, tooltips, typography. |
+| **Feedback** | Status & messaging — alerts, banners, dialogs, snackbars, **toasts**, progress, skeletons, backdrops. |
+| **Layout** | Structural primitives — box, **card**, container, grid, stack, image list, section header, **side panel**. |
+| **Navigation** | Wayfinding & chrome — global nav, tabs, menus, breadcrumbs, pagination, steppers. |
+| **Browse Hotels** | Discovery — search, filters, listing cards, map, room booking. |
+| **Your Trips** | Saved hotels ("travel plans"), surfaced via a bookmark fly-out. |
+| **Checkout Experience** | The stepped checkout — review, contact/group, payment, review reservation. |
+| **Confirmation** | Post-booking success page + everything you need after booking. |
+| **Manage Booking** | The account page — profile, communications, payment, security, help. |
+
+---
+
+## Experience flows
+
+### Browse Hotels
+**Discover and choose where to stay.** Search a destination, filter results,
+compare listings on cards or a map, and start a booking.
+
+- **Booking Widget** — destination + dates + guests search entry.
+- **Hotel Listing Card** — the core result card (horizontal & vertical), with a
+  photo carousel, rating, price, room-rate booking variants (`reserve` / `hold`),
+  and a **bookmark** to save the hotel (fires a toast).
+- **Hotel Map** — map-only results with price-pill markers and clustering (Google Maps, with a graceful no-key fallback).
+- **Search & Filters** — one `Filter` component covering every filter type
+  (Amenities list/grid, Guest Rating, Star Rating, Hotel class, Brands tree,
+  Budget range + price histogram, Property Search + autocomplete), collapsible
+  sections, a Sort dropdown, and an assembled "All Filters" sidebar.
+- **Forms, Empty States, Loading States** — supporting patterns for the flow.
+
+### Your Trips
+**Hotels you've saved.** Bookmarking a listing card adds it to **Saved Hotels**.
+The **Global Nav bookmark icon** opens the cart-style **fly-out** showing the
+list; a docked panel and empty state are also documented. Intentionally a
+lightweight one-time-user surface — not a trip manager.
+
+### Checkout Experience
+**Turn a selection into a booking.** An Airbnb-style stepped flow, with each step
+its own component and a sticky order-summary rail.
+
+- **Checkout Page** — orchestrates the steps; **Group Hold** and **Reservation** variants.
+- **Steps** — *Review Order*, *Contact Info* (adds the group/teams block + required
+  Group Block Name for `hold`), *Payment*, *Review Reservation* (protection +
+  cancellation policy).
+- **Payment Dialogs** — Instacart-style payment-method and add-card surfaces.
+
+### Confirmation
+**The post-booking page.** A `ConfirmationPage` with **Reservation** and **Group
+Hold** variants: success hero, itinerary, and post-booking modules — experience
+**rating**, **who's going**, **cancellation** + change/cancel, **add to
+calendar**, **location** (live map), **area tips**, **FAQ**, and **help/contact**.
+
+### Manage Booking
+**The account home** (pinned last). A two-column page: avatar + name + Edit
+profile on the left with a selectable menu; section content on the right —
+**Profile** (Basic info / Contact / More details / Additional travelers with a
+full-height edit modal), **Communications** toggles, **Payment methods** (add via
+the checkout dialog; edit/delete), **Security**, and **Help & feedback**.
+
+---
+
+## Primitives (building blocks)
+
+The flows above are assembled from these. Each story has a **Docs** tab with
+usage, props, and guidance.
+
+- **Foundations** — the tokens themselves, made visible. Start here to understand
+  the palette, type scale, spacing, radius, and motion the whole system uses.
+- **Inputs** — every form control, including the booking-specific **Quantity
+  Stepper**, plus primitives extracted from the booking flows: **Choice Chips**
+  (chip toggle group), **Range** (dual-handle slider), **Checkbox Tree** (parent
+  selects children), and **Phone Field** (country-code input).
+- **Data Display** — avatars, badges, chips, dividers, icons, lists, tables,
+  tooltips, typography, plus **List Item** (the standard row), **Accordion**
+  (expand/collapse), and **Rating** (read-only review score).
+- **Feedback** — alerts, banners (Atlassian-Flag style), dialogs, snackbars,
+  **Toast** (DS-styled Quasar Notify) — all sharing one hue convention — progress,
+  skeletons, backdrops.
+- **Layout** — `Ds*` structural wrappers: Box, **Card** (the standard surface),
+  Container, Grid, Stack, Image List, Section Header, and **Side Panel** (the
+  slide-over chrome used by the fly-outs).
+- **Navigation** — Global Nav (brand + Manage Booking + bookmark + cart, with
+  fly-outs), tabs, menus, breadcrumbs, pagination, steppers.
+
+---
 
 ## Where to customize
 
 | What you want to change | File |
 | --- | --- |
 | Brand colors, base font, global radius | `src/css/quasar.variables.scss` |
-| Spacing / radius / type design tokens | `src/css/tokens.scss` |
-| Per-component overrides & global CSS | `src/css/app.scss` |
-| Add components to the gallery | `src/stories/*.stories.js` |
+| Design tokens (palette, color roles, spacing, radius, type) | `src/css/ds-palette.scss`, `src/css/ds-color-tokens.scss`, `src/css/tokens.scss` |
+| Per-component overrides & global CSS (incl. `.ds-toast`) | `src/css/app.scss` |
+| Sidebar order / category IA | `.storybook/preview.js` (`storySort`) |
+| Components | `src/components/` (top-level primitives + `browse/`, `checkout/`, `confirmation/`, `managebooking/`, `yourtrips/`) |
+| Stories | `src/stories/<category>/*.stories.js` |
 
 ## Workflow
 
-1. Run `pnpm storybook` and open <a href="http://localhost:6006" target="_blank">localhost:6006</a>.
-2. Edit a file above — the canvas hot-reloads instantly.
-3. Use the **Controls** tab on each story to QA props/variants.
+1. `pnpm storybook` → open <a href="http://localhost:6006" target="_blank">localhost:6006</a>.
+2. Edit any file above — the canvas hot-reloads instantly.
+3. Use the **Controls** / **Docs** tabs on each story to QA props and variants.
 4. When happy, `pnpm build-storybook` produces a static site in `storybook-static/`.
 
-## Deploy later
+## Deploy
 
-The build output is a plain static site, ready for GitHub Pages, Netlify, or any
-static host. See `README.md` for the GitHub Pages steps when you're ready.
+The build output is a plain static site (GitHub Pages, Netlify, any static host).
+Pushing to `main` deploys to GitHub Pages via `.github/workflows/deploy.yml`.
+See `README.md` for details.

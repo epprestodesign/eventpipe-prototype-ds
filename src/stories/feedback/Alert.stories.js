@@ -14,9 +14,11 @@ Each alert pairs a bold **title** with a muted **description** and a severity ic
 - Transient action confirmation → **Snackbar**. Page-wide announcement → **Banner**.
 
 ## Severity styling
-- **Success / Info** — neutral surface, subtle border, neutral icon + title.
-- **Warning** — tinted \`background.warning\` surface, \`text.warning\` icon + title.
-- **Error** — neutral surface, fully \`text.danger\` icon, title, and body.
+Each severity is **tinted with its hue** — a soft \`background.*\` surface, a
+matching \`background.*-bold\` border, and a \`text.*\` accent on the icon + title.
+The same hue convention is shared by **Snackbar** and **Toast**.
+- **Default** — neutral surface + border (no hue).
+- **Success** — emerald tint. **Info** — blue tint. **Warning** — amber tint. **Error** — rose/danger tint.
 
 ## Quasar mapping
 \`Alert → QBanner\` (inline). Recommended wrapper \`PrestoAlert\` mapping
@@ -24,16 +26,15 @@ Each alert pairs a bold **title** with a muted **description** and a severity ic
 ` } } },
 }
 
-// Severity → token map. Neutral severities (default, success, info) sit on the
-// surface with neutral text; warning is tinted; error colors icon/title/body
-// with the danger token. `accent` drives icon + title; `body` drives the
-// description (equal to accent only for error, where the body is also red).
+// Severity → token map. Each severity is tinted with its hue: `bg` is the soft
+// `background.*` surface, `border` the `background.*-bold` step, `accent` the
+// `text.*` color (icon + title). Body stays subtle except error (also danger).
 const SEV = {
-  default: { icon: null,                 accent: 'var(--ds-color-text)',         bg: 'var(--ds-color-surface)',           border: 'var(--ds-color-border)',                 body: 'var(--ds-color-text-subtle)' },
-  success: { icon: 'check_circle_outline', accent: 'var(--ds-color-text)',       bg: 'var(--ds-color-surface)',           border: 'var(--ds-color-border)',                 body: 'var(--ds-color-text-subtle)' },
-  info:    { icon: 'info',               accent: 'var(--ds-color-text)',         bg: 'var(--ds-color-surface)',           border: 'var(--ds-color-border)',                 body: 'var(--ds-color-text-subtle)' },
-  warning: { icon: 'warning_amber',      accent: 'var(--ds-color-text-warning)', bg: 'var(--ds-color-background-warning)', border: 'var(--ds-color-background-warning-bold)', body: 'var(--ds-color-text-subtle)' },
-  error:   { icon: 'error_outline',      accent: 'var(--ds-color-text-danger)',  bg: 'var(--ds-color-surface)',           border: 'var(--ds-color-border)',                 body: 'var(--ds-color-text-danger)' },
+  default: { icon: null,                   accent: 'var(--ds-color-text)',         bg: 'var(--ds-color-surface)',            border: 'var(--ds-color-border)',                  body: 'var(--ds-color-text-subtle)' },
+  success: { icon: 'check_circle_outline', accent: 'var(--ds-color-text-success)', bg: 'var(--ds-color-background-success)',  border: 'var(--ds-color-background-success-bold)', body: 'var(--ds-color-text-subtle)' },
+  info:    { icon: 'info',                 accent: 'var(--ds-color-text-info)',    bg: 'var(--ds-color-background-info)',     border: 'var(--ds-color-background-info-bold)',    body: 'var(--ds-color-text-subtle)' },
+  warning: { icon: 'warning_amber',        accent: 'var(--ds-color-text-warning)', bg: 'var(--ds-color-background-warning)',  border: 'var(--ds-color-background-warning-bold)', body: 'var(--ds-color-text-subtle)' },
+  error:   { icon: 'error_outline',        accent: 'var(--ds-color-text-danger)',  bg: 'var(--ds-color-background-danger)',   border: 'var(--ds-color-background-danger-bold)',  body: 'var(--ds-color-text-danger)' },
 }
 
 const alert = (severity, title, body, { action } = {}) => {

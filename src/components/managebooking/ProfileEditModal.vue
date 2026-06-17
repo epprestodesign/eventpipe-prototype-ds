@@ -89,7 +89,7 @@ const onSave = () => { emit('save', { section: props.section, values: clone(form
 
             <!-- CONTACT -->
             <template v-else>
-              <label class="pe__field"><span>Email</span><input v-model="form.email" type="email" placeholder="you@example.com" /></label>
+              <label class="pe__field"><span>Email</span><input v-model="form.email" type="email" placeholder="youraccount@eventpipe.com" /></label>
               <div class="pe__field"><span>Phone number</span><phone-field v-model="form.phone" /></div>
               <label class="pe__field"><span>Emergency contact</span><input v-model="form.emergency" placeholder="Name and phone number" /></label>
               <label class="pe__field"><span>Address</span><input v-model="form.address" placeholder="Street, city, state, ZIP" /></label>

@@ -42,7 +42,7 @@ const err = (f) => {
       </label>
       <label class="cgf__field cgf__field--full">
         <span>Email <i class="cgf__req">*</i></span>
-        <input v-model="form.email" type="email" placeholder="you@example.com" :class="{ 'is-error': err('email') }" @blur="touched.email = true" />
+        <input v-model="form.email" type="email" placeholder="youraccount@eventpipe.com" :class="{ 'is-error': err('email') }" @blur="touched.email = true" />
         <small v-if="err('email')" class="cgf__err">{{ err('email') }}</small>
       </label>
 

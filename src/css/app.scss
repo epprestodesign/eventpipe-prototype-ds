@@ -156,16 +156,77 @@ body {
  * Variants map to Quasar's semantic types but use our palette + radius.
  * ------------------------------------------------------------------ */
 .ds-toast {
+  /* NB: do NOT set position here — Quasar's leave transition sets the
+     notification to position:absolute, and an override (same specificity,
+     loaded later) breaks the exit animation (it jumps sideways). */
   border-radius: var(--ds-radius-md);
   padding: 12px 16px;
   min-height: 0;
   font-weight: 600;
+  border: 1px solid var(--ds-color-border);
   box-shadow: var(--ds-shadow-3, 0 8px 24px rgba(0, 0, 0, 0.18));
 }
+/* Progress bar flush along the bottom edge of the box. It lives inside
+   `.q-notification__wrapper`, which sits inside the `.ds-toast` padding (12/16) —
+   so offset by the negative padding to reach the box edges, and round the bottom
+   corners to tuck into the rounded box (no overflow clip, so the count badge
+   keeps its default outside-the-corner placement). Quasar defaults it to
+   z-index:-1 behind an opaque card — raise it above the bg. */
+.ds-toast .q-notification__progress {
+  top: auto;
+  bottom: -12px;
+  left: -16px;
+  right: -16px;
+  height: 3px;
+  z-index: 1;
+  background: currentColor;
+  opacity: 0.3;
+  border-radius: 0 0 var(--ds-radius-md) var(--ds-radius-md);
+}
+/* Force the accent color onto Quasar's message/caption/icon (Quasar defaults
+   notification text to white). */
+.ds-toast .q-notification__message,
+.ds-toast .q-notification__caption,
+.ds-toast .q-notification__icon,
+.ds-toast .q-icon { color: inherit !important; }
 .ds-toast .q-notification__message { font-weight: 600; font-size: 0.9375rem; }
-.ds-toast--default { background: var(--ds-palette-zinc-900) !important; color: #fff; }
-.ds-toast--brand   { background: var(--ds-color-background-brand-bold) !important; color: #fff; }
-.ds-toast--success { background: var(--ds-palette-emerald-600) !important; color: #fff; }
-.ds-toast--error   { background: var(--ds-palette-rose-600) !important; color: #fff; }
-.ds-toast--warning { background: var(--ds-palette-amber-500) !important; color: var(--ds-palette-zinc-900); }
-.ds-toast--info    { background: var(--ds-palette-blue-600) !important; color: #fff; }
+.ds-toast .q-notification__caption { opacity: 0.85; }
+.ds-toast--default { background: var(--ds-color-surface) !important; border-color: var(--ds-color-border); color: var(--ds-color-text) !important; }
+.ds-toast--success { background: var(--ds-color-background-success) !important; border-color: var(--ds-color-background-success-bold); color: var(--ds-color-text-success) !important; }
+.ds-toast--info    { background: var(--ds-color-background-info) !important; border-color: var(--ds-color-background-info-bold); color: var(--ds-color-text-info) !important; }
+.ds-toast--warning { background: var(--ds-color-background-warning) !important; border-color: var(--ds-color-background-warning-bold); color: var(--ds-color-text-warning) !important; }
+.ds-toast--error   { background: var(--ds-color-background-danger) !important; border-color: var(--ds-color-background-danger-bold); color: var(--ds-color-text-danger) !important; }
+
+/* ------------------------------------------------------------------ *
+ * DS Button color treatments — apply on a QBtn (`unelevated no-caps`); they set
+ * color only, so the button keeps its normal size:
+ *   <q-btn unelevated no-caps class="ds-btn--secondary" label="Secondary" />
+ *   <q-btn unelevated no-caps class="ds-btn--danger"    label="Delete" />
+ * ------------------------------------------------------------------ */
+.ds-btn--primary { background: var(--ds-color-background-brand-bold) !important; color: #fff !important; }
+.ds-btn--primary:hover { filter: brightness(1.1); }
+.ds-btn--secondary { background: var(--ds-palette-zinc-100) !important; color: var(--ds-color-text) !important; }
+.ds-btn--secondary:hover { background: var(--ds-palette-zinc-200) !important; }
+.ds-btn--danger { background: var(--ds-palette-rose-600) !important; color: #fff !important; }
+.ds-btn--danger:hover { filter: brightness(1.08); }
+
+/* Banner (Atlassian Flag-style) action links — underline on hover. */
+.ds-banner__link { text-decoration: none; }
+.ds-banner__link:hover { text-decoration: underline; }
+
+/* ------------------------------------------------------------------ *
+ * DS Dialog — spacious, rounded card with a primary/secondary action pair.
+ * Use as the QCard class inside a QDialog; buttons are normal-sized.
+ * ------------------------------------------------------------------ */
+.ds-dialog {
+  width: 92vw;
+  max-width: 460px;
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: var(--ds-shadow-4, 0 24px 60px rgba(0, 0, 0, 0.25));
+}
+.ds-dialog__title { margin: 0 0 12px; font-size: 1.5rem; font-weight: 800; line-height: 1.2; color: var(--ds-color-text); }
+.ds-dialog__body { margin: 0 0 24px; font-size: 1rem; line-height: 1.5; color: var(--ds-color-text-subtle); }
+.ds-dialog__actions { display: flex; gap: 12px; }
+.ds-dialog__btn { flex: 1; min-height: 46px; border-radius: var(--ds-radius-pill); font-weight: 700; font-size: 0.9375rem; }
+@media (max-width: 440px) { .ds-dialog { padding: 24px; } }

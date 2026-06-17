@@ -17,12 +17,12 @@ const faqs = [
   { q: 'Are pets allowed?', a: 'This property is pet friendly. A small cleaning fee may apply — contact the hotel for details.' },
   { q: 'How do I get help during my stay?', a: 'Use the “Need help?” options below to call or email our support team anytime.' },
 ]
-const help = { phone: '+1 (800) 555-0142', email: 'support@presto.com' }
+const help = { phone: '+1 (800) 555-0142', email: 'youraccount@eventpipe.com' }
 
 // Single hotel stay — matches the Expedia-style confirmation reference.
 const reserveData = {
   itinerary: '72055771948934',
-  email: 'samlee.mobbin@gmail.com',
+  email: 'youraccount@eventpipe.com',
   hotel: {
     name: 'Days Inn by Wyndham Carson City',
     location: 'Carson City',
@@ -55,7 +55,7 @@ const reserveData = {
 const holdData = {
   blockName: 'Spring Cup — Eagles SC',
   itinerary: '72055771948934',
-  email: 'coach.lee@eaglessc.org',
+  email: 'youraccount@eventpipe.com',
   teams: [
     { name: 'Eagles SC', ageDivision: 'U14', gender: 'Boys' },
     { name: 'Eagles SC', ageDivision: 'U12', gender: 'Girls' },

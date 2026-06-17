@@ -1,55 +1,68 @@
-/** FEEDBACK / Dialog → Quasar: QDialog (native; wrap as PrestoDialog) */
+/** FEEDBACK / Dialog → Quasar: QDialog, styled with the DS dialog + button pair */
 import { ref } from 'vue'
 export default {
   title: 'Feedback/Dialog',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview
-Modal surface for focused tasks or decisions that interrupt the main flow.
+Modal surface for focused tasks or decisions that interrupt the main flow. We use
+Quasar's **QDialog** with the DS card + action styling:
 
-## When to use
-- Confirmations, short forms, focused detail that needs the user's full attention.
+- **\`.ds-dialog\`** on the \`QCard\` — generous padding, rounded corners, a bold
+  \`.ds-dialog__title\`, a muted \`.ds-dialog__body\`, and a \`.ds-dialog__actions\` row.
+- **\`.ds-dialog__btn\`** + a color treatment for each action — \`.ds-btn--secondary\`
+  (grey) for the lower-emphasis choice, \`.ds-btn--primary\` (brand) or
+  \`.ds-btn--danger\` (red) for the confirming action.
+
+\`\`\`html
+<q-card class="ds-dialog">
+  <h2 class="ds-dialog__title">You have unsaved changes.</h2>
+  <p class="ds-dialog__body">Are you sure you want to leave and discard your changes?</p>
+  <div class="ds-dialog__actions">
+    <q-btn unelevated no-caps class="ds-dialog__btn ds-btn--secondary" label="Discard Changes" v-close-popup />
+    <q-btn unelevated no-caps class="ds-dialog__btn ds-btn--primary"   label="Save Changes" v-close-popup />
+  </div>
+</q-card>
+\`\`\`
 
 ## When not to use
-- Non-blocking feedback → **Snackbar**. Lots of content/navigation → a page or **Drawer**.
-
-## Accessibility
-Trap focus, support Esc to close, return focus to the trigger on close (QDialog handles this).
-
-## Quasar mapping
-\`Dialog → QDialog\` (native). Recommended wrapper \`PrestoDialog\` for standard header/actions.
+- Non-blocking feedback → **Snackbar / Toast**. Lots of content/navigation → a page.
 ` } } },
 }
-export const Basic = {
+
+/** Standard confirm — secondary + primary pair. */
+export const UnsavedChanges = {
+  name: 'Unsaved changes',
   render: () => ({ setup: () => ({ open: ref(false) }), template: `
     <div>
-      <q-btn color="primary" label="Open dialog" @click="open = true" />
+      <q-btn unelevated no-caps color="primary" label="Open dialog" @click="open = true" />
       <q-dialog v-model="open">
-        <q-card style="min-width:320px">
-          <q-card-section><div class="text-h6">Confirm booking</div></q-card-section>
-          <q-card-section class="q-pt-none">Book Deluxe King at The Grand Plaza, Jun 2–6 (4 nights) for $756?</q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" color="primary" v-close-popup />
-            <q-btn unelevated label="Confirm" color="primary" v-close-popup />
-          </q-card-actions>
+        <q-card class="ds-dialog">
+          <h2 class="ds-dialog__title">You have unsaved changes.</h2>
+          <p class="ds-dialog__body">Are you sure you want to leave this screen and discard your changes?</p>
+          <div class="ds-dialog__actions">
+            <q-btn unelevated no-caps class="ds-dialog__btn ds-btn--secondary" label="Discard Changes" v-close-popup />
+            <q-btn unelevated no-caps class="ds-dialog__btn ds-btn--primary" label="Save Changes" v-close-popup />
+          </div>
         </q-card>
       </q-dialog>
     </div>` }),
 }
-export const Persistent = {
+
+/** Destructive confirm — secondary + red danger. */
+export const CancelReservation = {
+  name: 'Cancel reservation',
   render: () => ({ setup: () => ({ open: ref(false) }), template: `
     <div>
-      <q-btn color="negative" label="Cancel reservation" @click="open = true" />
+      <q-btn unelevated no-caps class="ds-btn--danger" style="border-radius:var(--ds-radius-pill);padding:0 18px" label="Cancel reservation" @click="open = true" />
       <q-dialog v-model="open" persistent>
-        <q-card style="min-width:320px">
-          <q-card-section class="row items-center q-gutter-sm">
-            <q-icon name="warning" color="negative" size="28px" /><span class="text-h6">Cancel reservation?</span>
-          </q-card-section>
-          <q-card-section class="q-pt-none">This non-refundable booking cannot be reinstated once cancelled.</q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Keep booking" color="primary" v-close-popup />
-            <q-btn unelevated label="Cancel reservation" color="negative" v-close-popup />
-          </q-card-actions>
+        <q-card class="ds-dialog">
+          <h2 class="ds-dialog__title">Cancel reservation?</h2>
+          <p class="ds-dialog__body">Are you sure you want to cancel this reservation? This non-refundable booking <strong>cannot be undone</strong>.</p>
+          <div class="ds-dialog__actions">
+            <q-btn unelevated no-caps class="ds-dialog__btn ds-btn--secondary" label="Keep reservation" v-close-popup />
+            <q-btn unelevated no-caps class="ds-dialog__btn ds-btn--danger" label="Cancel reservation" v-close-popup />
+          </div>
         </q-card>
       </q-dialog>
     </div>` }),

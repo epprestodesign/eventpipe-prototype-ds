@@ -10,7 +10,7 @@ import ProfileEditModal from './ProfileEditModal.vue'
 import AddPaymentDialog from '../checkout/AddPaymentDialog.vue'
 
 const props = defineProps({
-  user: { type: Object, default: () => ({ name: 'Justin Girard', email: 'hello@girardjustin.com' }) },
+  user: { type: Object, default: () => ({ name: 'Justin Girard', email: 'youraccount@eventpipe.com' }) },
   methods: { type: Array, default: () => ([
     { logo: 'Amex', last4: '1009', label: 'Amex', sub: 'Default' },
     { logo: 'Visa', last4: '4242', label: 'Visa' },
@@ -54,7 +54,7 @@ const contentTitle = computed(() => (active.value === 'profile' ? props.user.nam
 
 // Profile data (editable via the full-height modal).
 const basicInfo = reactive({ firstName: 'Justin', middleName: '', lastName: 'Girard', bio: '', dobMonth: '', dobDay: '', dobYear: '', gender: '', accessibility: 'Not provided' })
-const contactInfo = reactive({ email: 'hello@girardjustin.com', phone: '', emergency: '', address: '' })
+const contactInfo = reactive({ email: 'youraccount@eventpipe.com', phone: '', emergency: '', address: '' })
 
 const genderLabels = { female: 'Female', male: 'Male', x: 'Unspecified (X)', u: 'Undisclosed (U)' }
 const dobDisplay = computed(() => (basicInfo.dobMonth && basicInfo.dobDay && basicInfo.dobYear) ? `${basicInfo.dobMonth}/${basicInfo.dobDay}/${basicInfo.dobYear}` : '')
@@ -90,7 +90,7 @@ const comms = ref([
   { label: 'Surveys and feedback', sub: 'Occasional invitations to share feedback', on: false },
 ])
 const securityRows = [
-  { icon: 'mail', label: 'Email', value: 'hello@girardjustin.com', action: 'Change' },
+  { icon: 'mail', label: 'Email', value: 'youraccount@eventpipe.com', action: 'Change' },
   { icon: 'lock', label: 'Password', value: 'Last changed 3 months ago', action: 'Change' },
   { icon: 'verified_user', label: 'Two-factor authentication', value: 'Off', action: 'Set up' },
 ]

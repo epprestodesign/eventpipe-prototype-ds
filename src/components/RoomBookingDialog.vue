@@ -255,8 +255,8 @@ const ctaText = computed(() => {
 .rbd__add.is-on { background: var(--ds-color-background-brand-bold); border-color: var(--ds-color-background-brand-bold); color: #fff; }
 
 .rbd__foot { flex: none; padding: 16px 24px; border-top: 1px solid var(--ds-color-border); background: var(--ds-color-surface); }
-.rbd__cta { width: 100%; height: 52px; border-radius: var(--ds-radius-pill); background: var(--ds-palette-slate-400); color: #fff; font-weight: 700; font-size: 1rem; pointer-events: none; transition: background var(--ds-duration-fast) var(--ds-ease-standard); }
-.rbd__cta--ready { background: var(--ds-color-background-brand-bold); pointer-events: auto; }
+.rbd__cta { width: 100%; height: 52px; border-radius: var(--ds-radius-pill); background: var(--ds-palette-zinc-200); color: var(--ds-color-text-subtlest); font-weight: 700; font-size: 1rem; pointer-events: none; transition: background var(--ds-duration-fast) var(--ds-ease-standard), color var(--ds-duration-fast) var(--ds-ease-standard); }
+.rbd__cta--ready { background: var(--ds-color-background-brand-bold); color: #fff; pointer-events: auto; }
 
 /* Stack columns on narrow viewports. */
 @media (max-width: 760px) {

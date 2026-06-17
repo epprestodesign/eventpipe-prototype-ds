@@ -55,27 +55,27 @@ const preview = {
     options: {
       storySort: {
         order: [
-          'Getting Started', ['Introduction', 'Story Template'],
+          'Getting Started', ['Introduction', 'Architecture & Conventions', 'Story Template'],
           'Foundations', [
             'Palette', 'Colors', 'Typography', 'Icons', 'Imagery', 'Hero Banner', 'Elevation',
             'Spacing', 'Border Radius', 'Breakpoints', 'Motion',
           ],
           'Inputs', [
-            'Button', 'Button Group', 'Checkbox', 'Radio Group', 'Switch',
-            'Text Field', 'Text Area', 'Select', 'Autocomplete',
-            'Date Picker', 'Time Picker', 'Slider',
+            'Button', 'Checkbox', 'Checkbox Tree', 'Radio Group', 'Choice Chips', 'Switch',
+            'Text Field', 'Text Area', 'Phone Field', 'Select', 'Autocomplete',
+            'Date Picker', 'Time Picker', 'Slider', 'Range',
             'Rating', 'Quantity Stepper', 'Transfer List',
           ],
           'Data Display', [
             'Avatar', 'Badge', 'Chip', 'Divider', 'Icon',
-            'List', 'Table', 'Tooltip', 'Typography',
+            'List', 'List Item', 'Accordion', 'Rating', 'Table', 'Tooltip', 'Typography',
           ],
           'Feedback', [
-            'Alert', 'Banner', 'Dialog', 'Drawer', 'Snackbar', 'Toast',
+            'Alert', 'Banner', 'Dialog', 'Snackbar', 'Toast',
             'Progress', 'Skeleton', 'Backdrop',
           ],
           'Layout', [
-            'Box', 'Container', 'Grid', 'Stack', 'Image List', 'Section Header',
+            'Box', 'Card', 'Container', 'Grid', 'Stack', 'Image List', 'Section Header', 'Side Panel',
           ],
           'Navigation', [
             'Global Nav', 'Tabs', 'Menu', 'Breadcrumbs', 'Pagination', 'Stepper', 'App Navigation',

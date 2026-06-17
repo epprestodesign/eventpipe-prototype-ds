@@ -63,32 +63,32 @@ $q.notify({ type: 'positive', message: 'Saved', position: 'top' })
 }
 export default meta
 
-/** Basic example — trigger a default snackbar. */
+/** Basic example — a neutral snackbar using the DS style. */
 export const Basic = {
   render: () => ({
     setup() {
       const $q = useQuasar()
-      const notify = () => $q.notify({ message: 'This is a snackbar', position: 'top' })
+      const notify = () => $q.notify({ message: 'This is a snackbar', classes: 'ds-toast ds-toast--default', position: 'top' })
       return { notify }
     },
-    template: `<q-btn color="primary" label="Show snackbar" @click="notify" />`,
+    template: `<q-btn unelevated no-caps color="primary" label="Show snackbar" @click="notify" />`,
   }),
 }
 
-/** Common states — the semantic types. */
+/** Semantic states — the shared DS hue convention (same as Alert & Toast). */
 export const Types = {
   render: () => ({
     setup() {
       const $q = useQuasar()
-      const fire = (type, message) => $q.notify({ type, message, position: 'top' })
+      const fire = (variant, message, icon) => $q.notify({ message, icon, classes: `ds-toast ds-toast--${variant}`, position: 'top' })
       return { fire }
     },
     template: `
       <div class="q-gutter-sm">
-        <q-btn color="positive" label="Success" @click="fire('positive','Saved successfully')" />
-        <q-btn color="negative" label="Error" @click="fire('negative','Something went wrong')" />
-        <q-btn color="warning" label="Warning" @click="fire('warning','Check your input')" />
-        <q-btn color="info" label="Info" @click="fire('info','Heads up')" />
+        <q-btn unelevated no-caps color="primary" label="Success" @click="fire('success','Saved successfully','check_circle')" />
+        <q-btn unelevated no-caps color="primary" label="Info" @click="fire('info','Heads up','info')" />
+        <q-btn unelevated no-caps color="primary" label="Warning" @click="fire('warning','Check your input','warning')" />
+        <q-btn unelevated no-caps color="primary" label="Error" @click="fire('error','Something went wrong','error')" />
       </div>`,
   }),
 }

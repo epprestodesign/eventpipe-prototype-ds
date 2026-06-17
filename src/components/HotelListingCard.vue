@@ -364,8 +364,8 @@ const startingPrice = computed(() => props.nights.length ? Math.min(...props.nig
 .hlc__rr-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
 .hlc__rr-link { background: none; border: 0; padding: 0; cursor: pointer; color: var(--ds-color-text-info); font-weight: 600; font-size: 0.9375rem; }
 .hlc__rr-link:hover { text-decoration: underline; }
-.hlc__rr-reserve { height: 46px; padding: 0 22px; border-radius: var(--ds-radius-md); background: var(--ds-palette-blue-900); color: #fff; font-weight: 600; }
-/* Cart CTA is muted until at least one room is selected, then activates navy. */
-.hlc__rr-cart { width: 100%; height: 46px; margin-top: 14px; border-radius: var(--ds-radius-md); background: var(--ds-palette-slate-400); color: #fff; font-weight: 600; pointer-events: none; transition: background var(--ds-duration-fast) var(--ds-ease-standard); }
-.hlc__rr-cart--ready { background: var(--ds-palette-blue-900); pointer-events: auto; }
+.hlc__rr-reserve { height: 46px; padding: 0 22px; border-radius: var(--ds-radius-md); background: var(--ds-color-background-brand-bold); color: #fff; font-weight: 600; }
+/* Cart CTA is muted until at least one room is selected, then activates brand. */
+.hlc__rr-cart { width: 100%; height: 46px; margin-top: 14px; border-radius: var(--ds-radius-md); background: var(--ds-palette-zinc-200); color: var(--ds-color-text-subtlest); font-weight: 600; pointer-events: none; transition: background var(--ds-duration-fast) var(--ds-ease-standard), color var(--ds-duration-fast) var(--ds-ease-standard); }
+.hlc__rr-cart--ready { background: var(--ds-color-background-brand-bold); color: #fff; pointer-events: auto; }
 </style>

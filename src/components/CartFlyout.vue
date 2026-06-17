@@ -147,7 +147,7 @@ onBeforeUnmount(() => clearInterval(timer))
 .cf__timer-fill { height: 100%; background: var(--ds-palette-blue-600); transition: width 1s linear; }
 .cf__actions { padding: 16px 24px; }
 .cf__cta { width: 100%; height: 54px; border-radius: var(--ds-radius-pill); background: var(--ds-color-background-brand-bold); color: #fff; font-weight: 700; font-size: 1rem; }
-.cf__cta.is-disabled { background: var(--ds-palette-slate-400); pointer-events: none; }
+.cf__cta.is-disabled { background: var(--ds-palette-zinc-200); color: var(--ds-color-text-subtlest); pointer-events: none; }
 .cf__cta :deep(.q-btn__content) { width: 100%; justify-content: space-between; flex-wrap: nowrap; padding: 0 10px; }
 
 /* Special requests sub-flyout */
