@@ -15,6 +15,12 @@ const props = defineProps({
   currency: { type: String, default: '$' },
   showRequests: { type: Boolean, default: true },
   readonly: { type: Boolean, default: false }, // rail summary: static quantities, no edit
+  showPrice: { type: Boolean, default: true }, // the Price details card
+  showAddHotel: { type: Boolean, default: true }, // hold: "Add another hotel" CTA
+  cards: { type: Boolean, default: false }, // hold: wrap hotels in its own card, separate from price
+  orderTitle: { type: String, default: '' }, // hold: header above the hotels (e.g. "Review your order")
+  collapsible: { type: Boolean, default: false }, // hold: orderTitle toggles the hotels list (starts collapsed)
+  bind: { type: Boolean, default: false }, // edit the passed cart directly (share live state across instances)
 })
 const emit = defineEmits(['update:count', 'update:total', 'requests'])
 
@@ -38,9 +44,13 @@ const next = () => go(idx.value + 1)
 const hotelThumb = (h) => resolveImages(h.imageCategories || ['suites', 'rooms'], h.seed)[0]
 const hotel = computed(() => props.cart.hotel || {})
 
-// --- Hold: collapsible hotels → rooms → nights (cloned so source is untouched) ---
-const hotels = ref((props.cart.hotels || []).map((h) => ({ ...h, rooms: h.rooms.map((r) => ({ ...r, nights: r.nights.map((n) => ({ ...n })) })) })))
-const openHotels = ref((props.cart.hotels || []).map(() => true))
+// --- Hold: collapsible hotels → rooms → nights. With `bind`, edit the passed
+// (reactive) cart directly so multiple instances stay in sync; otherwise clone. ---
+const hotels = ref(props.bind
+  ? (props.cart.hotels || [])
+  : (props.cart.hotels || []).map((h) => ({ ...h, rooms: h.rooms.map((r) => ({ ...r, nights: r.nights.map((n) => ({ ...n })) })) })))
+// In the rail (collapsible), each hotel starts collapsed to a compact header row.
+const openHotels = ref((props.cart.hotels || []).map(() => !props.collapsible))
 const toggleHotel = (hi) => { openHotels.value[hi] = !openHotels.value[hi] }
 const removeNight = (hi, ri, ni) => {
   const rooms = hotels.value[hi].rooms
@@ -77,9 +87,10 @@ defineExpose({ clear })
 </script>
 
 <template>
-  <div class="cr">
+  <div class="cr" :class="{ 'cr--cards': cards }">
     <!-- ============ RESERVE ============ -->
     <template v-if="isReserve">
+      <div class="cr__resbody" :class="{ 'cr__resbody--card': cards }">
       <div class="cr__carousel">
         <img v-if="slides.length" :src="slides[idx].url" :alt="slides[idx].alt" class="cr__img" />
         <div v-else class="cr__img cr__img--empty"><q-icon name="image" size="36px" /></div>
@@ -131,8 +142,9 @@ defineExpose({ clear })
 
         <button v-if="showRequests" class="cr__reqrow" @click="emit('requests')">Any special/accessibility requests? <q-icon name="chevron_right" size="20px" /></button>
       </div>
+      </div>
 
-      <div v-if="cart.priceDetails" class="cr__pricecard">
+      <div v-if="cart.priceDetails && showPrice" class="cr__pricecard">
         <h4 class="cr__price-h">Price details</h4>
         <div class="cr__priceline">
           <div class="cr__priceline-l">
@@ -153,7 +165,9 @@ defineExpose({ clear })
 
     <!-- ============ HOLD ============ -->
     <template v-else>
-      <div class="cr__hold">
+      <div class="cr__hold" :class="{ 'cr__hold--cards': cards }">
+        <div class="cr__holdwrap" :class="{ 'cr__holdwrap--card': cards }">
+        <h3 v-if="orderTitle" class="cr__ordertitle">{{ orderTitle }}</h3>
         <div v-for="(h, hi) in hotels" :key="hi" class="cr__hotelblock">
           <button class="cr__hotelhead" :aria-expanded="openHotels[hi]" @click="toggleHotel(hi)">
             <img v-if="hotelThumb(h)" :src="hotelThumb(h).url" :alt="hotelThumb(h).alt" class="cr__hthumb" />
@@ -186,9 +200,10 @@ defineExpose({ clear })
           </div>
         </div>
 
-        <button v-if="!readonly" class="cr__addhotel"><q-icon name="add" size="18px" /> Add another hotel</button>
+        <button v-if="!readonly && showAddHotel" class="cr__addhotel"><q-icon name="add" size="18px" /> Add another hotel</button>
+        </div>
 
-        <div v-if="totalRooms > 0" class="cr__pricecard">
+        <div v-if="totalRooms > 0 && showPrice" class="cr__pricecard">
           <h4 class="cr__price-h">Price details</h4>
           <div v-for="(l, i) in roomLines" :key="i" class="cr__kv"><span>{{ l.label }} · {{ l.nights }} night{{ l.nights === 1 ? '' : 's' }}</span><span>{{ money(l.subtotal) }}</span></div>
           <div class="cr__rule" />
@@ -236,6 +251,14 @@ defineExpose({ clear })
 
 /* Hold: collapsible hotels */
 .cr__hold { display: flex; flex-direction: column; }
+/* Card mode (rail): body in its own card, separated from the price card. */
+.cr--cards { display: flex; flex-direction: column; gap: 16px; }
+.cr--cards .cr__pricecard { margin: 0; }
+.cr__hold--cards { gap: 16px; }
+.cr__holdwrap--card { background: var(--ds-color-surface); border: 1px solid var(--ds-color-border); border-radius: var(--ds-radius-lg); overflow: hidden; }
+.cr__holdwrap--card .cr__hotelblock:last-child { border-bottom: 0; }
+.cr__resbody--card { background: var(--ds-color-surface); border: 1px solid var(--ds-color-border); border-radius: var(--ds-radius-lg); overflow: hidden; }
+.cr__ordertitle { font-size: 1.375rem; font-weight: 700; color: var(--ds-color-text); margin: 0; padding: 18px 20px 10px; }
 .cr__hotelblock { border-bottom: 1px solid var(--ds-color-border); }
 .cr__hotelhead { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 20px; background: none; border: 0; cursor: pointer; text-align: left; }
 .cr__hotelhead:hover { background: var(--ds-palette-zinc-50); }
@@ -271,7 +294,7 @@ defineExpose({ clear })
 .cr__kv--total > span { color: var(--ds-color-text) !important; font-weight: 700; }
 
 /* Price details card */
-.cr__pricecard { margin: 6px 20px 20px; border: 1px solid var(--ds-color-border); border-radius: var(--ds-radius-md); padding: 16px; }
+.cr__pricecard { background: var(--ds-color-surface); margin: 6px 20px 20px; border: 1px solid var(--ds-color-border); border-radius: var(--ds-radius-md); padding: 16px; }
 .cr__price-h { font-size: 1.0625rem; font-weight: 700; margin: 0 0 12px; color: var(--ds-color-text); }
 .cr__priceline { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
 .cr__priceline-l { display: flex; flex-direction: column; }

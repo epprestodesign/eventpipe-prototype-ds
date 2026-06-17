@@ -85,7 +85,9 @@ const preview = {
             'Data Tables', 'Dashboards', 'App Shell', 'Side Panels', 'Confirmation Flows',
           ],
           'Checkout Experience', [
-            'Checkout Page', 'Order Summary', 'Contact & Group Info', 'Payment Dialogs',
+            'Checkout Page',
+            'Steps', ['Review Order', 'Contact Info', 'Payment', 'Review Reservation'],
+            'Payment Dialogs',
           ],
           '*',
         ],
