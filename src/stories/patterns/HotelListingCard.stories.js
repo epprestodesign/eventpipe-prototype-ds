@@ -53,7 +53,7 @@ const roomRate = {
 }
 
 export default {
-  title: 'Patterns/Hotel Listing Card',
+  title: 'Browse Hotels/Hotel Listing Card',
   component: HotelListingCard,
   tags: ['autodocs'],
   argTypes: {

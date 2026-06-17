@@ -4,7 +4,8 @@
 // availability (available / limited / sold out), trust badge, refundability,
 // rating-or-new, and a loading skeleton. The image carousel sources photos
 // dynamically from the local imagery library (imagery.js) by category.
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useQuasar } from 'quasar'
 import { loadImagery } from '../lib/imagery'
 import QuantityStepper from './QuantityStepper.vue'
 
@@ -31,6 +32,12 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
   ctaLabel: { type: String, default: 'Choose your room' },
 
+  // --- Bookmark / "Save to travel plans" ---
+  bookmarkable: { type: Boolean, default: true },     // show the carousel bookmark button
+  bookmarked: { type: Boolean, default: false },      // v-model:bookmarked
+  tripName: { type: String, default: 'Boston' },      // used in the save toast
+  bookmarkToast: { type: Boolean, default: true },    // show a toast on toggle
+
   // --- Room-rate booking variants (vertical only) ---
   // When `bookingMode` is set, the vertical card renders a room-rate detail
   // body below the carousel instead of the standard listing body:
@@ -45,6 +52,28 @@ const props = defineProps({
   nights: { type: Array, default: () => [] },      // [{ date, roomsLeft, price }]
   roomCount: { type: Number, default: 1 },         // reserve summary ("N room…")
 })
+const emit = defineEmits(['update:bookmarked', 'toggle-bookmark'])
+const $q = useQuasar()
+
+// Bookmark state mirrors the prop so the card works both controlled
+// (v-model:bookmarked) and standalone.
+const saved = ref(props.bookmarked)
+watch(() => props.bookmarked, (v) => { saved.value = v })
+const toggleBookmark = () => {
+  saved.value = !saved.value
+  emit('update:bookmarked', saved.value)
+  emit('toggle-bookmark', saved.value)
+  if (props.bookmarkToast) {
+    $q.notify({
+      message: saved.value ? `This property was saved to your ${props.tripName} trip.` : 'This property was removed',
+      icon: saved.value ? 'bookmark' : 'bookmark_border',
+      color: 'dark',
+      textColor: 'white',
+      position: 'bottom',
+      timeout: 2600,
+    })
+  }
+}
 
 // Soft badge tones mapped to DS palette ramps.
 const TONES = {
@@ -120,6 +149,10 @@ const startingPrice = computed(() => props.nights.length ? Math.min(...props.nig
         <div v-else class="hlc__img hlc__img--empty"><q-icon name="image" size="32px" /></div>
 
         <div v-if="badge" class="hlc__badge" :style="toneStyle(badge.tone)">{{ badge.label }}</div>
+
+        <button v-if="bookmarkable" type="button" class="hlc__bookmark" :class="{ 'is-saved': saved }" :aria-pressed="saved" :aria-label="saved ? 'Remove from travel plans' : 'Save to travel plans'" @click.stop="toggleBookmark">
+          <q-icon :name="saved ? 'bookmark' : 'bookmark_border'" size="20px" />
+        </button>
 
         <template v-if="slides.length > 1">
           <button class="hlc__arrow hlc__arrow--prev" aria-label="Previous photo" @click="prev"><q-icon name="chevron_left" size="20px" /></button>
@@ -240,6 +273,10 @@ const startingPrice = computed(() => props.nights.length ? Math.min(...props.nig
 .hlc__img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hlc__img--empty { display: flex; align-items: center; justify-content: center; color: var(--ds-color-text-disabled); height: 100%; }
 .hlc__badge { position: absolute; top: 14px; left: 14px; background: var(--bg); color: var(--fg); font-weight: 600; font-size: 0.8125rem; padding: 6px 12px; border-radius: var(--ds-radius-md); }
+.hlc__bookmark { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border: 0; border-radius: 50%; background: rgba(0,0,0,0.5); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--ds-duration-fast) var(--ds-ease-standard), transform var(--ds-duration-fast) var(--ds-ease-standard); z-index: 2; }
+.hlc__bookmark:hover { background: rgba(0,0,0,0.68); }
+.hlc__bookmark:active { transform: scale(0.9); }
+.hlc__bookmark.is-saved { color: #fff; }
 .hlc__arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(0,0,0,0.45); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--ds-duration-fast) var(--ds-ease-standard); }
 .hlc__arrow:hover { background: rgba(0,0,0,0.65); }
 .hlc__arrow--prev { left: 10px; }

@@ -149,3 +149,23 @@ body {
 .q-chip__icon--remove {
   margin-left: calc(0.1em + 2px);
 }
+
+/* ------------------------------------------------------------------ *
+ * Design-system Toast — Quasar Notify, styled to DS tokens.
+ * Apply via: $q.notify({ classes: 'ds-toast ds-toast--success', ... })
+ * Variants map to Quasar's semantic types but use our palette + radius.
+ * ------------------------------------------------------------------ */
+.ds-toast {
+  border-radius: var(--ds-radius-md);
+  padding: 12px 16px;
+  min-height: 0;
+  font-weight: 600;
+  box-shadow: var(--ds-shadow-3, 0 8px 24px rgba(0, 0, 0, 0.18));
+}
+.ds-toast .q-notification__message { font-weight: 600; font-size: 0.9375rem; }
+.ds-toast--default { background: var(--ds-palette-zinc-900) !important; color: #fff; }
+.ds-toast--brand   { background: var(--ds-color-background-brand-bold) !important; color: #fff; }
+.ds-toast--success { background: var(--ds-palette-emerald-600) !important; color: #fff; }
+.ds-toast--error   { background: var(--ds-palette-rose-600) !important; color: #fff; }
+.ds-toast--warning { background: var(--ds-palette-amber-500) !important; color: var(--ds-palette-zinc-900); }
+.ds-toast--info    { background: var(--ds-palette-blue-600) !important; color: #fff; }

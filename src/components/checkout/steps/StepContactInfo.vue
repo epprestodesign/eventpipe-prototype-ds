@@ -19,7 +19,8 @@ const valid = computed(() => {
   const m = props.modelValue || {}
   if (props.mode === 'group') {
     const c = m.contact || {}
-    return !!(c.firstName && c.lastName && c.mobile && c.email && ((m.teams && m.teams.length) || m.notHolding))
+    const teamsOk = m.notHolding || ((m.teams && m.teams.length) && (m.groupBlockName || '').trim())
+    return !!(c.firstName && c.lastName && c.mobile && c.email && teamsOk)
   }
   return !!(m.firstName && m.lastName && m.email && m.phone)
 })

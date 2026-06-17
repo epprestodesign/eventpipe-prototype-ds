@@ -14,6 +14,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const view = ref('count') // count | list | add
 const notHolding = ref(false)
+const groupBlockName = ref(props.modelValue.groupBlockName || '')
 const showSpecial = ref(false)
 const showOrg = ref(false)
 const expected = ref(props.modelValue.expected ?? 1)
@@ -75,8 +76,9 @@ const cErr = (f) => {
   return ''
 }
 const teamsErr = computed(() => (props.showErrors && added.value.length === 0 ? 'Add at least one team' : ''))
+const blockNameErr = computed(() => (props.showErrors && added.value.length > 0 && !groupBlockName.value.trim() ? 'Required' : ''))
 
-watch([added, expected, contact, notHolding], () => emit('update:modelValue', { expected: expected.value, teams: [...added.value], contact: { ...contact }, notHolding: notHolding.value }), { deep: true })
+watch([added, expected, contact, notHolding, groupBlockName], () => emit('update:modelValue', { expected: expected.value, teams: [...added.value], contact: { ...contact }, notHolding: notHolding.value, groupBlockName: groupBlockName.value }), { deep: true })
 </script>
 
 <template>
@@ -196,6 +198,14 @@ watch([added, expected, contact, notHolding], () => emit('update:modelValue', { 
         </template>
       </div>
     </div>
+
+    <!-- Group block name — appears once teams are added, before the step's Next -->
+    <label v-if="!notHolding && added.length" class="gtb__field gtb__field--full gtb__blockname">
+      <span>Group Block Name <i class="gtb__req">*</i></span>
+      <input v-model="groupBlockName" placeholder="e.g. Spring Cup — Eagles SC" :class="{ 'is-error': blockNameErr }" />
+      <small v-if="blockNameErr" class="gtb__errmsg">{{ blockNameErr }}</small>
+      <small class="gtb__hint">A name for this room block — shown to guests when they book.</small>
+    </label>
   </div>
 </template>
 
@@ -213,6 +223,8 @@ watch([added, expected, contact, notHolding], () => emit('update:modelValue', { 
 .gtb__field span { font-size: 0.8125rem; font-weight: 600; color: var(--ds-color-text); }
 .gtb__req { color: var(--ds-color-text-danger); font-style: normal; }
 .gtb__errmsg { color: var(--ds-color-text-danger); font-size: 0.75rem; font-weight: 500; }
+.gtb__blockname { margin-top: 24px; }
+.gtb__hint { color: var(--ds-color-text-subtle); font-size: 0.75rem; }
 .gtb__errmsg--block { margin: 8px 0 0; }
 .gtb input { height: 46px; border: 1px solid var(--ds-color-border-bold); border-radius: var(--ds-radius-md); padding: 0 14px; font-family: inherit; font-size: 0.9375rem; color: var(--ds-color-text); outline: none; transition: border-color var(--ds-duration-fast) var(--ds-ease-standard); width: 100%; }
 .gtb input:focus { border-color: var(--ds-color-border-focused); }

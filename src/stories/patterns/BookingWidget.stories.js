@@ -2,7 +2,7 @@
 import BookingWidget from '../../components/BookingWidget.vue'
 
 export default {
-  title: 'Patterns/Booking Widget',
+  title: 'Browse Hotels/Booking Widget',
   component: BookingWidget,
   tags: ['autodocs'],
   argTypes: {

@@ -1,7 +1,7 @@
 /** PATTERNS / Empty States → custom DsEmptyState (composition) */
 import DsEmptyState from '../../components/DsEmptyState.vue'
 export default {
-  title: 'Patterns/Empty States',
+  title: 'Browse Hotels/Empty States',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

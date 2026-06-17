@@ -9,3 +9,6 @@ storybook-static
 .env
 .env.local
 .env.*.local
+
+# Design reference screenshots — kept local only, not tracked
+references/

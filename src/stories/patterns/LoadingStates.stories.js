@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import exterior from '../../assets/hotel/exterior.jpg'
 export default {
-  title: 'Patterns/Loading States',
+  title: 'Browse Hotels/Loading States',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

@@ -71,7 +71,7 @@ const preview = {
             'List', 'Table', 'Tooltip', 'Typography',
           ],
           'Feedback', [
-            'Alert', 'Banner', 'Dialog', 'Drawer', 'Snackbar',
+            'Alert', 'Banner', 'Dialog', 'Drawer', 'Snackbar', 'Toast',
             'Progress', 'Skeleton', 'Backdrop',
           ],
           'Layout', [
@@ -80,16 +80,24 @@ const preview = {
           'Navigation', [
             'Global Nav', 'Tabs', 'Menu', 'Breadcrumbs', 'Pagination', 'Stepper', 'App Navigation',
           ],
-          'Patterns', [
-            'Booking Widget', 'Hotel Listing Card', 'Room Booking Dialog', 'Hotel Map', 'Forms', 'Search & Filters', 'Empty States', 'Loading States',
-            'Data Tables', 'Dashboards', 'App Shell', 'Side Panels', 'Confirmation Flows',
+          'Browse Hotels', [
+            'Booking Widget', 'Hotel Listing Card', 'Room Booking Dialog', 'Hotel Map', 'Search & Filters', 'Forms', 'Empty States', 'Loading States',
+          ],
+          'Your Trips', [
+            'Saved Items',
           ],
           'Checkout Experience', [
             'Checkout Page',
             'Steps', ['Review Order', 'Contact Info', 'Payment', 'Review Reservation'],
             'Payment Dialogs',
           ],
+          'Confirmation', [
+            'Confirmation Page',
+          ],
           '*',
+          'Manage Booking', [
+            'Account',
+          ],
         ],
       },
     },
