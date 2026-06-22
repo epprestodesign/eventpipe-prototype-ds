@@ -2,16 +2,17 @@
 // results "Sort by" control. One `Filter` component drives every filter type via
 // its `type` prop (each a variant below); the Sort dropdown is a sibling. The
 // "All Filters" story stacks them into a full sidebar.
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Filter from '../../components/browse/Filter.vue'
 import SortDropdown from '../../components/browse/SortDropdown.vue'
+import AllFiltersDialog from '../../components/browse/AllFiltersDialog.vue'
 
 export default {
   title: 'Browse Hotels/Search & Filters',
   component: Filter,
   tags: ['autodocs'],
   argTypes: {
-    type: { control: 'select', options: ['amenities', 'amenitiesGrid', 'guestRating', 'starRating', 'hotelClass', 'brands', 'budget', 'propertySearch'] },
+    type: { control: 'select', options: ['amenities', 'amenitiesGrid', 'roomType', 'guestRating', 'starRating', 'hotelClass', 'brands', 'budget', 'propertySearch'] },
   },
   parameters: { docs: { description: { component: `
 ## Overview
@@ -38,16 +39,19 @@ const box = (inner, data = {}) => ({
 })
 
 /** Multi-select amenities checklist. */
-export const Amenities = { render: () => box(`<browse-filter type="amenities" v-model="v" />`, { v: ref(['Pool', 'WiFi Included']) }) }
+export const Amenities = { render: () => box(`<browse-filter type="amenities" v-model="v" />`, { v: ref(['Free Breakfast', 'Indoor Pool']) }) }
 
 /** Multi-select amenities as an icon-tile grid. */
 export const AmenitiesGrid = {
   name: 'Amenities (grid)',
-  render: () => box(`<browse-filter type="amenitiesGrid" v-model="v" />`, { v: ref(['Free Wi-Fi', 'Pool']) }),
+  render: () => box(`<browse-filter type="amenitiesGrid" v-model="v" />`, { v: ref(['Free WiFi', 'Swimming Pool']) }),
 }
 
 /** Single-select guest-rating bands. */
 export const GuestRating = { render: () => box(`<browse-filter type="guestRating" v-model="v" />`, { v: ref('Any') }) }
+
+/** Multi-select room-type chips (King / Double / Queen / Suite). */
+export const RoomType = { render: () => box(`<browse-filter type="roomType" v-model="v" />`, { v: ref(['King']) }) }
 
 /** Multi-select star-rating chips. */
 export const StarRating = { render: () => box(`<browse-filter type="starRating" v-model="v" />`, { v: ref([4, 5]) }) }
@@ -120,7 +124,7 @@ export const AllFilters = {
         stars: ref([4, 5]),
         hotelClass: ref(['4-star', '5-star']),
         brands: ref(['Cambria', 'Comfort']),
-        amenities: ref(['Free Wi-Fi', 'Pool']),
+        amenities: ref(['Free WiFi', 'Swimming Pool']),
       }
     },
     template: `
@@ -144,6 +148,47 @@ export const AllFilters = {
           <hr style="border:0;border-top:1px solid var(--ds-color-border);margin:24px 0" />
           <browse-filter collapsible type="amenitiesGrid" v-model="amenities" />
         </aside>
+      </div>`,
+  }),
+}
+
+// Mock result count — fewer results as more filters are applied, so the footer
+// shows a number the user can anticipate. (No real data behind it.)
+const resultCount = (f) => {
+  let n = 312
+  if (f.propertySearch) n -= 80
+  if (f.roomType?.length) n -= f.roomType.length * 26
+  if (f.amenities?.length) n -= f.amenities.length * 10
+  if (f.starRating?.length) n -= f.starRating.length * 12
+  if (f.hotelClass?.length) n -= f.hotelClass.length * 16
+  if (f.brands?.length) n -= f.brands.length * 14
+  if (f.guestRating && f.guestRating !== 'Any') n -= 34
+  if (f.budget) n -= Math.round((1 - (f.budget.max - f.budget.min) / 950) * 110)
+  return Math.max(2, n)
+}
+
+/** **All Filters** button → an Airbnb-style modal consolidating every filter as
+ *  collapsible accordion sections (Room Type, Budget & Amenities open by
+ *  default). The footer shows a live "Show N results" count that updates as you
+ *  change filters, plus "Clear all". */
+export const AllFiltersModal = {
+  name: 'All Filters (modal)',
+  parameters: { layout: 'fullscreen' },
+  render: () => ({
+    components: { AllFiltersDialog },
+    setup() {
+      const open = ref(false)
+      const filters = ref({ roomType: ['King'], amenities: ['Free Breakfast', 'Indoor Pool'] })
+      const count = computed(() => resultCount(filters.value))
+      return { open, filters, count }
+    },
+    template: `
+      <div style="min-height:100vh;background:var(--ds-palette-neutral-100);padding:32px 24px">
+        <button type="button" @click="open = true" style="display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 22px;border:1px solid var(--ds-color-border-bold);border-radius:999px;background:var(--ds-color-surface);color:var(--ds-color-text);font-weight:600;font-size:1rem;cursor:pointer;font-family:inherit">
+          <q-icon name="tune" size="20px" /> All filters
+        </button>
+        <p style="margin-top:14px;color:var(--ds-color-text-subtle);font-size:0.875rem">Click to open the consolidated filter dialog. The footer count updates live as you adjust filters.</p>
+        <all-filters-dialog v-model="open" :filters="filters" @update:filters="filters = $event" :result-count="count" />
       </div>`,
   }),
 }

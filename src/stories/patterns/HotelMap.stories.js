@@ -1,4 +1,5 @@
 // PATTERNS / Hotel Map — map-only listings view with price-pill markers.
+import { ref } from 'vue'
 import HotelMap from '../../components/HotelMap.vue'
 import { getImages } from '../../lib/imagery'
 
@@ -82,4 +83,28 @@ const manyHotels = [
  *  expand it into individual price pills. */
 export const Clustered = {
   render: () => ({ components: { HotelMap }, setup: () => ({ hotels: manyHotels, eventLocation }), template: '<hotel-map :hotels="hotels" :event-location="eventLocation" :zoom="13" height="560px" />' }),
+}
+
+/**
+ * **Search radius** — a slider drives a circular search area centered on the
+ * event location. The `searchRadius` (miles) draws a `google.maps.Circle` that
+ * resizes live and auto-fits the map as you drag. Hotels stay visible; the
+ * circle is purely a visual indicator of where the search is looking.
+ */
+export const SearchRadius = {
+  render: () => ({
+    components: { HotelMap },
+    setup: () => ({ hotels: manyHotels, eventLocation, radius: ref(5) }),
+    template: `
+      <div>
+        <div style="max-width:440px;margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <label style="font-weight:600;color:var(--ds-color-text)">Search radius</label>
+            <strong style="font-variant-numeric:tabular-nums;color:var(--ds-color-text)">{{ radius }} mi</strong>
+          </div>
+          <q-slider v-model="radius" :min="1" :max="25" :step="1" :label-value="radius + ' mi'" label color="dark" track-color="grey-4" />
+        </div>
+        <hotel-map :hotels="hotels" :event-location="eventLocation" :search-radius="radius" radius-unit="mi" :zoom="12" height="560px" />
+      </div>`,
+  }),
 }

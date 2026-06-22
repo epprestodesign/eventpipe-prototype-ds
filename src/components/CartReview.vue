@@ -1,16 +1,20 @@
 <script setup>
 // CartReview — the recyclable body of the booking cart, shared by CartFlyout
-// (slide-over) and the Checkout "Review order" step. Two modes:
-//   'hold'    → collapsible hotels → rooms → per-day QuantitySteppers + an
-//               aggregated Price details card.
-//   'reserve' → carousel, stay dates, highlights, room features + Price details.
+// (slide-over) and the Checkout "Review order" step. Three modes:
+//   'hold'         → collapsible hotels → rooms → per-day QuantitySteppers + an
+//                    aggregated Price details card.
+//   'reservations' → multiple booked reservations: collapsible hotels → rooms →
+//                    per-night rows (date + nightly rate). Same hierarchy as
+//                    hold, but each night is a fixed booking (no quantity
+//                    selector). For booking several hotels/nights at once.
+//   'reserve'      → carousel, stay dates, highlights, room features + Price details.
 // Emits live `update:count` / `update:total`; exposes clear() for "Clear Cart".
 import { ref, computed, watch, onMounted } from 'vue'
 import { loadImagery } from '../lib/imagery'
 import QuantityStepper from './QuantityStepper.vue'
 
 const props = defineProps({
-  mode: { type: String, default: 'reserve' }, // reserve | hold
+  mode: { type: String, default: 'reserve' }, // reserve | hold | reservations
   cart: { type: Object, default: () => ({}) },
   currency: { type: String, default: '$' },
   showRequests: { type: Boolean, default: true },
@@ -26,6 +30,9 @@ const emit = defineEmits(['update:count', 'update:total', 'requests'])
 
 const money = (n) => props.currency + Number(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const isReserve = computed(() => props.mode === 'reserve')
+// 'reservations' shares the multi-hotel hierarchy with 'hold' but each night is
+// a fixed booking (qty 1) shown as a date + rate row — no quantity stepper.
+const isReservations = computed(() => props.mode === 'reservations')
 
 // --- Imagery (reserve carousel + per-hotel thumbnails) ---
 const lib = ref(null)
@@ -59,16 +66,31 @@ const removeNight = (hi, ri, ni) => {
   if (rooms.length === 0) { hotels.value.splice(hi, 1); openHotels.value.splice(hi, 1) }
 }
 const clear = () => { hotels.value = []; openHotels.value = [] }
-const hotelRooms = (h) => h.rooms.reduce((s, r) => s + r.nights.reduce((a, n) => a + n.qty, 0), 0)
-const hotelSubtotal = (h) => h.rooms.reduce((s, r) => s + r.nights.reduce((a, n) => a + n.qty * r.price, 0), 0)
+// Per-night quantity: fixed at 1 for reservations, else the chosen hold qty.
+// Per-night cost honours an optional per-night `price`, falling back to the room rate.
+const nightQty = (n) => (isReservations.value ? 1 : (n.qty ?? 0))
+const nightCost = (n, r) => nightQty(n) * (n.price ?? r.price)
+const hotelRooms = (h) => h.rooms.reduce((s, r) => s + r.nights.reduce((a, n) => a + nightQty(n), 0), 0)
+const hotelSubtotal = (h) => h.rooms.reduce((s, r) => s + r.nights.reduce((a, n) => a + nightCost(n, r), 0), 0)
 const totalRooms = computed(() => hotels.value.reduce((s, h) => s + hotelRooms(h), 0))
+// Collapsed hotel header summary. Reservations show rooms + nights; hold shows room count.
+const hotelSummary = (h) => {
+  if (isReservations.value) {
+    const rooms = h.rooms.length
+    const nights = h.rooms.reduce((s, r) => s + r.nights.length, 0)
+    return `${rooms} room${rooms === 1 ? '' : 's'} · ${nights} night${nights === 1 ? '' : 's'} · ${money(hotelSubtotal(h))}`
+  }
+  const rn = hotelRooms(h)
+  return `${rn} room${rn === 1 ? '' : 's'} · ${money(hotelSubtotal(h))}`
+}
 
 const roomLines = computed(() => {
   const lines = []
   for (const h of hotels.value) {
     for (const r of h.rooms) {
-      const nights = r.nights.reduce((a, n) => a + n.qty, 0)
-      if (nights > 0) lines.push({ label: r.type, nights, subtotal: nights * r.price })
+      const nights = r.nights.reduce((a, n) => a + nightQty(n), 0)
+      const subtotal = r.nights.reduce((a, n) => a + nightCost(n, r), 0)
+      if (nights > 0) lines.push({ label: r.type, nights, subtotal })
     }
   }
   return lines
@@ -174,7 +196,7 @@ defineExpose({ clear })
             <div v-else class="cr__hthumb cr__img--empty"><q-icon name="image" size="18px" /></div>
             <div class="cr__hinfo">
               <span class="cr__hname">{{ h.name }}</span>
-              <span class="cr__hsummary">{{ hotelRooms(h) }} room{{ hotelRooms(h) === 1 ? '' : 's' }} · {{ money(hotelSubtotal(h)) }}</span>
+              <span class="cr__hsummary">{{ hotelSummary(h) }}</span>
             </div>
             <q-icon :name="openHotels[hi] ? 'expand_less' : 'expand_more'" size="24px" class="cr__hchevron" />
           </button>
@@ -191,16 +213,19 @@ defineExpose({ clear })
               <div v-for="(n, ni) in r.nights" :key="ni" class="cr__dayrow">
                 <div class="cr__dayinfo">
                   <span class="cr__date">{{ n.date }}</span>
-                  <span v-if="!readonly" class="cr__left">{{ n.roomsLeft - n.qty }} left</span>
+                  <span v-if="!readonly && !isReservations" class="cr__left">{{ n.roomsLeft - n.qty }} left</span>
                 </div>
-                <quantity-stepper v-if="!readonly" v-model="n.qty" :min="1" :max="n.roomsLeft" removable size="sm" @remove="removeNight(hi, ri, ni)" />
+                <!-- reservations: a fixed booked night → show its nightly rate -->
+                <span v-if="isReservations" class="cr__nightprice">{{ money(n.price ?? r.price) }}</span>
+                <!-- hold: editable per-night quantity -->
+                <quantity-stepper v-else-if="!readonly" v-model="n.qty" :min="1" :max="n.roomsLeft" removable size="sm" @remove="removeNight(hi, ri, ni)" />
                 <span v-else class="cr__qty">{{ n.qty }} room{{ n.qty === 1 ? '' : 's' }}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <button v-if="!readonly && showAddHotel" class="cr__addhotel"><q-icon name="add" size="18px" /> Add another hotel</button>
+        <button v-if="!readonly && showAddHotel" class="cr__addhotel"><q-icon name="add" size="18px" /> {{ isReservations ? 'Add another reservation' : 'Add another hotel' }}</button>
         </div>
 
         <div v-if="totalRooms > 0 && showPrice" class="cr__pricecard">
@@ -282,6 +307,7 @@ defineExpose({ clear })
 .cr__date { font-size: 0.875rem; color: var(--ds-color-text); }
 .cr__left { font-size: 0.75rem; font-weight: 600; color: var(--ds-palette-orange-600); white-space: nowrap; }
 .cr__qty { font-weight: 600; font-size: 0.875rem; color: var(--ds-color-text); white-space: nowrap; }
+.cr__nightprice { font-weight: 600; font-size: 0.875rem; color: var(--ds-color-text); white-space: nowrap; }
 .cr__addhotel { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin: 14px 20px 20px; padding: 10px 18px; border: 1px solid var(--ds-color-background-brand-bold); border-radius: var(--ds-radius-pill); background: var(--ds-color-surface); color: var(--ds-color-text); font-weight: 600; font-size: 0.9375rem; cursor: pointer; transition: background var(--ds-duration-fast) var(--ds-ease-standard), color var(--ds-duration-fast) var(--ds-ease-standard); }
 .cr__addhotel:hover { background: var(--ds-color-background-brand-bold); color: #fff; }
 

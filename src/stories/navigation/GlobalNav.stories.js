@@ -74,6 +74,54 @@ const reserveCart = {
   roomsLeft: 1,
 }
 
+// "Multiple Room Reservations" cart — several booked hotels → rooms → per-night
+// rows (date + nightly rate). Same hierarchy as hold, but each night is a fixed
+// booking with no quantity selector.
+const reservationsCart = {
+  heldSeconds: 895,
+  taxRate: 0.12,
+  feePerNight: 0,
+  hotels: [
+    {
+      name: 'Hilton Orlando Lake Buena Vista',
+      imageCategories: ['suites', 'rooms'], seed: 0,
+      rooms: [
+        { type: 'King Bedroom', summary: '1 King Bed · Sleeps 2', price: 301, nights: [
+          { date: 'Tue, Jun 23', price: 301 },
+          { date: 'Wed, Jun 24', price: 301 },
+          { date: 'Thu, Jun 25', price: 319 },
+        ] },
+        { type: 'Double Queen Bedroom', summary: '2 Queen Beds · Sleeps 4', price: 363, nights: [
+          { date: 'Tue, Jun 23', price: 363 },
+          { date: 'Wed, Jun 24', price: 363 },
+        ] },
+      ],
+    },
+    {
+      name: 'Omni Orlando Resort',
+      imageCategories: ['lobby', 'rooms'], seed: 2,
+      rooms: [
+        { type: 'Studio Suite', summary: '1 King Bed + Sofa · Sleeps 3', price: 401, nights: [
+          { date: 'Tue, Jun 23', price: 401 },
+          { date: 'Wed, Jun 24', price: 401 },
+          { date: 'Thu, Jun 25', price: 429 },
+          { date: 'Fri, Jun 26', price: 459 },
+        ] },
+      ],
+    },
+    {
+      name: 'Marriott Downtown',
+      imageCategories: ['exterior', 'suites'], seed: 4,
+      rooms: [
+        { type: 'King Room', summary: '1 King Bed · Sleeps 2', price: 289, nights: [
+          { date: 'Fri, Jun 26', price: 289 },
+          { date: 'Sat, Jun 27', price: 309 },
+        ] },
+      ],
+    },
+  ],
+}
+
 import { reactive } from 'vue'
 
 // Sample saved hotels for the bookmark fly-out.
@@ -106,6 +154,8 @@ the cart opens the **Cart Fly-out** order summary (Uber Eats-style slide-over).
   held-until panel + Proceed to Checkout. The badge tracks the live count.
 - **\`reserve\`** — "Hotel Reservation": held countdown, photo carousel, dates,
   nightly breakdown, Total, Due Today / Balance Due, Edit / Start Over.
+- **\`reservations\`** — "Multiple Room Reservations": several booked hotels →
+  rooms → per-night rows (date + nightly rate), no quantity selector.
 
 Built on DS tokens; primary actions use the brand Zinc 900.
 ` } },
@@ -137,5 +187,15 @@ export const ReservationCart = {
     components: { GlobalNav },
     setup: () => ({ cart: reserveCart, ...makeSaved() }),
     template: `<global-nav brand="Soccer League" cart-mode="reserve" :cart="cart" :saved="saved" @remove="onRemove" />`,
+  }),
+}
+
+/** Multiple room reservations — click the cart icon to open the fly-out:
+ *  several booked hotels → rooms → per-night rows, no quantity selector. */
+export const MultipleRoomReservations = {
+  render: () => ({
+    components: { GlobalNav },
+    setup: () => ({ cart: reservationsCart, ...makeSaved() }),
+    template: `<global-nav brand="Soccer League" cart-mode="reservations" :cart="cart" :saved="saved" @remove="onRemove" />`,
   }),
 }

@@ -8,6 +8,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { loadImagery } from '../lib/imagery'
 import QuantityStepper from './QuantityStepper.vue'
+import AvailabilityDialog from './AvailabilityDialog.vue'
 
 const props = defineProps({
   name: { type: String, default: 'Hotel Name' },
@@ -31,6 +32,14 @@ const props = defineProps({
   orientation: { type: String, default: 'horizontal' }, // horizontal | vertical
   loading: { type: Boolean, default: false },
   ctaLabel: { type: String, default: 'Choose your room' },
+  ratingLabel: { type: String, default: '' }, // e.g. "Excellent" (Availability dialog)
+
+  // --- Group bookings: "Availability" secondary action + inventory dialog ---
+  // When `groupBooking` is set, the card shows an "Availability" secondary button
+  // beside the primary CTA that opens an AvailabilityDialog: a compact hotel
+  // summary + a hold-mode RoomsCarousel built from `availabilityRooms`.
+  groupBooking: { type: Boolean, default: false },
+  availabilityRooms: { type: Array, default: () => [] }, // hold-room data for the dialog
 
   // --- Bookmark / "Save to travel plans" ---
   bookmarkable: { type: Boolean, default: true },     // show the carousel bookmark button
@@ -86,6 +95,7 @@ const TONES = {
 }
 const toneStyle = (tone) => TONES[tone] || TONES.teal
 
+const showAvailability = ref(false)
 const discounted = computed(() => props.originalPrice != null && props.price != null && props.originalPrice > props.price)
 const soldout = computed(() => props.availability === 'soldout')
 const limited = computed(() => props.availability === 'limited')
@@ -123,7 +133,7 @@ const startingPrice = computed(() => props.nights.length ? Math.min(...props.nig
 </script>
 
 <template>
-  <div class="hlc" :class="[`hlc--${orientation}`, { 'hlc--soldout': soldout }]">
+  <div class="hlc" :class="[`hlc--${orientation}`, { 'hlc--soldout': soldout, 'hlc--group': groupBooking }]">
     <!-- LOADING SKELETON -->
     <template v-if="loading">
       <div class="hlc__media hlc__sk" />
@@ -257,10 +267,26 @@ const startingPrice = computed(() => props.nights.length ? Math.min(...props.nig
           </div>
           <div v-if="total != null" class="hlc__totals">{{ money(total) }} total<br><span>(includes taxes &amp; fees)</span></div>
           <div v-if="limited" class="hlc__urgency">Only {{ roomsLeft }} room{{ roomsLeft === 1 ? '' : 's' }} left</div>
-          <q-btn unelevated class="hlc__cta" :class="{ 'hlc__cta--disabled': soldout }" :tabindex="soldout ? -1 : 0" :label="soldout ? 'Sold out' : ctaLabel" no-caps />
+          <div class="hlc__actions">
+            <button v-if="groupBooking && !soldout" type="button" class="hlc__avail" @click="showAvailability = true">Availability</button>
+            <q-btn unelevated class="hlc__cta" :class="{ 'hlc__cta--disabled': soldout }" :tabindex="soldout ? -1 : 0" :label="soldout ? 'Sold out' : ctaLabel" no-caps />
+          </div>
         </div>
       </div>
     </template>
+
+    <!-- Group bookings: inventory/availability dialog (hold-mode rooms) -->
+    <teleport to="body">
+      <availability-dialog
+        v-if="groupBooking"
+        v-model="showAvailability"
+        :name="name" :location="location"
+        :rating="rating" :reviews="reviews" :rating-label="ratingLabel"
+        :amenities="amenities"
+        :images="images" :image-categories="imageCategories" :seed="seed"
+        :rooms="availabilityRooms" :currency="currency"
+      />
+    </teleport>
   </div>
 </template>
 
@@ -269,6 +295,9 @@ const startingPrice = computed(() => props.nights.length ? Math.min(...props.nig
 /* Horizontal cards hold the reference proportions so the media never squishes. */
 .hlc:not(.hlc--vertical) { min-height: 240px; }
 .hlc:not(.hlc--vertical):hover { box-shadow: var(--ds-shadow-3); }
+/* Group bookings stack two CTAs (Availability + Choose your room), so give the
+   card more height and a bit more breathing room above the action stack. */
+.hlc--group:not(.hlc--vertical) { min-height: 292px; }
 .hlc--soldout { opacity: 0.92; }
 
 /* Media / carousel */
@@ -313,8 +342,15 @@ const startingPrice = computed(() => props.nights.length ? Math.min(...props.nig
 .hlc__urgency { color: var(--ds-palette-rose-600); font-weight: 600; font-size: 0.8125rem; margin-top: 8px; }
 /* `auto` consumes the price column's free height so the CTA always anchors to
    the bottom; the column's flex-end keeps it pinned to the right. */
-.hlc__cta { margin-top: auto; height: 48px; padding: 0 22px; border-radius: var(--ds-radius-md); background: var(--ds-color-background-brand-bold); color: #fff; font-weight: 600; }
+.hlc__cta { height: 48px; padding: 0 22px; border-radius: var(--ds-radius-md); background: var(--ds-color-background-brand-bold); color: #fff; font-weight: 600; }
 .hlc__cta--disabled { pointer-events: none; background: var(--ds-palette-zinc-200) !important; color: var(--ds-color-text-subtle) !important; }
+/* Group bookings: "Availability" secondary (outline) above the primary CTA.
+   `auto` keeps the action stack pinned to the bottom of the price column. */
+.hlc__actions { margin-top: auto; display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+/* Group cards have two stacked CTAs — add a little space above the stack. */
+.hlc--group .hlc__actions { padding-top: 16px; }
+.hlc__avail { height: 48px; padding: 0 22px; border: 1px solid var(--ds-color-border-bold); border-radius: var(--ds-radius-md); background: var(--ds-color-surface); color: var(--ds-color-text); font-weight: 600; font-size: 0.9375rem; font-family: inherit; cursor: pointer; transition: background var(--ds-duration-fast) var(--ds-ease-standard); }
+.hlc__avail:hover { background: var(--ds-color-surface-sunken); }
 
 /* Skeleton */
 .hlc__sk { position: relative; overflow: hidden; background: var(--ds-palette-zinc-100); border-radius: var(--ds-radius-sm); }

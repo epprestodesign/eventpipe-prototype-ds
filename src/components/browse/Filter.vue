@@ -3,6 +3,7 @@
 // control; each type is a Storybook variant:
 //   amenities      → checkbox list (multi-select)
 //   amenitiesGrid  → icon-tile grid (multi-select)
+//   roomType       → icon chip toggles (multi-select)
 //   guestRating    → radio group (single-select)
 //   starRating     → star chip toggles (multi-select)
 //   hotelClass     → description cards (multi-select)
@@ -12,6 +13,7 @@
 // v-model holds the appropriate value shape per type. Selected states use the
 // DS primary (Zinc). Stack several to build a full filter sidebar.
 import { computed, reactive, ref } from 'vue'
+import { AMENITIES, filterAmenities } from '../../lib/amenities.js'
 
 const props = defineProps({
   type: { type: String, required: true },
@@ -32,28 +34,32 @@ const props = defineProps({
   // layout
   collapsible: { type: Boolean, default: false }, // title becomes an expand/collapse header
   defaultOpen: { type: Boolean, default: true },
+  // amenities / amenitiesGrid: show only the first N items behind a
+  // "View more / Fewer" toggle. null → per-type default; 0 → show all.
+  collapseAfter: { type: Number, default: null },
 })
 const emit = defineEmits(['update:modelValue'])
 
 const DEFAULTS = {
   amenities: {
     title: 'Amenities',
-    options: ['Breakfast Included', 'Pool', 'WiFi Included', 'Airport Shuttle', 'Parking Included', 'Hot Tub', 'Pet Friendly', 'Ocean View', 'Kitchen', 'Spa', 'Fitness Center', 'Restaurants', 'Fully Refundable'],
+    // Full amenity list, sourced from the shared catalog (src/lib/amenities.js).
+    options: filterAmenities().map((a) => a.label),
     value: () => [],
   },
   amenitiesGrid: {
     title: 'Amenities',
-    tiles: [
-      { label: 'Free Wi-Fi', icon: 'wifi' }, { label: 'Free breakfast', icon: 'free_breakfast' },
-      { label: 'Restaurant', icon: 'restaurant' }, { label: 'Bar', icon: 'local_bar' },
-      { label: 'Kid-friendly', icon: 'child_friendly' }, { label: 'Pet-friendly', icon: 'pets' },
-      { label: 'Free parking', icon: 'local_parking' }, { label: 'Parking', icon: 'local_parking' },
-      { label: 'EV charger', icon: 'ev_station' }, { label: 'Room service', icon: 'room_service' },
-      { label: 'Fitness center', icon: 'fitness_center' }, { label: 'Spa', icon: 'spa' },
-      { label: 'Pool', icon: 'pool' }, { label: 'Indoor pool', icon: 'pool' },
-      { label: 'Outdoor pool', icon: 'pool' }, { label: 'Air-conditioned', icon: 'ac_unit' },
-      { label: 'Wheelchair accessible', icon: 'accessible' }, { label: 'Beach access', icon: 'beach_access' },
-      { label: 'All-inclusive available', icon: 'all_inclusive' },
+    // Icon-tile grid sourced from the full amenities catalog (src/lib/amenities.js).
+    tiles: AMENITIES.map((a) => ({ label: a.label, icon: a.icon })),
+    value: () => [],
+  },
+  roomType: {
+    title: 'Room Type',
+    options: [
+      { label: 'King', icon: 'king_bed' },
+      { label: 'Double', icon: 'bed' },
+      { label: 'Queen', icon: 'bed' },
+      { label: 'Suite', icon: 'meeting_room' },
     ],
     value: () => [],
   },
@@ -108,6 +114,20 @@ const range = computed({
   get: () => val.value || { min: props.min, max: props.max },
   set: (v) => { val.value = v },
 })
+// Editable Min/Max inputs, kept in sync with the slider and clamped so the
+// handles never cross. An empty Max means "no cap" (the slider's top).
+const setMin = (v) => {
+  let n = Number(v)
+  if (Number.isNaN(n)) n = props.min
+  n = Math.max(props.min, Math.min(n, range.value.max - props.step))
+  range.value = { min: n, max: range.value.max }
+}
+const setMax = (v) => {
+  let n = (v === '' || v == null) ? props.max : Number(v)
+  if (Number.isNaN(n)) n = props.max
+  n = Math.min(props.max, Math.max(n, range.value.min + props.step))
+  range.value = { min: range.value.min, max: n }
+}
 
 // Price-distribution bars: scaled to the tallest bucket; a bar is "active"
 // (brand color) when its price bucket falls inside the selected range.
@@ -153,6 +173,21 @@ const pick = (s) => { val.value = s.name; acFocused.value = false }
 
 // Collapsible section state.
 const open = ref(props.defaultOpen)
+
+// "View more / Fewer amenity options" — collapse long amenity lists/grids to a
+// preview, with a toggle. Defaults: 15 checkbox rows, 8 grid tiles.
+const DEFAULT_COLLAPSE = { amenities: 15, amenitiesGrid: 8 }
+const showAll = ref(false)
+const collapseLimit = computed(() => {
+  const n = props.collapseAfter ?? DEFAULT_COLLAPSE[props.type] ?? 0
+  return n > 0 ? n : 0
+})
+const totalCount = computed(() => (props.type === 'amenitiesGrid' ? tiles.value.length : opts.value.length))
+const hiddenCount = computed(() => Math.max(0, totalCount.value - collapseLimit.value))
+const canToggle = computed(() => collapseLimit.value > 0 && hiddenCount.value > 0)
+const collapse = (list) => (collapseLimit.value && !showAll.value ? list.slice(0, collapseLimit.value) : list)
+const visibleOpts = computed(() => collapse(opts.value))
+const visibleTiles = computed(() => collapse(tiles.value))
 </script>
 
 <template>
@@ -165,18 +200,38 @@ const open = ref(props.defaultOpen)
 
     <div v-show="!collapsible || open" class="flt__body">
     <!-- amenities: checkbox list -->
-    <div v-if="type === 'amenities'" class="flt__list">
-      <button v-for="a in opts" :key="a" type="button" class="flt__check" :class="{ 'is-on': (val || []).includes(a) }" role="checkbox" :aria-checked="(val || []).includes(a)" @click="toggleVal(a)">
-        <span class="flt__box"><q-icon v-if="(val || []).includes(a)" name="check" size="16px" /></span>
-        <span class="flt__label">{{ a }}</span>
+    <template v-if="type === 'amenities'">
+      <div class="flt__list">
+        <button v-for="a in visibleOpts" :key="a" type="button" class="flt__check" :class="{ 'is-on': (val || []).includes(a) }" role="checkbox" :aria-checked="(val || []).includes(a)" @click="toggleVal(a)">
+          <span class="flt__box"><q-icon v-if="(val || []).includes(a)" name="check" size="16px" /></span>
+          <span class="flt__label">{{ a }}</span>
+        </button>
+      </div>
+      <button v-if="canToggle" type="button" class="flt__more" :aria-expanded="showAll" @click="showAll = !showAll">
+        <q-icon :name="showAll ? 'expand_less' : 'expand_more'" size="20px" />
+        {{ showAll ? 'Fewer amenity options' : `View ${hiddenCount} more amenities` }}
       </button>
-    </div>
+    </template>
 
     <!-- amenities: icon-tile grid -->
-    <div v-else-if="type === 'amenitiesGrid'" class="flt__grid">
-      <button v-for="t in tiles" :key="t.label" type="button" class="flt__tile" :class="{ 'is-on': (val || []).includes(t.label) }" :aria-pressed="(val || []).includes(t.label)" @click="toggleVal(t.label)">
-        <q-icon :name="t.icon" size="24px" />
-        <span>{{ t.label }}</span>
+    <template v-else-if="type === 'amenitiesGrid'">
+      <div class="flt__grid">
+        <button v-for="t in visibleTiles" :key="t.label" type="button" class="flt__tile" :class="{ 'is-on': (val || []).includes(t.label) }" :aria-pressed="(val || []).includes(t.label)" @click="toggleVal(t.label)">
+          <q-icon :name="t.icon" size="24px" />
+          <span>{{ t.label }}</span>
+        </button>
+      </div>
+      <button v-if="canToggle" type="button" class="flt__more" :aria-expanded="showAll" @click="showAll = !showAll">
+        <q-icon :name="showAll ? 'expand_less' : 'expand_more'" size="20px" />
+        {{ showAll ? 'Fewer amenity options' : `View ${hiddenCount} more amenities` }}
+      </button>
+    </template>
+
+    <!-- room type: icon chip toggles -->
+    <div v-else-if="type === 'roomType'" class="flt__chips">
+      <button v-for="o in opts" :key="o.label" type="button" class="flt__chip" :class="{ 'is-on': (val || []).includes(o.label) }" :aria-pressed="(val || []).includes(o.label)" @click="toggleVal(o.label)">
+        <q-icon :name="o.icon" size="20px" />
+        <span>{{ o.label }}</span>
       </button>
     </div>
 
@@ -230,8 +285,14 @@ const open = ref(props.defaultOpen)
     <!-- budget: dual-handle slider + min/max boxes (+ optional price histogram) -->
     <div v-else-if="type === 'budget'" class="flt__budget" :class="{ 'flt__budget--histo': bars.length }">
       <div class="flt__mmrow">
-        <div class="flt__mm"><span>Min</span><strong>{{ money(range.min) }}</strong></div>
-        <div class="flt__mm"><span>Max</span><strong>{{ money(range.max) }}</strong></div>
+        <label class="flt__mm">
+          <span>Minimum</span>
+          <span class="flt__mmfield"><span class="flt__mmcur">{{ currency }}</span><input class="flt__mminput" type="number" inputmode="numeric" :value="range.min" :min="min" :max="range.max - step" @change="setMin($event.target.value)" /></span>
+        </label>
+        <label class="flt__mm">
+          <span>Max price</span>
+          <span class="flt__mmfield"><span class="flt__mmcur">{{ currency }}</span><input class="flt__mminput" type="number" inputmode="numeric" :value="range.max >= max ? null : range.max" placeholder="Max" :min="range.min + step" :max="max" @change="setMax($event.target.value)" /></span>
+        </label>
       </div>
       <div v-if="bars.length" class="flt__histo" aria-hidden="true">
         <span v-for="(b, i) in bars" :key="i" class="flt__bar" :class="{ 'is-active': b.active }" :style="{ height: b.h + '%' }" />
@@ -263,6 +324,10 @@ const open = ref(props.defaultOpen)
 .flt__titlerow .flt__title { margin: 0; }
 .flt__titlechev { color: var(--ds-color-text-subtle); flex: none; }
 .flt--collapsible .flt__body { padding-top: 16px; }
+
+/* "View more / Fewer amenity options" toggle */
+.flt__more { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 4px 0; background: none; border: 0; color: var(--ds-color-text); font-family: inherit; font-weight: 700; font-size: 1.0625rem; cursor: pointer; }
+.flt__more:hover { text-decoration: underline; }
 
 /* checkbox + radio rows */
 .flt__list { display: flex; flex-direction: column; gap: 6px; }
@@ -317,9 +382,23 @@ const open = ref(props.defaultOpen)
 .flt__budget--histo .flt__range { order: 3; }
 
 .flt__mmrow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.flt__mm { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--ds-color-border-bold); border-radius: var(--ds-radius-md); padding: 12px 16px; }
-.flt__mm span { font-size: 0.9375rem; color: var(--ds-color-text-subtle); }
-.flt__mm strong { font-size: 1.25rem; font-weight: 700; color: var(--ds-color-text); }
+.flt__mm { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--ds-color-border-bold); border-radius: var(--ds-radius-md); padding: 10px 16px; cursor: text; transition: border-color var(--ds-duration-fast) var(--ds-ease-standard); }
+.flt__mm:focus-within { border-color: var(--ds-color-border-focused); }
+.flt__mm > span:first-child { font-size: 0.9375rem; color: var(--ds-color-text-subtle); }
+.flt__mmfield { display: flex; align-items: center; gap: 4px; }
+.flt__mmcur { font-size: 1.25rem; font-weight: 700; color: var(--ds-color-text); flex: none; }
+.flt__mminput { width: 100%; min-width: 0; border: 0; outline: none; background: none; padding: 0; font-family: inherit; font-size: 1.25rem; font-weight: 700; color: var(--ds-color-text); }
+.flt__mminput::placeholder { color: var(--ds-color-text-subtlest); font-weight: 700; }
+/* Hide number-input spinners for a cleaner look. */
+.flt__mminput::-webkit-outer-spin-button, .flt__mminput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.flt__mminput { -moz-appearance: textfield; }
+
+/* room type chips */
+.flt__chips { display: flex; flex-wrap: wrap; gap: 12px; }
+.flt__chip { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 20px; border: 1px solid var(--ds-color-border-bold); border-radius: var(--ds-radius-pill); background: var(--ds-color-surface); color: var(--ds-color-text); font-weight: 600; font-size: 1.0625rem; cursor: pointer; transition: background var(--ds-duration-fast) var(--ds-ease-standard), border-color var(--ds-duration-fast) var(--ds-ease-standard); }
+.flt__chip .q-icon { color: var(--ds-color-text); }
+.flt__chip:hover { border-color: var(--ds-color-text); }
+.flt__chip.is-on { border-color: var(--ds-color-background-brand-bold); background: var(--ds-palette-zinc-100); box-shadow: inset 0 0 0 1px var(--ds-color-background-brand-bold); }
 
 /* price-distribution histogram */
 .flt__histo { display: flex; align-items: flex-end; gap: 3px; height: 96px; padding: 0 6px; }

@@ -3,7 +3,7 @@
 // clicking a pill selects it (inverts to brand color) and opens a popup card.
 // Auto-fits bounds to all pins. Falls back to a styled placeholder when no
 // Google Maps key is configured (see src/lib/googleMaps.js).
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { MarkerClusterer } from '@googlemaps/markerclusterer'
 import { loadGoogleMaps, hasMapsKey } from '../lib/googleMaps'
 
@@ -19,15 +19,48 @@ const props = defineProps({
   height: { type: String, default: '560px' },
   linkTarget: { type: String, default: '_self' }, // where the details link opens
   cluster: { type: Boolean, default: true }, // group nearby hotels into count bubbles
+  // Search-radius overlay: a circle centered on the event location (or center),
+  // sized live by `searchRadius`. 0 hides it. Auto-fits the map to the circle.
+  searchRadius: { type: Number, default: 0 },
+  radiusUnit: { type: String, default: 'mi' }, // mi | km
 })
 
 const mapEl = ref(null)
 const status = ref('loading') // loading | ready | nokey | error
 const selectedId = ref(null)
 let map = null
+let gmaps = null
 let infoWindow = null
 let clusterer = null
+let radiusCircle = null
 const markers = []
+
+// --- Search-radius circle ---
+const radiusCenter = () => props.eventLocation || props.center ||
+  (props.hotels.length ? { lat: props.hotels[0].lat, lng: props.hotels[0].lng } : null)
+function updateRadius () {
+  if (!map || !gmaps) return
+  const center = radiusCenter()
+  if (props.searchRadius > 0 && center) {
+    const meters = props.searchRadius * (props.radiusUnit === 'km' ? 1000 : 1609.344)
+    if (!radiusCircle) {
+      radiusCircle = new gmaps.Circle({
+        map, center, radius: meters, clickable: false, zIndex: 1,
+        strokeColor: '#18181B', strokeOpacity: 0.5, strokeWeight: 2,
+        fillColor: '#18181B', fillOpacity: 0.08,
+      })
+    } else {
+      radiusCircle.setCenter(center)
+      radiusCircle.setRadius(meters)
+    }
+    // Auto-zoom so the whole circle stays in view as it grows/shrinks.
+    map.fitBounds(radiusCircle.getBounds(), 48)
+  } else if (radiusCircle) {
+    radiusCircle.setMap(null)
+    radiusCircle = null
+  }
+}
+watch(() => [props.searchRadius, props.radiusUnit], updateRadius)
 
 const money = (n) => props.currency + Number(n).toLocaleString('en-US')
 
@@ -77,6 +110,7 @@ async function initMap (keyOverride) {
   status.value = 'loading'
   try {
     const g = await loadGoogleMaps(keyOverride)
+    gmaps = g
     const center = props.center || props.eventLocation ||
       (props.hotels.length ? { lat: props.hotels[0].lat, lng: props.hotels[0].lng } : { lat: 36.1627, lng: -86.7816 })
     map = new g.Map(mapEl.value, {
@@ -147,6 +181,8 @@ async function initMap (keyOverride) {
     } else if (props.hotels.length > 1) {
       map.fitBounds(bounds, 64)
     }
+    // Draw the search-radius circle (and fit to it) if a radius is set.
+    updateRadius()
     status.value = 'ready'
   } catch (e) {
     status.value = keyOverride ? 'error' : 'nokey'

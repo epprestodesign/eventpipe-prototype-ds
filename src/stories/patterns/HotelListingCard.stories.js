@@ -107,6 +107,31 @@ export const TrustBadges = {
 export const Loading = { render: () => wrap({ loading: true }) }
 
 /**
+ * Group booking — adds an **Availability** secondary button beside the primary
+ * CTA. It opens the [Availability Dialog](/?path=/docs/browse-hotels-availability-dialog--docs):
+ * a compact hotel summary + a hold-mode rooms carousel for holding inventory.
+ */
+export const GroupBooking = {
+  render: () => {
+    const feat = (n) => [{ icon: 'wifi', label: 'Free WiFi' }, { icon: 'spa', label: 'Spa Access' }, { icon: 'straighten', label: `${n} sq ft` }]
+    const nights = (p) => [
+      { date: 'Tue, Jun 23', roomsLeft: 6, price: p },
+      { date: 'Wed, Jun 24', roomsLeft: 7, price: p },
+      { date: 'Thu, Jun 25', roomsLeft: 3, price: p + 18 },
+    ]
+    return wrap({
+      groupBooking: true,
+      ratingLabel: 'Excellent',
+      availabilityRooms: [
+        { roomType: 'King Bedroom', bedConfig: '1 King Bed', sleeps: 2, features: feat(241), price: 301, nights: nights(301), refundable: true, seed: 0 },
+        { roomType: 'Double Queen Bedroom', bedConfig: '2 Queen Beds', sleeps: 4, features: feat(256), price: 363, nights: nights(363), refundable: false, seed: 1 },
+        { roomType: 'Studio Suite', bedConfig: '1 King Bed + Sofa', sleeps: 3, features: feat(240), price: 401, nights: nights(401), refundable: true, seed: 2 },
+      ],
+    })
+  },
+}
+
+/**
  * **Deprecated.** The vertical grid card (image top, content stacked).
  *
  * Kept for reference only. The listing experience now uses horizontal cards,

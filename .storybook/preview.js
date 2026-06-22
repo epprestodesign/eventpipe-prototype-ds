@@ -81,7 +81,7 @@ const preview = {
             'Global Nav', 'Tabs', 'Menu', 'Breadcrumbs', 'Pagination', 'Stepper', 'App Navigation',
           ],
           'Browse Hotels', [
-            'Booking Widget', 'Hotel Listing Card', 'Hotel Map', 'Search & Filters', 'Forms', 'Empty States', 'Loading States',
+            'Booking Widget', 'Hotel Listing Card', 'Availability Dialog', 'Hotel Map', 'Search & Filters', 'Forms', 'Empty States', 'Loading States',
           ],
           'Hotel Details', [
             'Hotel Detail Page', 'Photo Gallery', 'Detail Tabs', 'Hotel Summary Header',

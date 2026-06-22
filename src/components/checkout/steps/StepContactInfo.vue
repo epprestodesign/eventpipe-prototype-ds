@@ -1,28 +1,33 @@
 <script setup>
 // Checkout step 2 — Contact information. Variant-specific:
 //   group       → GroupTeamsBlock (teams flow + primary contact)
-//   reservation → ContactGroupForm (contact only)
+//   reservation → ReservationGuests (per-room guest info, aware of the booking
+//                 widget's room/traveler selection via `rooms`)
 // Clicking Next while incomplete surfaces required-field errors instead of
-// advancing; required fields = names + email + phone (+ ≥1 team for group).
+// advancing.
 import { computed, ref } from 'vue'
-import ContactGroupForm from '../ContactGroupForm.vue'
+import ReservationGuests from '../ReservationGuests.vue'
 import GroupTeamsBlock from '../GroupTeamsBlock.vue'
 
 const props = defineProps({
   mode: { type: String, default: 'group' }, // group | reservation
-  modelValue: { type: Object, default: () => ({}) },
+  modelValue: { type: [Object, Array], default: () => ({}) },
+  // Reservation: the booking-widget selection (one entry per room) + event-
+  // configurable extra fields, passed through to ReservationGuests.
+  rooms: { type: Array, default: () => [{ adults: 1, children: 0 }] },
+  teamName: { type: Boolean, default: false },
+  customFields: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['update:modelValue', 'next'])
 
 const showErrors = ref(false)
+const resValid = ref(false)
 const valid = computed(() => {
+  if (props.mode === 'reservation') return resValid.value
   const m = props.modelValue || {}
-  if (props.mode === 'group') {
-    const c = m.contact || {}
-    const teamsOk = m.notHolding || ((m.teams && m.teams.length) && (m.groupBlockName || '').trim())
-    return !!(c.firstName && c.lastName && c.mobile && c.email && teamsOk)
-  }
-  return !!(m.firstName && m.lastName && m.email && m.phone)
+  const c = m.contact || {}
+  const teamsOk = m.notHolding || ((m.teams && m.teams.length) && (m.groupBlockName || '').trim())
+  return !!(c.firstName && c.lastName && c.mobile && c.email && teamsOk)
 })
 const onNext = () => { if (valid.value) emit('next'); else { showErrors.value = true } }
 </script>
@@ -30,7 +35,14 @@ const onNext = () => { if (valid.value) emit('next'); else { showErrors.value = 
 <template>
   <div class="step">
     <group-teams-block v-if="mode === 'group'" :model-value="modelValue" :show-errors="showErrors" @update:model-value="emit('update:modelValue', $event)" />
-    <contact-group-form v-else :mode="mode" :model-value="modelValue" :show-errors="showErrors" @update:model-value="emit('update:modelValue', $event)" />
+    <reservation-guests
+      v-else
+      :rooms="rooms" :team-name="teamName" :custom-fields="customFields"
+      :model-value="Array.isArray(modelValue) ? modelValue : []"
+      :show-errors="showErrors"
+      @update:model-value="emit('update:modelValue', $event)"
+      @update:valid="resValid = $event"
+    />
     <q-btn unelevated no-caps class="step__next" label="Next" @click="onNext" />
   </div>
 </template>
