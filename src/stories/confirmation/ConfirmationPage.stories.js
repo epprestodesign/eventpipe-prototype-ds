@@ -106,6 +106,72 @@ const holdData = {
   ],
 }
 
+// Multiple room reservations — one card per reservation, rooms with occupancy.
+// Edge cases: (1) one reservation with two differently-occupied rooms (2 adults
+// + 1 child, and a 1-guest room); (2) the same guest with one room today and one
+// room at a different hotel tomorrow — two separate reservation cards.
+const reservationsData = {
+  heading: 'Your reservations are confirmed!',
+  ctaLabel: 'View your trips',
+  itinerary: '72055771948934',
+  email: 'youraccount@eventpipe.com',
+  reservations: [
+    // Edge case 1 — one reservation, two rooms with different occupancy.
+    {
+      hotel: {
+        name: 'Hilton Orlando Lake Buena Vista',
+        location: 'Orlando, FL',
+        rating: { score: '8.8/10', label: 'Excellent', reviews: 3120 },
+      },
+      checkIn: 'Mon, Jun 29, 3:00pm',
+      checkOut: 'Wed, Jul 1, 11:00am',
+      rooms: [
+        { label: 'Room 1', type: 'King Room', summary: '1 King Bed · Sleeps 3', guests: '2 adults · 1 child' },
+        { label: 'Room 2', type: 'Queen Room', summary: '1 Queen Bed · Sleeps 2', guests: '1 adult' },
+      ],
+    },
+    // Edge case 2a — one guest, one room, checking in today.
+    {
+      hotel: {
+        name: 'Omni Orlando Resort at ChampionsGate',
+        location: 'ChampionsGate, FL',
+        rating: { score: '8.4/10', label: 'Very good', reviews: 1985 },
+      },
+      checkIn: 'Tue, Jun 23, 3:00pm',
+      checkOut: 'Wed, Jun 24, 11:00am',
+      rooms: [
+        { label: 'Room 1', type: 'Double Queen Room', summary: '2 Queen Beds · Sleeps 4', guests: '1 adult' },
+      ],
+    },
+    // Edge case 2b — same guest, one room at a different hotel, checking in tomorrow.
+    {
+      hotel: {
+        name: 'Margaritaville Resort Orlando',
+        location: 'Kissimmee, FL',
+        rating: { score: '8.1/10', label: 'Very good', reviews: 1432 },
+      },
+      checkIn: 'Wed, Jun 24, 3:00pm',
+      checkOut: 'Thu, Jun 25, 11:00am',
+      rooms: [
+        { label: 'Room 1', type: 'King Suite', summary: '1 King Bed · Sleeps 2', guests: '1 adult' },
+      ],
+    },
+  ],
+  party: [
+    { name: 'Alex Smith', role: 'You', status: 'host' },
+    { name: 'Jordan Maye', role: 'Traveler', status: 'invited' },
+    { name: 'Unknown Guest', status: 'unknown' },
+  ],
+  cancellation: {
+    freeUntil: 'Sat, Jun 21, 4:00pm',
+    text: 'Free cancellation applies to each reservation until the date shown for that hotel. After that, the property’s individual cancellation terms apply per room. Manage any reservation independently above.',
+  },
+  location: { lat: 28.3892, lng: -81.5417, address: '1751 Hotel Plaza Blvd, Orlando, FL 32830', label: 'Hilton Orlando Lake Buena Vista' },
+  areaTips,
+  faqs,
+  help,
+}
+
 export default {
   title: 'Confirmation/Confirmation Page',
   component: ConfirmationPage,
@@ -120,6 +186,8 @@ booking type:
 
 - **Reservation** — a single hotel stay: check-in / check-out and room features.
 - **Group Hold** — a group/team room block: one card per hotel with rooms held by night.
+- **Multiple Room Reservations** — one card per reservation; room details reuse the
+  Group Hold layout, showing per-room occupancy and each reservation's own hotel + dates.
 
 Accents use the DS primary (Zinc 900).
 ` } },
@@ -141,5 +209,21 @@ export const GroupHold = {
     components: { ConfirmationPage },
     setup: () => ({ data: holdData }),
     template: `<confirmation-page mode="hold" :data="data" />`,
+  }),
+}
+
+/**
+ * Multiple room reservations — one card per reservation, with room details laid
+ * out like Group Hold (room type + summary) but showing per-room occupancy.
+ * Covers the edge cases: a single reservation with two differently-occupied
+ * rooms (2 adults + 1 child, and a 1-guest room), and one guest booking a room
+ * today plus a room at a different hotel tomorrow (two separate cards).
+ */
+export const MultipleReservations = {
+  name: 'Multiple Room Reservations',
+  render: () => ({
+    components: { ConfirmationPage },
+    setup: () => ({ data: reservationsData }),
+    template: `<confirmation-page mode="reservations" :data="data" />`,
   }),
 }

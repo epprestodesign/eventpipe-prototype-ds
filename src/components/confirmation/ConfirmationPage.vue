@@ -1,8 +1,10 @@
 <script setup>
 // ConfirmationPage — the post-checkout success screen.
-// Two data modes:
-//   reserve → a single hotel stay (check-in / check-out / room features)
-//   hold    → a group/team room block (one card per hotel, rooms held by night)
+// Three data modes:
+//   reserve      → a single hotel stay (check-in / check-out / room features)
+//   hold         → a group/team room block (one card per hotel, rooms held by night)
+//   reservations → multiple room reservations (one card per reservation; rooms
+//                  reuse the hold layout with per-room occupancy instead of nights)
 // Below the booking summary both modes share a stack of post-booking modules:
 // who's going, cancellation + manage, add-to-calendar, location, area tips,
 // FAQ, help/contact, and an experience rating. Controls are presentational
@@ -12,15 +14,16 @@ import HotelMap from '../HotelMap.vue'
 import heroImg from '../../assets/confirmation/soccer-luggage.png'
 
 const props = defineProps({
-  mode: { type: String, default: 'reserve' }, // reserve | hold
+  mode: { type: String, default: 'reserve' }, // reserve | hold | reservations
   data: { type: Object, default: () => ({}) },
 })
 
 const isHold = computed(() => props.mode === 'hold')
+const isMulti = computed(() => props.mode === 'reservations')
 const d = computed(() => props.data || {})
 const hero = computed(() => d.value.heroImage || heroImg)
-const heading = computed(() => d.value.heading || (isHold.value ? "Your block is confirmed!" : "You're confirmed!"))
-const ctaLabel = computed(() => d.value.ctaLabel || (isHold.value ? 'Manage your block' : 'View your trip'))
+const heading = computed(() => d.value.heading || (isMulti.value ? 'Your reservations are confirmed!' : isHold.value ? 'Your block is confirmed!' : "You're confirmed!"))
+const ctaLabel = computed(() => d.value.ctaLabel || (isMulti.value ? 'View your trips' : isHold.value ? 'Manage your block' : 'View your trip'))
 
 // Meta rows shown under the heading (label → value), right-aligned values.
 const meta = computed(() => {
@@ -34,6 +37,8 @@ const meta = computed(() => {
 const teams = computed(() => (d.value.teams || []).map((t) => (typeof t === 'string' ? { name: t } : t)))
 const hotels = computed(() => (isHold.value ? d.value.hotels || [] : d.value.hotel ? [d.value.hotel] : []))
 const totalRooms = (h) => (h.rooms || []).reduce((sum, r) => sum + (r.nights || []).reduce((s, n) => s + (n.qty || 0), 0), 0)
+// Multiple room reservations — one card per reservation (hotel + dates + rooms).
+const reservations = computed(() => (isMulti.value ? d.value.reservations || [] : []))
 
 // Who's going — avatar initials; an "unknown" status renders a ghost glyph.
 const party = computed(() => d.value.party || [])
@@ -125,6 +130,40 @@ const scores = Array.from({ length: 10 }, (_, i) => i + 1)
           <hr class="conf__rule" />
           <p class="conf__heldsum"><q-icon name="check_circle" size="18px" /> {{ totalRooms(h) }} room-nights held at this hotel</p>
         </template>
+      </section>
+
+      <!-- RESERVATIONS body: one card per reservation. Room details mirror the
+           Group Hold layout (conf__room / conf__roomhead), with each room's
+           occupancy in place of held nights. Each reservation carries its own
+           hotel + dates, so different hotels / dates list as separate cards. -->
+      <section v-for="(rsv, si) in reservations" :key="'rsv-' + si" class="conf__card">
+        <span class="conf__rsveyebrow">Reservation {{ si + 1 }} of {{ reservations.length }}</span>
+        <header class="conf__cardhead">
+          <h2 class="conf__hotel">{{ rsv.hotel.name }}</h2>
+          <p v-if="rsv.hotel.location" class="conf__loc">{{ rsv.hotel.location }}</p>
+          <p v-if="rsv.hotel.rating" class="conf__rating">
+            <strong>{{ rsv.hotel.rating.score }} - {{ rsv.hotel.rating.label }}</strong>
+            <span v-if="rsv.hotel.rating.reviews"> ({{ rsv.hotel.rating.reviews.toLocaleString() }} reviews)</span>
+          </p>
+        </header>
+        <hr class="conf__rule" />
+        <div class="conf__stay">
+          <div class="conf__when"><span class="conf__lbl">Check-in</span><strong>{{ rsv.checkIn }}</strong></div>
+          <div class="conf__when"><span class="conf__lbl">Check-out</span><strong>{{ rsv.checkOut }}</strong></div>
+        </div>
+        <hr class="conf__rule" />
+        <div v-for="(r, ri) in rsv.rooms || []" :key="ri" class="conf__room">
+          <div class="conf__roomhead">
+            <span class="conf__roomtype">{{ r.label ? r.label + ' · ' : '' }}{{ r.type }}</span>
+            <span v-if="r.summary" class="conf__roomsum">{{ r.summary }}</span>
+          </div>
+          <ul class="conf__nights">
+            <li><span>Guests</span><strong>{{ r.guests }}</strong></li>
+            <li v-if="r.dates"><span>Dates</span><strong>{{ r.dates }}</strong></li>
+          </ul>
+        </div>
+        <hr class="conf__rule" />
+        <p class="conf__heldsum"><q-icon name="check_circle" size="18px" /> {{ (rsv.rooms || []).length }} {{ (rsv.rooms || []).length === 1 ? 'room' : 'rooms' }} confirmed</p>
       </section>
 
       <!-- who's going -->
@@ -269,6 +308,9 @@ const scores = Array.from({ length: 10 }, (_, i) => i + 1)
 .conf__loc { margin: 4px 0 0; color: var(--ds-color-text-subtle); font-size: 0.875rem; }
 .conf__rating { margin: 4px 0 0; font-size: 0.875rem; color: var(--ds-color-text); }
 .conf__rule { border: 0; border-top: 1px solid var(--ds-color-border); margin: 18px 0; }
+
+/* reservation eyebrow (multiple room reservations) */
+.conf__rsveyebrow { display: block; margin-bottom: 8px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ds-color-text-subtle); }
 
 /* group block + teams */
 .conf__blocklabel { display: block; color: var(--ds-color-text-subtle); font-size: 0.875rem; }
