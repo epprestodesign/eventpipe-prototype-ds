@@ -157,7 +157,7 @@ the cart opens the **Cart Fly-out** order summary (Uber Eats-style slide-over).
 - **\`reservations\`** — "Multiple Room Reservations": several booked hotels →
   rooms → per-night rows (date + nightly rate), no quantity selector.
 
-Built on DS tokens; primary actions use the brand Zinc 900.
+Built on DS tokens; primary actions use the brand Navy 900 (#01113E).
 ` } },
   },
 }

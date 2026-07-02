@@ -11,14 +11,14 @@
 // system lives in ds-palette.scss + ds-color-tokens.scss.
 // (Quasar's SASS color fns need solid hex, so literals are used here;
 //  alpha tokens stay as CSS custom properties only.)
-// Brand = Zinc (Tailwind). Primary is the bold near-black step for strong
-// contrast on actions; status colors use the palette's designated defaults.
-$primary:   #18181B;   // background.brand.bold → Zinc 900
-$secondary: #71717A;   // Zinc 500
-$accent:    #3F3F46;   // Zinc 700 (kept monochrome with the brand)
+// Brand = Navy (Presto). Primary is the deep navy anchor (#01113E) for strong
+// contrast on actions; neutrals use Slate; status colors use palette defaults.
+$primary:   #01113E;   // background.brand.bold → Navy 900
+$secondary: #475569;   // Slate 600
+$accent:    #2C4380;   // Navy 500 (mid brand accent)
 
-$dark:      #18181B;   // Zinc 900
-$dark-page: #09090B;   // Zinc 950
+$dark:      #01113E;   // Navy 900
+$dark-page: #030A26;   // Navy 950
 
 $positive:  #16A34A;   // success.bold → Green 600
 $negative:  #DC2626;   // danger.bold  → Red 600
@@ -27,10 +27,11 @@ $warning:   #FACC15;   // warning.bold → Yellow 400 (needs dark text)
 
 // --- Typography ----------------------------------------------
 // Font family is imported in app.scss; here we tell Quasar to use it.
-$typography-font-family: 'Poppins', -apple-system, BlinkMacSystemFont,
+// PT Sans ships only 400 & 700, so "semibold" UI resolves to 700.
+$typography-font-family: 'PT Sans', -apple-system, BlinkMacSystemFont,
   'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
 // --- Shape / spacing tokens ----------------------------------
-$generic-border-radius: 10px;   // global radius used by many components
-$button-border-radius:  10px;
-$button-font-weight:    600;
+$generic-border-radius: 8px;    // global radius used by many components
+$button-border-radius:  8px;
+$button-font-weight:    700;

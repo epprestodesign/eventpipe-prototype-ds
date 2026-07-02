@@ -8,7 +8,7 @@ export default {
 ## Overview
 The **primitive color palette** (Tailwind-based) — the raw hue ramps every
 semantic token is built from. Each family runs \`50 → 950\`. The **brand** is the
-**Zinc** ramp.
+**Navy** ramp (anchored on #01113E); neutrals are the **Slate** ramp.
 
 > **Don't use these directly in components.** They exist only to be referenced by
 > the semantic tokens on **Foundations / Colors**. Use \`--ds-color-*\` instead.
@@ -38,16 +38,16 @@ export const AllHues = {
   render: () => ({ setup: () => ({ ramps }), template: RAMP }),
 }
 
-/** A single ramp blown up — the Zinc brand ramp (primary = Zinc 900). */
-export const BrandZinc = {
-  name: 'Brand (Zinc)',
+/** A single ramp blown up — the Navy brand ramp (primary = Navy 900 / #01113E). */
+export const BrandNavy = {
+  name: 'Brand (Navy)',
   render: () => ({
-    setup: () => ({ fam: ramps.find((r) => r.family === 'Zinc') }),
+    setup: () => ({ fam: ramps.find((r) => r.family === 'Navy') }),
     template: `
       <div class="row" style="flex-wrap:wrap;gap:10px">
         <div v-for="s in fam.steps" :key="s.step" style="width:120px">
           <div :style="{ background: s.hex, height: '88px', borderRadius: '10px', border: '1px solid rgba(0,0,0,.12)' }"></div>
-          <div class="q-mt-xs" style="font-weight:600">Zinc {{ s.step }}</div>
+          <div class="q-mt-xs" style="font-weight:600">Navy {{ s.step }}</div>
           <div style="font-family:monospace;font-size:11px;color:#71717A">{{ s.hex }}</div>
         </div>
       </div>`,

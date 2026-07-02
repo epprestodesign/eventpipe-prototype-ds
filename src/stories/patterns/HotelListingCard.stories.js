@@ -57,7 +57,7 @@ and results pages. A single component renders many states through props:
 - **Rating or New** — falls back to a "New" pill when \`rating\` is null.
 - **Loading** — shimmer skeleton.
 
-Built on DS tokens (Zinc/Poppins, palette ramps, radius/shadow tokens).
+Built on DS tokens (Zinc/PT Sans, palette ramps, radius/shadow tokens).
 
 > **Note:** This card is now **horizontal-only**. The room-rate booking
 > variants (reserve / hold) moved to **Hotel Details / Room Card**, and the

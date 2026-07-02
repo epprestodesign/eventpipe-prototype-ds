@@ -122,11 +122,11 @@ const money = (n) => props.currency + Number(n).toLocaleString('en-US')
 const pillCss = (selected) =>
   `display:inline-block;background:${selected ? '#fff' : '#18181B'};color:${selected ? '#18181B' : '#fff'};` +
   'border:3px solid #18181B;border-radius:999px;padding:5px 12px;' +
-  'font:600 13px/1 Poppins,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.3);cursor:pointer;white-space:nowrap;'
+  'font:600 13px/1 PT Sans,system-ui,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.3);cursor:pointer;white-space:nowrap;'
 
 function popupNode (h) {
   const el = document.createElement('div')
-  el.style.cssText = 'width:240px;font-family:Poppins,system-ui,sans-serif;'
+  el.style.cssText = 'width:240px;font-family:PT Sans,system-ui,sans-serif;'
   // Image + name link to the hotel details page (future functionality).
   const url = h.url || '#'
   const tgt = props.linkTarget
@@ -149,7 +149,7 @@ function select (id) {
 
 function eventPopupNode (ev) {
   const el = document.createElement('div')
-  el.style.cssText = 'font-family:Poppins,system-ui,sans-serif;padding:2px 4px;'
+  el.style.cssText = 'font-family:PT Sans,system-ui,sans-serif;padding:2px 4px;'
   el.innerHTML =
     '<div style="display:flex;align-items:center;gap:7px">' +
       '<span style="width:9px;height:9px;border-radius:50%;background:#18181B;display:inline-block;flex:0 0 auto"></span>' +
@@ -219,7 +219,7 @@ async function initMap (keyOverride) {
           const size = count < 10 ? 40 : count < 25 ? 48 : 56
           el.style.cssText = `display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;` +
             'border-radius:999px;background:#18181B;color:#fff;border:3px solid #fff;' +
-            'font:700 14px/1 Poppins,system-ui,sans-serif;box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer;'
+            'font:700 14px/1 PT Sans,system-ui,sans-serif;box-shadow:0 1px 6px rgba(0,0,0,.35);cursor:pointer;'
           el.textContent = String(count)
           return new g.marker.AdvancedMarkerElement({ position, content: el, zIndex: 1000 + count })
         },

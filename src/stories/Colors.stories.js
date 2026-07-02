@@ -12,8 +12,8 @@ components actually use. Each token references a primitive from
 
 Use via CSS custom properties (\`var(--ds-color-background-brand-bold)\`) or the
 generated helpers (\`.bg-ds-brand-bold\`, \`.text-ds-subtle\`, \`.border-ds-bold\`).
-Quasar components are bridged through brand vars (\`$primary\` = Zinc 900, etc.).
-The **brand is Zinc**; status uses Red / Yellow / Green; links stay Blue.
+Quasar components are bridged through brand vars (\`$primary\` = Navy 900 / #01113E, etc.).
+The **brand is Navy** (neutrals are Slate); status uses Red / Yellow / Green; links are Navy.
 ` } } },
 }
 

@@ -4,9 +4,9 @@ A **Quasar + Vue 3 design system**, documented and QA'd in **Storybook**, themed
 for a consumer **hotel booking & reservation** experience ("Presto Design System").
 
 - **Stack:** Vue 3 · Quasar 2 · Storybook 8 · Vite 6 · pnpm
-- **Font:** Poppins
+- **Font:** PT Sans
 - **Color system:** Tailwind-based 3-tier tokens (primitives → semantic → Quasar
-  bridge), brand = **Zinc**.
+  bridge), brand = **Navy** (#01113E), neutrals = **Slate**.
 
 ## Live docs
 Storybook is published to GitHub Pages on every push to `main`:

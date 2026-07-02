@@ -1,4 +1,5 @@
-// AUTO-GENERATED token data (Tailwind palette, brand = Zinc).
+// AUTO-GENERATED token data (Tailwind palette, brand = Navy).
+// Regenerate with: node scripts/gen-tokens-data.mjs
 export const ramps = [
   {
     "family": "Red",
@@ -1319,6 +1320,66 @@ export const ramps = [
         "varName": "--ds-palette-stone-950"
       }
     ]
+  },
+  {
+    "family": "Navy",
+    "steps": [
+      {
+        "step": "50",
+        "hex": "#EEF1F8",
+        "varName": "--ds-palette-navy-50"
+      },
+      {
+        "step": "100",
+        "hex": "#D5DCEC",
+        "varName": "--ds-palette-navy-100"
+      },
+      {
+        "step": "200",
+        "hex": "#ADBAD8",
+        "varName": "--ds-palette-navy-200"
+      },
+      {
+        "step": "300",
+        "hex": "#7C8DBE",
+        "varName": "--ds-palette-navy-300"
+      },
+      {
+        "step": "400",
+        "hex": "#4E63A0",
+        "varName": "--ds-palette-navy-400"
+      },
+      {
+        "step": "500",
+        "hex": "#2C4380",
+        "varName": "--ds-palette-navy-500"
+      },
+      {
+        "step": "600",
+        "hex": "#1B2F63",
+        "varName": "--ds-palette-navy-600"
+      },
+      {
+        "step": "700",
+        "hex": "#16265C",
+        "varName": "--ds-palette-navy-700"
+      },
+      {
+        "step": "800",
+        "hex": "#0B1A4C",
+        "varName": "--ds-palette-navy-800"
+      },
+      {
+        "step": "900",
+        "hex": "#01113E",
+        "varName": "--ds-palette-navy-900"
+      },
+      {
+        "step": "950",
+        "hex": "#030A26",
+        "varName": "--ds-palette-navy-950"
+      }
+    ]
   }
 ]
 
@@ -1326,39 +1387,39 @@ export const semanticGroups = {
   "Text": [
     {
       "name": "color.text",
-      "hex": "#171717",
+      "hex": "#0F172A",
       "desc": "Primary text — body copy, headers, buttons.",
-      "primitive": "Neutral 900"
+      "primitive": "Slate 900"
     },
     {
       "name": "color.text.subtle",
-      "hex": "#525252",
+      "hex": "#475569",
       "desc": "Secondary text — nav, subtle links, labels.",
-      "primitive": "Neutral 600"
+      "primitive": "Slate 600"
     },
     {
       "name": "color.text.subtlest",
-      "hex": "#A3A3A3",
+      "hex": "#94A3B8",
       "desc": "Tertiary text — metadata, placeholders.",
-      "primitive": "Neutral 400"
+      "primitive": "Slate 400"
     },
     {
       "name": "color.text.inverse",
       "hex": "#FFFFFF",
       "desc": "Text on bold/dark backgrounds.",
-      "primitive": null
+      "primitive": "White"
     },
     {
       "name": "color.text.disabled",
-      "hex": "#D4D4D4",
+      "hex": "#CBD5E1",
       "desc": "Text in a disabled state.",
-      "primitive": "Neutral 300"
+      "primitive": "Slate 300"
     },
     {
       "name": "color.text.brand",
-      "hex": "#18181B",
+      "hex": "#01113E",
       "desc": "Text that reinforces the brand.",
-      "primitive": "Zinc 900"
+      "primitive": "Navy 900"
     },
     {
       "name": "color.text.danger",
@@ -1388,125 +1449,125 @@ export const semanticGroups = {
   "Link": [
     {
       "name": "color.link",
-      "hex": "#2563EB",
-      "desc": "Links (default/hover). Kept blue for affordance.",
-      "primitive": "Blue 600"
+      "hex": "#01113E",
+      "desc": "Links (default/hover). Navy to match the brand.",
+      "primitive": "Navy 900"
     },
     {
       "name": "color.link.visited",
-      "hex": "#7C3AED",
+      "hex": "#16265C",
       "desc": "Visited links.",
-      "primitive": "Violet 600"
+      "primitive": "Navy 700"
     }
   ],
   "Icon": [
     {
       "name": "color.icon",
-      "hex": "#171717",
+      "hex": "#0F172A",
       "desc": "Default icon color.",
-      "primitive": "Neutral 900"
+      "primitive": "Slate 900"
     },
     {
       "name": "color.icon.subtle",
-      "hex": "#525252",
+      "hex": "#475569",
       "desc": "Icons paired with subtle text.",
-      "primitive": "Neutral 600"
+      "primitive": "Slate 600"
     },
     {
       "name": "color.icon.inverse",
       "hex": "#FFFFFF",
       "desc": "Icons on bold backgrounds.",
-      "primitive": null
+      "primitive": "White"
     },
     {
       "name": "color.icon.disabled",
-      "hex": "#D4D4D4",
+      "hex": "#CBD5E1",
       "desc": "Icons in a disabled state.",
-      "primitive": "Neutral 300"
+      "primitive": "Slate 300"
     }
   ],
   "Border": [
     {
       "name": "color.border",
-      "hex": "#E5E5E5",
+      "hex": "#E2E8F0",
       "desc": "Group/separate UI — cards, dividers.",
-      "primitive": "Neutral 200"
+      "primitive": "Slate 200"
     },
     {
       "name": "color.border.bold",
-      "hex": "#A3A3A3",
+      "hex": "#94A3B8",
       "desc": "Stronger border (≥3:1).",
-      "primitive": "Neutral 400"
+      "primitive": "Slate 400"
     },
     {
       "name": "color.border.brand",
-      "hex": "#18181B",
+      "hex": "#01113E",
       "desc": "Brand/selected borders.",
-      "primitive": "Zinc 900"
+      "primitive": "Navy 900"
     },
     {
       "name": "color.border.disabled",
-      "hex": "#E5E5E5",
+      "hex": "#E2E8F0",
       "desc": "Borders of disabled elements.",
-      "primitive": "Neutral 200"
+      "primitive": "Slate 200"
     },
     {
       "name": "color.border.focused",
-      "hex": "#18181B",
+      "hex": "#01113E",
       "desc": "Focus ring.",
-      "primitive": "Zinc 900"
+      "primitive": "Navy 900"
     }
   ],
   "Background · neutral": [
     {
       "name": "color.background.neutral",
-      "hex": "#F5F5F5",
+      "hex": "#F1F5F9",
       "desc": "Default neutral element bg (e.g. default buttons).",
-      "primitive": "Neutral 100"
+      "primitive": "Slate 100"
     },
     {
       "name": "color.background.neutral.subtle",
       "hex": "#00000000",
       "desc": "No-fill neutral until interaction.",
-      "primitive": null
+      "primitive": "Transparent"
     },
     {
       "name": "color.background.neutral.bold",
-      "hex": "#171717",
+      "hex": "#0F172A",
       "desc": "Vibrant neutral bg.",
-      "primitive": "Neutral 900"
+      "primitive": "Slate 900"
     },
     {
       "name": "color.background.input",
       "hex": "#FFFFFF",
       "desc": "Form input background.",
-      "primitive": null
+      "primitive": "White"
     }
   ],
   "Background · brand & selected": [
     {
       "name": "color.background.brand.subtlest",
-      "hex": "#FAFAFA",
+      "hex": "#EEF1F8",
       "desc": "Subtle brand-tinted bg.",
-      "primitive": "Zinc 50"
+      "primitive": "Navy 50"
     },
     {
       "name": "color.background.brand.bold",
-      "hex": "#18181B",
+      "hex": "#01113E",
       "desc": "Primary buttons / brand emphasis.",
-      "primitive": "Zinc 900"
+      "primitive": "Navy 900"
     },
     {
       "name": "color.background.selected",
-      "hex": "#F4F4F5",
+      "hex": "#D5DCEC",
       "desc": "Selected rows, open items.",
-      "primitive": "Zinc 100"
+      "primitive": "Navy 100"
     },
     {
       "name": "color.background.selected.bold",
-      "hex": "#18181B",
+      "hex": "#01113E",
       "desc": "Bold selected bg.",
-      "primitive": "Zinc 900"
+      "primitive": "Navy 900"
     }
   ],
   "Background · status": [
@@ -1576,25 +1637,25 @@ export const semanticGroups = {
       "name": "elevation.surface",
       "hex": "#FFFFFF",
       "desc": "Primary UI background.",
-      "primitive": null
+      "primitive": "White"
     },
     {
       "name": "elevation.surface.sunken",
-      "hex": "#FAFAFA",
+      "hex": "#F8FAFC",
       "desc": "Grouped/secondary background.",
-      "primitive": "Neutral 50"
+      "primitive": "Slate 50"
     },
     {
       "name": "elevation.surface.raised",
       "hex": "#FFFFFF",
       "desc": "Cards that lift.",
-      "primitive": null
+      "primitive": "White"
     },
     {
       "name": "elevation.surface.overlay",
       "hex": "#FFFFFF",
       "desc": "Menus, dialogs.",
-      "primitive": null
+      "primitive": "White"
     }
   ]
 }

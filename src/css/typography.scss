@@ -7,7 +7,7 @@
 // =============================================================
 
 :root {
-  --ds-font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ds-font-family: 'PT Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --ds-text-display: 3.5rem;
   --ds-text-display-weight: 700;
   --ds-text-lead: 1.25rem;
@@ -31,8 +31,12 @@
 }
 
 // Make Quasar's heading classes use the brand font + tighter tracking.
+// PT Sans is a 400/700 family, so headings go bold (matches Presto production
+// where section titles read as strong navy). Quasar's light default weights
+// (300–500) would fall back to 400 and look too thin otherwise.
 .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6 {
   font-family: var(--ds-font-family);
+  font-weight: var(--ds-font-weight-bold); // 700
   letter-spacing: -0.01em;
 }
 

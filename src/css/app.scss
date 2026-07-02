@@ -12,22 +12,22 @@
 @use './ds-color-tokens.scss';   // Tier 2 — semantic roles (--ds-color-*)
 @use './ds-utilities.scss';      // Tier 3 — bg-ds-*/text-ds-*/border-ds-* helpers
 
-// Custom font (swap for your own / a self-hosted file later).
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+// Custom font — PT Sans (matches EventPipe/Presto production). Ships 400 & 700.
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'PT Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   color: var(--ds-color-text);
   background-color: var(--ds-color-surface);
 }
 
 // --- Example component overrides -----------------------------
-// Buttons: softer corners, no shouting caps, tighter weight.
+// Buttons: softer corners, no shouting caps, bold PT Sans labels (matches ref).
 .q-btn {
   border-radius: var(--ds-radius-md);
   text-transform: none;
-  font-weight: var(--ds-font-weight-medium);
+  font-weight: var(--ds-font-weight-bold);
   letter-spacing: 0;
 
   &.q-btn--rounded {

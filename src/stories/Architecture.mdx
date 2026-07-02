@@ -79,12 +79,12 @@ existing work.
 
 - **Always use DS tokens**, never hardcoded hex. Tokens are CSS custom properties
   named `--ds-*`:
-  - Palette ramps: `--ds-palette-<hue>-<step>` (e.g. `--ds-palette-zinc-900`, `--ds-palette-emerald-600`).
+  - Palette ramps: `--ds-palette-<hue>-<step>` (e.g. `--ds-palette-navy-900`, `--ds-palette-emerald-600`).
   - Semantic roles: `--ds-color-text`, `--ds-color-text-subtle`, `--ds-color-surface`, `--ds-color-border`, `--ds-color-border-bold`, `--ds-color-background-brand-bold`, `--ds-color-text-danger`, `--ds-color-text-success`.
   - Scales: `--ds-radius-*`, `--ds-duration-fast`, `--ds-ease-standard`, `--ds-shadow-*`.
-- **Primary brand = Zinc** (near-black). Do **not** introduce blue as the action
-  color even when a reference uses it — map to `--ds-color-background-brand-bold`.
-- Page backgrounds use `--ds-palette-neutral-100`; foreground cards use
+- **Primary brand = Navy** (#01113E). Reach for `--ds-color-background-brand-bold`
+  for actions and `--ds-color-text-brand` for brand headings.
+- Page backgrounds use `--ds-palette-slate-100`; foreground cards use
   `--ds-color-surface` with a `--ds-color-border` outline (the checkout/account pattern).
 
 ---

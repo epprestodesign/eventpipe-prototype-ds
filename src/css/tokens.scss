@@ -13,17 +13,19 @@
   --ds-space-5: 24px;
   --ds-space-6: 32px;
 
-  // Radius scale
+  // Radius scale — tightened to 8px to match the Presto reference corners.
   --ds-radius-sm: 6px;
-  --ds-radius-md: 10px;
+  --ds-radius-md: 8px;
   --ds-radius-lg: 16px;
   --ds-radius-pill: 999px;
 
-  // Typography scale
+  // Typography scale. PT Sans ships only 400 & 700, so "medium" resolves to
+  // 400 (regular) — deterministic body/label weight matching production.
+  // Emphasis (buttons, headings) uses --ds-font-weight-bold (700).
   --ds-font-size-sm: 0.8125rem;
   --ds-font-size-md: 0.9375rem;
   --ds-font-size-lg: 1.125rem;
-  --ds-font-weight-medium: 500;
+  --ds-font-weight-medium: 400;
   --ds-font-weight-bold: 700;
 
   // Elevation

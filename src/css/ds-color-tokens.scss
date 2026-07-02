@@ -1,47 +1,47 @@
-// AUTO-GENERATED — semantic color tokens (brand = Zinc). Tier 2.
+// AUTO-GENERATED — semantic color tokens (brand = Navy, neutrals = Slate). Tier 2.
 // Reference Tier-1 primitives. Components & utilities consume ONLY these.
 :root {
 
   /* Text */
-  --ds-color-text: var(--ds-palette-neutral-900);
-  --ds-color-text-subtle: var(--ds-palette-neutral-600);
-  --ds-color-text-subtlest: var(--ds-palette-neutral-400);
+  --ds-color-text: var(--ds-palette-slate-900);
+  --ds-color-text-subtle: var(--ds-palette-slate-600);
+  --ds-color-text-subtlest: var(--ds-palette-slate-400);
   --ds-color-text-inverse: #FFFFFF;
-  --ds-color-text-disabled: var(--ds-palette-neutral-300);
-  --ds-color-text-brand: var(--ds-palette-zinc-900);
+  --ds-color-text-disabled: var(--ds-palette-slate-300);
+  --ds-color-text-brand: var(--ds-palette-navy-900);
   --ds-color-text-danger: var(--ds-palette-red-600);
   --ds-color-text-warning: var(--ds-palette-yellow-700);
   --ds-color-text-success: var(--ds-palette-green-700);
   --ds-color-text-info: var(--ds-palette-blue-600);
 
   /* Link */
-  --ds-color-link: var(--ds-palette-blue-600);
-  --ds-color-link-visited: var(--ds-palette-violet-600);
+  --ds-color-link: var(--ds-palette-navy-900);
+  --ds-color-link-visited: var(--ds-palette-navy-700);
 
   /* Icon */
-  --ds-color-icon: var(--ds-palette-neutral-900);
-  --ds-color-icon-subtle: var(--ds-palette-neutral-600);
+  --ds-color-icon: var(--ds-palette-slate-900);
+  --ds-color-icon-subtle: var(--ds-palette-slate-600);
   --ds-color-icon-inverse: #FFFFFF;
-  --ds-color-icon-disabled: var(--ds-palette-neutral-300);
+  --ds-color-icon-disabled: var(--ds-palette-slate-300);
 
   /* Border */
-  --ds-color-border: var(--ds-palette-neutral-200);
-  --ds-color-border-bold: var(--ds-palette-neutral-400);
-  --ds-color-border-brand: var(--ds-palette-zinc-900);
-  --ds-color-border-disabled: var(--ds-palette-neutral-200);
-  --ds-color-border-focused: var(--ds-palette-zinc-900);
+  --ds-color-border: var(--ds-palette-slate-200);
+  --ds-color-border-bold: var(--ds-palette-slate-400);
+  --ds-color-border-brand: var(--ds-palette-navy-900);
+  --ds-color-border-disabled: var(--ds-palette-slate-200);
+  --ds-color-border-focused: var(--ds-palette-navy-900);
 
   /* Background · neutral */
-  --ds-color-background-neutral: var(--ds-palette-neutral-100);
+  --ds-color-background-neutral: var(--ds-palette-slate-100);
   --ds-color-background-neutral-subtle: #00000000;
-  --ds-color-background-neutral-bold: var(--ds-palette-neutral-900);
+  --ds-color-background-neutral-bold: var(--ds-palette-slate-900);
   --ds-color-background-input: #FFFFFF;
 
   /* Background · brand & selected */
-  --ds-color-background-brand-subtlest: var(--ds-palette-zinc-50);
-  --ds-color-background-brand-bold: var(--ds-palette-zinc-900);
-  --ds-color-background-selected: var(--ds-palette-zinc-100);
-  --ds-color-background-selected-bold: var(--ds-palette-zinc-900);
+  --ds-color-background-brand-subtlest: var(--ds-palette-navy-50);
+  --ds-color-background-brand-bold: var(--ds-palette-navy-900);
+  --ds-color-background-selected: var(--ds-palette-navy-100);
+  --ds-color-background-selected-bold: var(--ds-palette-navy-900);
 
   /* Background · status */
   --ds-color-background-danger: var(--ds-palette-red-50);
@@ -57,7 +57,7 @@
 
   /* Surface */
   --ds-color-surface: #FFFFFF;
-  --ds-color-surface-sunken: var(--ds-palette-neutral-50);
+  --ds-color-surface-sunken: var(--ds-palette-slate-50);
   --ds-color-surface-raised: #FFFFFF;
   --ds-color-surface-overlay: #FFFFFF;
 }
