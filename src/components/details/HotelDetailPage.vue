@@ -32,6 +32,7 @@ const props = defineProps({
 
   // Rooms
   rooms: { type: Array, default: () => [] },
+  roomsFlow: { type: String, default: 'reserve' }, // 'reserve' | 'group'
   roomsTitle: { type: String, default: 'Select Your Room' },
   roomsSubtitle: { type: String, default: '' },
 
@@ -90,7 +91,7 @@ onMounted(async () => {
 
     <!-- Rooms -->
     <section id="hdp-rooms" class="hdp__section">
-      <rooms-carousel :rooms="rooms" :title="roomsTitle" :subtitle="roomsSubtitle" />
+      <rooms-carousel :rooms="rooms" :flow="roomsFlow" :title="roomsTitle" :subtitle="roomsSubtitle" />
     </section>
 
     <!-- Property / About -->

@@ -5,10 +5,10 @@ import { ref } from 'vue'
 import AvailabilityDialog from '../../components/AvailabilityDialog.vue'
 import { popularAmenities } from '../../lib/amenities.js'
 
-const feat = (n) => [
-  { icon: 'wifi', label: 'Free WiFi' },
-  { icon: 'spa', label: 'Spa Access' },
-  { icon: 'straighten', label: `${n} sq ft` },
+const features = [
+  { label: 'Entertainment', value: '55" Smart TV, Netflix, Apple TV' },
+  { label: 'Food & Drink', value: 'Coffee Maker, Mini Fridge' },
+  { label: 'Non-smoking', value: 'Yes' },
 ]
 const nights = (base) => [
   { date: 'Tue, Jun 23', roomsLeft: 6, price: base },
@@ -17,10 +17,10 @@ const nights = (base) => [
 ]
 
 const rooms = [
-  { roomType: 'King Bedroom', bedConfig: '1 King Bed', sleeps: 2, features: feat(241), price: 301, nights: nights(301), refundable: true, seed: 0 },
-  { roomType: 'Double Queen Bedroom', bedConfig: '2 Queen Beds', sleeps: 4, features: feat(256), price: 363, nights: nights(363), refundable: false, seed: 1 },
-  { roomType: 'Studio Suite', bedConfig: '1 King Bed + Sofa', sleeps: 3, features: feat(240), price: 401, nights: nights(401), refundable: true, seed: 2 },
-  { roomType: 'Accessible King', bedConfig: '1 King Bed', sleeps: 2, features: feat(245), price: 289, nights: nights(289), refundable: true, availability: 'soldout', seed: 4 },
+  { roomType: 'King Bedroom', bedConfig: '1 King Bed', maxOccupancy: 2, features, nights: nights(301), availability: 'available' },
+  { roomType: 'Double Queen Bedroom', bedConfig: '2 Queen Beds', maxOccupancy: 4, features, nights: nights(363), availability: 'available' },
+  { roomType: 'Studio Suite', bedConfig: '1 King Bed + Sofa', maxOccupancy: 3, features, nights: nights(401), availability: 'limited' },
+  { roomType: 'Accessible King', bedConfig: '1 King Bed', maxOccupancy: 2, features, nights: nights(289), availability: 'soldout' },
 ]
 
 const base = {

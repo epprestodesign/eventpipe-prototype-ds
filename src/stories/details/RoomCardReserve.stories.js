@@ -10,7 +10,7 @@ const features = [
 ]
 
 export default {
-  title: 'Hotel Details/Room Card/Book Reservations',
+  title: 'Hotel Details/Book Reservation/Room Card',
   component: RoomCardReserve,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

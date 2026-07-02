@@ -1,11 +1,10 @@
-// PATTERNS / Room Booking Dialog — a full item-detail modal that hosts the same
-// reserve / hold booking experience as the Hotel Listing Card booking variants,
-// laid out like an Uber Eats item dialog (image left, scrollable detail right,
-// sticky CTA footer). Selections (nights, rooms, add-ons) drive the live total.
+// HOTEL DETAILS / Book Reservation / Room Booking Dialog — a full item-detail
+// modal (Uber Eats-style) hosting the reserve booking experience: image left,
+// scrollable detail right, sticky CTA footer whose total updates live.
 import { ref } from 'vue'
 import RoomBookingDialog from '../../components/RoomBookingDialog.vue'
 
-const base = {
+export const base = {
   roomType: 'Two-Room Suite King',
   bedConfig: '1 King Bed, Separate Living Room',
   maxOccupancy: 4,
@@ -34,40 +33,23 @@ const base = {
 }
 
 // Render the dialog surface on a dimmed backdrop to evoke the modal context.
-const onBackdrop = (args) => ({
+export const onBackdrop = (args) => ({
   components: { RoomBookingDialog },
   setup: () => ({ args }),
-  template: `<div style="background:rgba(9,9,11,0.55);padding:40px;display:flex;justify-content:center;border-radius:16px"><room-booking-dialog v-bind="args" /></div>`,
+  template: `<div style="background:rgba(1,17,62,0.55);padding:40px;display:flex;justify-content:center;border-radius:16px"><room-booking-dialog v-bind="args" /></div>`,
 })
 
 export default {
-  title: 'Hotel Details/Room Booking Dialog',
+  title: 'Hotel Details/Book Reservation/Room Booking Dialog',
   component: RoomBookingDialog,
   tags: ['autodocs'],
-  argTypes: {
-    bookingMode: { control: 'inline-radio', options: ['reserve', 'hold'] },
-  },
   parameters: {
     layout: 'fullscreen',
     docs: { description: { component: `
-## Overview
-The **Room Booking Dialog** is a full item-detail modal that reuses the
-**Hotel Listing Card** booking experience inside an Uber Eats-style layout:
-
-- **Left** — a large hero image (pulled from the local imagery library).
-- **Right** — scrollable room detail: title + nightly price, description,
-  trust badge, room features, a "Most popular" add-on carousel, the booking
-  section, and an "Enhance your stay" extras list.
-- **Footer** — a sticky CTA whose total updates live as nights / rooms and
-  add-ons are selected.
-
-## Booking modes (\`bookingMode\`)
-- **\`reserve\`** ("Book Reservations") — read-only nights availability;
-  CTA reads **Reserve Room · total**.
-- **\`hold\`** ("Hold Rooms for Group or Team") — per-night − / + steppers;
-  CTA stays muted until rooms are selected, then reads **Add N to Cart · total**.
-
-Built on DS tokens, shared with the Hotel Listing Card booking variants.
+## Room Booking Dialog — Book Reservation
+A full item-detail modal (Uber Eats-style) hosting the **reserve** booking
+experience: large hero image (left), scrollable room detail (right), and a sticky
+CTA footer. Nights availability is read-only; the CTA reads **Reserve Room · total**.
 ` } },
   },
 }
@@ -75,16 +57,13 @@ Built on DS tokens, shared with the Hotel Listing Card booking variants.
 /** Book Reservations mode — nights availability + Reserve Room CTA. */
 export const Reserve = { render: () => onBackdrop({ ...base, bookingMode: 'reserve', seed: 0 }) }
 
-/** Hold Rooms for Group or Team mode — per-night steppers + Add to Cart CTA. */
-export const Hold = { render: () => onBackdrop({ ...base, bookingMode: 'hold', seed: 2 }) }
-
-/** Launched from a button as a real Quasar dialog (click "Choose your room"). */
+/** Launched from a button as a real Quasar dialog. */
 export const LaunchFromButton = {
   render: () => ({
     components: { RoomBookingDialog },
     setup: () => {
       const open = ref(false)
-      return { open, args: { ...base, bookingMode: 'hold', seed: 1 } }
+      return { open, args: { ...base, bookingMode: 'reserve', seed: 1 } }
     },
     template: `
       <div style="padding:40px">

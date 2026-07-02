@@ -1,14 +1,18 @@
 <script setup>
 // RoomsCarousel — the "Select Your Room" section of the hotel detail screen.
-// Lays out RoomCards in a horizontal, scroll-snapping track so more than three
+// Lays out room cards in a horizontal, scroll-snapping track so more than three
 // rooms can be browsed when available (arrows + native touch/trackpad swipe).
-// Sold-out rooms are rendered inline (RoomCard handles its own sold-out state),
-// so availability never removes a room from the list — it just disables it.
+// The `flow` prop picks the card: 'reserve' → RoomCardReserve (Book
+// Reservations), 'group' → RoomCardGroup (Group Block). Sold-out rooms are
+// rendered inline (the cards handle their own sold-out state), so availability
+// never removes a room from the list — it just disables it.
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import RoomCard from './RoomCard.vue'
+import RoomCardReserve from './RoomCardReserve.vue'
+import RoomCardGroup from './RoomCardGroup.vue'
 
 const props = defineProps({
-  rooms: { type: Array, default: () => [] }, // array of RoomCard prop objects
+  rooms: { type: Array, default: () => [] }, // array of room-card prop objects
+  flow: { type: String, default: 'reserve' }, // 'reserve' | 'group'
   title: { type: String, default: 'Select Your Room' },
   subtitle: { type: String, default: '' },
 })
@@ -62,7 +66,8 @@ onBeforeUnmount(() => ro?.disconnect())
 
     <div ref="track" class="rcar__track" @scroll="update">
       <div v-for="(room, i) in rooms" :key="i" class="rcar__item">
-        <room-card v-bind="room" />
+        <room-card-group v-if="flow === 'group'" v-bind="room" />
+        <room-card-reserve v-else v-bind="room" />
       </div>
     </div>
   </section>
@@ -83,5 +88,5 @@ onBeforeUnmount(() => ro?.disconnect())
    swipe; arrows drive programmatic scroll. Cards keep their intrinsic width. */
 .rcar__track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 2px; padding: 4px 2px 8px; margin: -4px -2px -8px; scrollbar-width: thin; }
 .rcar__item { scroll-snap-align: start; flex: 0 0 auto; }
-.rcar__item > :deep(.rc) { height: 100%; }
+.rcar__item > :deep(.rcr), .rcar__item > :deep(.rcg) { height: 100%; }
 </style>

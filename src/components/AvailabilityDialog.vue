@@ -30,8 +30,8 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 
-// Rooms render in hold mode (per-night quantity steppers), regardless of caller.
-const holdRooms = computed(() => props.rooms.map((r) => ({ currency: props.currency, ...r, mode: 'hold' })))
+// Rooms render as group-block cards (per-night quantity steppers), regardless of caller.
+const holdRooms = computed(() => props.rooms.map((r) => ({ currency: props.currency, ...r })))
 
 // Header photo
 const lib = ref(null)
@@ -73,7 +73,7 @@ const photo = computed(() => {
       </div>
 
       <!-- Inventory carousel (hold-mode room cards) -->
-      <rooms-carousel :rooms="holdRooms" :title="carouselTitle" :subtitle="carouselSubtitle" />
+      <rooms-carousel :rooms="holdRooms" flow="group" :title="carouselTitle" :subtitle="carouselSubtitle" />
     </div>
   </ds-modal>
 </template>
