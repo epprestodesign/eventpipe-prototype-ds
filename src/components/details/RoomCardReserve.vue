@@ -5,7 +5,8 @@
 // "Price Details" link and "Reserve Room" CTA.
 // Availability: available | limited | soldout (soldout dims the card + disables
 // the CTA; per-night labels color by remaining count).
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { loadImagery } from '../../lib/imagery'
 
 const props = defineProps({
   roomType: { type: String, default: 'Room' },
@@ -18,10 +19,27 @@ const props = defineProps({
   total: { type: Number, default: null },          // stay total
   roomCount: { type: Number, default: 1 },
   availability: { type: String, default: 'available' }, // available | limited | soldout
+  // Optional photo: explicit `image` wins; else pulled from the imagery library
+  // by category. Omit both for a text-only card.
+  image: { type: String, default: '' },
+  imageCategories: { type: Array, default: () => [] }, // e.g. ['rooms','suites']
+  seed: { type: Number, default: 0 },
 })
 const emit = defineEmits(['reserve', 'price-details'])
 
 const soldout = computed(() => props.availability === 'soldout')
+
+// Optional thumbnail — explicit image, or first available library image.
+const loaded = ref('')
+const thumb = computed(() => props.image || loaded.value)
+onMounted(async () => {
+  if (props.image || !props.imageCategories.length) return
+  const lib = await loadImagery()
+  for (const c of props.imageCategories) {
+    const arr = lib[c]
+    if (arr && arr.length) { loaded.value = arr[props.seed % arr.length].url; break }
+  }
+})
 const money = (n) => props.currency + Number(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const leftLabel = (n) => (n <= 0 ? 'Sold out' : n <= 3 ? `Only ${n} left` : `${n} rooms left`)
 const leftClass = (n) => (n <= 0 ? 'is-sold' : n <= 3 ? 'is-limited' : 'is-ok')
@@ -29,6 +47,7 @@ const leftClass = (n) => (n <= 0 ? 'is-sold' : n <= 3 ? 'is-limited' : 'is-ok')
 
 <template>
   <div class="rcr" :class="{ 'rcr--soldout': soldout }">
+    <img v-if="thumb" :src="thumb" :alt="roomType" class="rcr__media" />
     <!-- HEAD -->
     <div class="rcr__head">
       <h3 class="rcr__title">{{ roomType }}</h3>
@@ -64,6 +83,7 @@ const leftClass = (n) => (n <= 0 ? 'is-sold' : n <= 3 ? 'is-limited' : 'is-ok')
 <style scoped>
 .rcr { display: flex; flex-direction: column; width: 360px; background: var(--ds-color-surface); border: 1px solid var(--ds-color-border); border-radius: var(--ds-radius-md); overflow: hidden; }
 .rcr--soldout { opacity: 0.6; }
+.rcr__media { width: 100%; height: 168px; object-fit: cover; display: block; }
 
 .rcr__head { padding: 20px 22px 16px; display: flex; flex-direction: column; gap: 8px; }
 .rcr__title { margin: 0; font-size: 1.375rem; font-weight: 700; color: var(--ds-color-text-brand); line-height: 1.2; }

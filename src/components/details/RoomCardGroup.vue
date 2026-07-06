@@ -5,7 +5,8 @@
 // + an "Add to Cart" CTA (muted until a room is picked).
 // Availability: available | limited | soldout (soldout dims the card, zeroes the
 // steppers, and disables the CTA; per-night labels color by remaining count).
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { loadImagery } from '../../lib/imagery'
 import QuantityStepper from '../QuantityStepper.vue'
 
 const props = defineProps({
@@ -16,10 +17,26 @@ const props = defineProps({
   nights: { type: Array, default: () => [] },      // [{ date, roomsLeft, price }]
   currency: { type: String, default: '$' },
   availability: { type: String, default: 'available' }, // available | limited | soldout
+  // Optional photo: explicit `image` wins; else pulled from the imagery library.
+  image: { type: String, default: '' },
+  imageCategories: { type: Array, default: () => [] },
+  seed: { type: Number, default: 0 },
 })
 const emit = defineEmits(['add'])
 
 const soldout = computed(() => props.availability === 'soldout')
+
+// Optional thumbnail — explicit image, or first available library image.
+const loaded = ref('')
+const thumb = computed(() => props.image || loaded.value)
+onMounted(async () => {
+  if (props.image || !props.imageCategories.length) return
+  const lib = await loadImagery()
+  for (const c of props.imageCategories) {
+    const arr = lib[c]
+    if (arr && arr.length) { loaded.value = arr[props.seed % arr.length].url; break }
+  }
+})
 const money = (n) => props.currency + Number(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const leftLabel = (n) => (n <= 0 ? 'Sold out' : n <= 3 ? `Only ${n} left` : `${n} left`)
 const leftClass = (n) => (n <= 0 ? 'is-sold' : n <= 3 ? 'is-limited' : 'is-ok')
@@ -31,6 +48,7 @@ const startingPrice = computed(() => (props.nights.length ? Math.min(...props.ni
 
 <template>
   <div class="rcg" :class="{ 'rcg--soldout': soldout }">
+    <img v-if="thumb" :src="thumb" :alt="roomType" class="rcg__media" />
     <!-- HEAD -->
     <div class="rcg__head">
       <h3 class="rcg__title">{{ roomType }}</h3>
@@ -68,6 +86,7 @@ const startingPrice = computed(() => (props.nights.length ? Math.min(...props.ni
 <style scoped>
 .rcg { display: flex; flex-direction: column; width: 360px; background: var(--ds-color-surface); border: 1px solid var(--ds-color-border); border-radius: var(--ds-radius-md); overflow: hidden; }
 .rcg--soldout { opacity: 0.6; }
+.rcg__media { width: 100%; height: 168px; object-fit: cover; display: block; }
 
 .rcg__head { padding: 20px 22px 16px; display: flex; flex-direction: column; gap: 8px; }
 .rcg__title { margin: 0; font-size: 1.375rem; font-weight: 700; color: var(--ds-color-text-brand); line-height: 1.2; }
