@@ -1,9 +1,10 @@
 /** DES-207 / V1 · Notifications Preferences (Phase 1) — full App Shell experience.
- *  The template copy lives in ./des207-content.json. "Edit content" makes each
- *  Header/Subtext editable inline; "Save to GitHub" commits the updated JSON to
- *  main via the GitHub API (using the editor's own token, kept in this browser),
- *  which redeploys the site so the change sticks for everyone. */
-import { ref, computed, watch, nextTick } from 'vue'
+ *  Template copy lives in ./des207-content.json. Editing is done through
+ *  Storybook's native Controls panel (a Header + Subtext control per template).
+ *  The "Publish content" toolbar button (top of the canvas) holds the GitHub
+ *  token + Save / Discard — Save commits the edited copy to main so it sticks
+ *  for everyone. See .storybook/manager.js for the toolbar addon. */
+import { ref, watchEffect } from 'vue'
 import { page } from '../pages/_shell'
 import { travelocHeader, companySettingsSections } from './_des207'
 import contentData from './des207-content.json'
@@ -11,18 +12,15 @@ import DsListItem from '../../components/DsListItem.vue'
 import DsSectionHeader from '../../components/DsSectionHeader.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
 
+const SECTIONS = contentData.sections
+
 export default {
   title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/V1 · Notifications Preferences',
   tags: ['autodocs'],
-  parameters: { layout: 'fullscreen', docs: { description: { component: 'Phase 1 in the App Shell (Companies → Traveloc). **General** tab shows the full company settings; **Notifications** tab shows collapsible **Section Accordions** of **Notification Rows**. Template copy is stored in `des207-content.json`; **Edit content → Save to GitHub** commits changes back to the repo so they persist for all users.' } } },
+  parameters: { layout: 'fullscreen', docs: { description: { component: 'Phase 1 in the App Shell (Companies → Traveloc). Edit each template’s **Header / Subtext** in the **Controls** panel, then use the **Publish content** button in the Storybook toolbar to **Save** (commit to `main`, redeploy for everyone) or **Discard**.' } } },
 }
 
-// Where the copy lives in the repo, for the Save-to-GitHub commit.
-const GH = { owner: 'epprestodesign', repo: 'eventpipe-prototype-ds', branch: 'main', path: 'src/stories/design-requests/des207-content.json' }
-
 const TITLE_STYLE = 'font-size:0.9375rem; font-weight:700; color:var(--ds-color-text);'
-const SUB_STYLE = 'display:block; font-size:0.8125rem; color:var(--ds-color-text-subtle); line-height:1.5;'
-const EDIT_AFFORD = "outline:1px dashed var(--ds-color-border-bold); border-radius:4px; padding:1px 6px; cursor:text; background:var(--ds-color-surface);"
 // Shared column widths so the "Send Email" / "Template" headers line up with the controls.
 const COL_SEND = 'width:96px; display:flex; align-items:center; justify-content:center;'
 const COL_TMPL = 'width:132px; display:flex; align-items:center; justify-content:center; margin-left:24px;'
@@ -44,25 +42,6 @@ const notice = `
     <q-btn flat no-caps color="primary" label="Dismiss" style="flex:none; align-self:center;" @click="noticeShown = false" />
   </div>`
 
-// Edit toolbar: toggle edit mode, enter a GitHub token, Save (commit) / Cancel.
-const editBar = `
-  <div style="display:flex; flex-direction:column; gap:6px;">
-    <div class="row items-center justify-end q-gutter-sm">
-      <q-btn v-if="!editMode" outline no-caps color="primary" icon="edit_note" label="Edit content" @click="editMode = true" />
-      <template v-else>
-        <q-input v-model="token" dense outlined type="password" placeholder="GitHub token (write access)" style="width:280px" hide-bottom-space>
-          <template #prepend><q-icon name="key" size="18px" /></template>
-        </q-input>
-        <q-btn flat no-caps color="grey-8" label="Cancel" @click="cancelEdit" />
-        <q-btn unelevated no-caps color="primary" icon="cloud_upload" :loading="saving" label="Save to GitHub" @click="save" />
-      </template>
-    </div>
-    <div v-if="editMode" class="text-caption text-grey-7" style="text-align:right;">
-      Click any header or description to edit. Your token stays in this browser and is sent only to GitHub. Saving commits to <b>main</b> and redeploys (~1–2 min), then everyone sees it.
-    </div>
-    <div v-if="status" class="text-caption" :class="statusOk ? 'text-positive' : 'text-negative'" style="text-align:right; font-weight:600;">{{ status }}</div>
-  </div>`
-
 const sectionsMarkup = `
   <q-card flat bordered v-for="s in sections" :key="s.name">
     <q-expansion-item :default-opened="s.open" :label="s.name" header-class="text-primary text-weight-bold">
@@ -71,17 +50,12 @@ const sectionsMarkup = `
       <template v-for="(it, i) in s.items" :key="i">
         <q-separator v-if="i > 0" />
         <div style="padding:8px 28px;">
-          <ds-list-item :bordered="false">
+          <ds-list-item :subtitle="it.desc" :bordered="false">
             <template #title>
               <span class="row items-center q-gutter-sm">
-                <strong :contenteditable="editMode" @blur="it.title = $event.target.innerText"
-                  style="${TITLE_STYLE}" :style="editMode ? '${EDIT_AFFORD}' : ''">{{ it.title }}</strong>
+                <strong style="${TITLE_STYLE}">{{ it.title }}</strong>
                 <q-badge v-if="it.custom" color="primary" class="q-px-sm q-py-xs">Custom</q-badge>
               </span>
-            </template>
-            <template #subtitle>
-              <span :contenteditable="editMode" @blur="it.desc = $event.target.innerText"
-                style="${SUB_STYLE}" :style="editMode ? '${EDIT_AFFORD}' : ''">{{ it.desc }}</span>
             </template>
             <template #trailing>
               <div class="row items-center no-wrap">
@@ -116,59 +90,42 @@ const settingsMarkup = `
     </div>
   </div>`
 
+// Native Storybook Controls: a Header + Subtext control per template, grouped by
+// section. Keys (sNiM_title / _desc) map back onto SECTIONS[N].items[M] — the
+// "Publish content" toolbar addon reads the same keys to commit to GitHub.
+const TEMPLATE_ARG_TYPES = {}
+const TEMPLATE_ARGS = {}
+SECTIONS.forEach((s, si) => {
+  s.items.forEach((it, ii) => {
+    const base = `s${si}i${ii}`
+    TEMPLATE_ARG_TYPES[`${base}_title`] = { name: `${it.title} · Header`, control: 'text', table: { category: s.name } }
+    TEMPLATE_ARG_TYPES[`${base}_desc`] = { name: `${it.title} · Subtext`, control: 'text', table: { category: s.name } }
+    TEMPLATE_ARGS[`${base}_title`] = it.title
+    TEMPLATE_ARGS[`${base}_desc`] = it.desc
+  })
+})
+function sectionsFromArgs(args = {}) {
+  return SECTIONS.map((s, si) => ({
+    ...s,
+    items: s.items.map((it, ii) => ({
+      ...it,
+      title: args[`s${si}i${ii}_title`] ?? it.title,
+      desc: args[`s${si}i${ii}_desc`] ?? it.desc,
+    })),
+  }))
+}
+
 export const Default = page({
   active: 'none',
   org: 'Traveloc',
   user: 'Mike Addesa',
   components: { DsListItem, DsSectionHeader, DsInfoGrid },
-  setup: () => {
-    const content = ref(JSON.parse(JSON.stringify(contentData)))
-    const sections = computed(() => content.value.sections)
-    const editMode = ref(false)
-    const token = ref((() => { try { return localStorage.getItem('ep_gh_token') || '' } catch (e) { return '' } })())
-    watch(token, (v) => { try { localStorage.setItem('ep_gh_token', v || '') } catch (e) {} })
-    const saving = ref(false)
-    const status = ref('')
-    const statusOk = ref(true)
-    const setStatus = (msg, ok) => { status.value = msg; statusOk.value = ok }
-
-    function cancelEdit() {
-      content.value = JSON.parse(JSON.stringify(contentData))
-      editMode.value = false
-      setStatus('', true)
-    }
-
-    async function save() {
-      // Flush the field the cursor is in so its latest text is captured.
-      if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur()
-      await nextTick()
-      if (!token.value) { setStatus('Enter a GitHub token with write access first.', false); return }
-      saving.value = true; setStatus('Saving…', true)
-      try {
-        const api = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`
-        const headers = { Authorization: `token ${token.value}`, Accept: 'application/vnd.github+json' }
-        const cur = await fetch(`${api}?ref=${GH.branch}`, { headers })
-        if (!cur.ok) throw new Error(cur.status === 401 ? 'Token rejected (401) — check it has repo write access.' : `Couldn't read the file (${cur.status}).`)
-        const meta = await cur.json()
-        const text = JSON.stringify({ sections: content.value.sections }, null, 2) + '\n'
-        const b64 = btoa(unescape(encodeURIComponent(text))) // UTF-8-safe base64
-        const res = await fetch(api, {
-          method: 'PUT', headers,
-          body: JSON.stringify({ message: 'content(des-207): update notification template copy', content: b64, sha: meta.sha, branch: GH.branch }),
-        })
-        if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || `Save failed (${res.status}).`) }
-        const out = await res.json()
-        setStatus(`Saved ✓ commit ${out.commit.sha.slice(0, 7)} — redeploying (~1–2 min), then everyone sees it.`, true)
-        editMode.value = false
-      } catch (e) {
-        setStatus(`Error: ${e.message}`, false)
-      } finally { saving.value = false }
-    }
-
-    return {
-      sections, settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true),
-      editMode, token, saving, status, statusOk, save, cancelEdit,
-    }
+  setup: (args) => {
+    // args is reactive in Storybook's Vue renderer — rebuild sections when a
+    // Header/Subtext control changes so edits preview live.
+    const sections = ref([])
+    watchEffect(() => { sections.value = sectionsFromArgs(args) })
+    return { sections, settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true) }
   },
   slot: `
     ${travelocHeader}
@@ -176,7 +133,6 @@ export const Default = page({
       <div class="column q-gutter-md">
         ${notice}
         <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
-        ${editBar}
         ${sectionsMarkup}
       </div>
     </div>
@@ -185,6 +141,8 @@ export const Default = page({
     </div>`,
 })
 Default.parameters = { layout: 'fullscreen' }
+Default.argTypes = TEMPLATE_ARG_TYPES
+Default.args = TEMPLATE_ARGS
 
 /* ---- Locked / Upsell: company without Teams Management ---- */
 const upsellBanner = `
