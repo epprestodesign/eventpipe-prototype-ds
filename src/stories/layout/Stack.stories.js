@@ -7,7 +7,7 @@ import DsStack from '../../components/DsStack.vue'
  * Quasar's flex utilities + a gap token, mirroring MUI's <Stack>.
  */
 const meta = {
-  title: 'Layout/Stack',
+  title: 'Components/Layout & Structure/Stack',
   component: DsStack,
   tags: ['autodocs'],
   parameters: {

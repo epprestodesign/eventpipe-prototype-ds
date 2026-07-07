@@ -2,7 +2,7 @@
 import DsCard from '../../components/DsCard.vue'
 
 export default {
-  title: 'Layout/Card',
+  title: 'Components/Layout & Structure/Card',
   component: DsCard,
   tags: ['autodocs'],
   argTypes: {

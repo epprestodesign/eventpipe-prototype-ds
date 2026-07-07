@@ -8,7 +8,7 @@ import { useQuasar } from 'quasar'
  * Call via const $q = useQuasar(); $q.notify({ ... })
  */
 const meta = {
-  title: 'Feedback/Snackbar',
+  title: 'Components/Feedback & Status/Snackbar',
   tags: ['autodocs'],
   parameters: {
     docs: {

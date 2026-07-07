@@ -1,7 +1,7 @@
 /** DATA DISPLAY / Avatar → Quasar: QAvatar (native) */
 import guestPortrait from '../../assets/hotel/guest-portrait.jpg'
 export default {
-  title: 'Data Display/Avatar',
+  title: 'Components/Media & Visuals/Avatar',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

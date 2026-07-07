@@ -46,12 +46,12 @@ const tag = computed(() => (props.clickable ? 'button' : 'div'))
 .ds-li--bordered { padding: 14px 16px; border: 1px solid var(--ds-color-border); border-radius: var(--ds-radius-md); }
 .ds-li:not(.ds-li--bordered) { padding: 12px 0; }
 .ds-li--clickable { cursor: pointer; transition: background var(--ds-duration-fast) var(--ds-ease-standard); }
-.ds-li--clickable:hover { background: var(--ds-palette-slate-100); }
+.ds-li--clickable:hover { background: var(--ds-palette-graphite-100); }
 
-.ds-li__thumb { width: 56px; height: 56px; flex: none; border-radius: var(--ds-radius-md); overflow: hidden; background: var(--ds-palette-slate-100); display: flex; align-items: center; justify-content: center; }
+.ds-li__thumb { width: 56px; height: 56px; flex: none; border-radius: var(--ds-radius-md); overflow: hidden; background: var(--ds-palette-graphite-100); display: flex; align-items: center; justify-content: center; }
 .ds-li__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ds-li__icon { width: 40px; height: 40px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.ds-li__icon--neutral { background: var(--ds-palette-slate-100); color: var(--ds-color-text); }
+.ds-li__icon--neutral { background: var(--ds-palette-graphite-100); color: var(--ds-color-text); }
 .ds-li__icon--brand { background: var(--ds-color-background-brand-bold); color: #fff; }
 .ds-li__lead { flex: none; display: flex; }
 

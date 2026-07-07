@@ -2,7 +2,7 @@
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 export default {
-  title: 'Feedback/Backdrop',
+  title: 'Components/Actions/Backdrop',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

@@ -24,7 +24,7 @@ const money = (n) => props.prefix + Number(n).toLocaleString('en-US') + (n >= pr
 
 <template>
   <div class="dsr">
-    <q-range v-model="range" :min="min" :max="max" :step="step" class="dsr__range" color="dark" track-color="grey-4" />
+    <q-range v-model="range" :min="min" :max="max" :step="step" class="dsr__range" color="primary" track-color="grey-4" />
     <div class="dsr__mm">
       <div class="dsr__box"><span>{{ minLabel }}</span><strong>{{ money(range.min) }}</strong></div>
       <div class="dsr__box"><span>{{ maxLabel }}</span><strong>{{ money(range.max) }}</strong></div>
@@ -38,5 +38,5 @@ const money = (n) => props.prefix + Number(n).toLocaleString('en-US') + (n >= pr
 .dsr__mm { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
 .dsr__box { display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--ds-color-border-bold); border-radius: var(--ds-radius-md); padding: 8px 12px; }
 .dsr__box span { font-size: 0.8125rem; color: var(--ds-color-text-subtle); }
-.dsr__box strong { font-size: 1rem; font-weight: 700; color: var(--ds-color-text); }
+.dsr__box strong { font-size: 1rem; font-weight: var(--ds-font-weight-medium); color: var(--ds-color-text); }
 </style>

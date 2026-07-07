@@ -58,8 +58,8 @@ onBeforeUnmount(() => { if (typeof document !== 'undefined') { document.body.sty
 @keyframes dsp-rise { from { transform: translate(-50%, 1.5%); opacity: 0.6; } }
 
 .dsp__head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; flex: none; }
-.dsp__close { width: 36px; height: 36px; flex: none; border: 0; border-radius: 50%; background: var(--ds-palette-slate-100); color: var(--ds-color-text); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.dsp__close:hover { background: var(--ds-palette-slate-200); }
+.dsp__close { width: 36px; height: 36px; flex: none; border: 0; border-radius: 50%; background: var(--ds-palette-graphite-100); color: var(--ds-color-text); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.dsp__close:hover { background: var(--ds-palette-graphite-200); }
 .dsp__title { flex: 1; min-width: 0; margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--ds-color-text); }
 .dsp__headend { flex: none; }
 

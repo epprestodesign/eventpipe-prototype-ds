@@ -35,6 +35,23 @@ body {
   }
 }
 
+// --- Standard control height: 40px across the whole library --------
+// Every standard button and single-line outlined field is 40px tall. Excludes
+// auto-height fields (textarea / chip-selects, which must grow) and small dense
+// / round icon buttons.
+.q-btn:not(.q-btn--dense):not(.q-btn--round):not(.q-btn--fab):not(.q-btn--fab-mini) {
+  min-height: 40px;
+}
+// 40px applies to fields laid out the EventPipe way — label ABOVE the control
+// (Form Field / DsInput / DsSelect, which run dense). We deliberately DON'T force
+// a fixed height on fields with an inside floating label: they need vertical room
+// to animate the label to the top on focus, so a hard 40px breaks that. Those
+// keep their natural height; the DS pattern (label above) is the 40px standard.
+.q-field--outlined.q-field--dense:not(.q-field--auto-height) .q-field__control {
+  min-height: 40px;
+  height: 40px; // hard 40px so affixed fields (e.g. search w/ icon) match plain ones
+}
+
 // --- Flat-by-default: no elevation on buttons / button groups -
 // Quasar renders button elevation on the `:before` pseudo-element, and
 // bumps it on hover/active. Flatten it in every state so the unelevated
@@ -82,11 +99,18 @@ body {
   color: var(--ds-color-text);
 }
 
-// Cards: custom radius + elevation token.
+// Cards / containers: custom radius + the subtle standard container border
+// (--ds-color-border-container, #DFDFDF) + elevation token.
 .q-card {
   border-radius: var(--ds-radius-lg);
+  border: 1px solid var(--ds-color-border-container);
   box-shadow: var(--ds-shadow-2);
 }
+
+// Divider (QSeparator): default to the DS border token so every plain rule is
+// the same light graphite line as the references. Colored (`color="primary"`)
+// separators still win via Quasar's !important bg-* utility.
+.q-separator { background-color: var(--ds-color-border); }
 
 // Inputs (outlined): consistent radius with the rest of the system.
 .q-field--outlined .q-field__control {
@@ -219,11 +243,106 @@ body {
  *   <q-btn unelevated no-caps class="ds-btn--danger"    label="Delete" />
  * ------------------------------------------------------------------ */
 .ds-btn--primary { background: var(--ds-color-background-brand-bold) !important; color: #fff !important; }
-.ds-btn--primary:hover { background: var(--ds-palette-navy-800) !important; }
-.ds-btn--secondary { background: var(--ds-palette-slate-100) !important; color: var(--ds-color-text) !important; }
-.ds-btn--secondary:hover { background: var(--ds-palette-slate-200) !important; }
+.ds-btn--primary:hover { background: var(--ds-palette-azure-700) !important; }
+.ds-btn--secondary { background: var(--ds-palette-graphite-100) !important; color: var(--ds-color-text) !important; }
+.ds-btn--secondary:hover { background: var(--ds-palette-graphite-200) !important; }
 .ds-btn--danger { background: var(--ds-color-background-danger-bold) !important; color: #fff !important; }
 .ds-btn--danger:hover { filter: brightness(1.08); }
+
+/* ------------------------------------------------------------------ *
+ * DS Data Table (EventPipe) — apply `class="ds-table"` on a QTable to get the
+ * brand-blue header, zebra rows, and rounded outline from the references.
+ * ------------------------------------------------------------------ */
+.ds-table.q-table__container {
+  border-radius: var(--ds-radius-lg);
+  border: 1px solid var(--ds-color-border);
+  box-shadow: none;
+  overflow: hidden;
+}
+.ds-table thead tr { background: var(--ds-color-background-brand-bold); }
+.ds-table thead th {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  border-color: color-mix(in srgb, #fff 25%, transparent);
+}
+/* White selection checkbox in the blue header: white box, primary-blue check/dash. */
+.ds-table thead .q-checkbox__inner { color: #fff; }
+.ds-table thead .q-checkbox__bg { border-color: #fff; }
+.ds-table thead .q-checkbox__inner--truthy .q-checkbox__bg,
+.ds-table thead .q-checkbox__inner--indet .q-checkbox__bg { background: #fff; }
+.ds-table thead .q-checkbox__svg,
+.ds-table thead .q-checkbox__truthy,
+.ds-table thead .q-checkbox__indet { color: var(--ds-color-background-brand-bold); }
+
+.ds-table tbody td { font-size: 0.9375rem; color: var(--ds-color-text); }
+/* Neutral white / light-grey zebra rows (matches reference). */
+.ds-table tbody tr:nth-child(even) { background: var(--ds-color-surface-sunken); }
+/* Selection is shown by the checkbox only — keep the row's zebra color. */
+.ds-table tbody tr.selected { background: var(--ds-color-surface); }
+.ds-table tbody tr.selected:nth-child(even) { background: var(--ds-color-surface-sunken); }
+.ds-table tbody tr:hover { background: var(--ds-color-background-brand-subtlest); }
+
+/* Muted header variant — neutral slate header instead of brand blue. Apply
+   `class="ds-table ds-table--muted"` (used for secondary/nested tables). */
+.ds-table--muted thead tr { background: var(--ds-palette-graphite-600); }
+.ds-table--muted thead .q-checkbox__inner--truthy .q-checkbox__bg,
+.ds-table--muted thead .q-checkbox__inner--indet .q-checkbox__bg { background: #fff; }
+.ds-table--muted thead .q-checkbox__svg,
+.ds-table--muted thead .q-checkbox__truthy,
+.ds-table--muted thead .q-checkbox__indet { color: var(--ds-palette-graphite-600); }
+
+/* ------------------------------------------------------------------ *
+ * Account / auth screens (Log in, Sign up, Forgot password, Verification).
+ * A centered card on the app canvas — shared by the Account stories.
+ * ------------------------------------------------------------------ */
+.ep-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: var(--ds-color-surface-canvas);
+}
+.ep-auth__card {
+  width: 100%;
+  max-width: 400px;
+  padding: 36px 32px;
+  background: var(--ds-color-surface);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-2);
+}
+.ep-auth__logo { height: 30px; width: auto; display: block; margin-bottom: 24px; }
+.ep-auth__title { margin: 0 0 6px; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; color: var(--ds-color-text); }
+.ep-auth__sub { margin: 0 0 24px; font-size: 0.9375rem; color: var(--ds-color-text-subtle); }
+.ep-auth__or { display: flex; align-items: center; gap: 12px; margin: 16px 0; color: var(--ds-color-text-subtlest); font-size: 0.8125rem; }
+.ep-auth__or::before, .ep-auth__or::after { content: ""; flex: 1; height: 1px; background: var(--ds-color-border); }
+.ep-auth__link { color: var(--ds-color-text-brand); font-weight: 700; font-size: 0.875rem; text-decoration: none; }
+.ep-auth__link:hover { text-decoration: underline; }
+.ep-auth__foot { margin: 20px 0 0; text-align: center; font-size: 0.875rem; color: var(--ds-color-text-subtle); }
+.ep-auth__hint { margin: 0; font-size: 0.8125rem; color: var(--ds-color-text-subtle); }
+
+/* Split auth layout (Untitled-UI style): navy brand panel + form. */
+.ep-authx { display: flex; min-height: 100vh; background: var(--ds-color-surface); }
+.ep-authx__brand {
+  flex: 1 1 50%;
+  background: #01113E;
+  color: #fff;
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+}
+.ep-authx__brand-logo { height: 30px; width: auto; }
+.ep-authx__brand-body { margin-top: auto; padding-top: 48px; }
+.ep-authx__headline { margin: 0 0 16px; font-size: 2.25rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; max-width: 460px; }
+.ep-authx__subhead { margin: 0 0 28px; font-size: 1.0625rem; line-height: 1.55; color: rgba(255, 255, 255, 0.78); max-width: 440px; }
+.ep-authx__features { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.ep-authx__feature { display: flex; align-items: flex-start; gap: 10px; color: rgba(255, 255, 255, 0.9); font-size: 0.9375rem; }
+.ep-authx__feature .q-icon { color: #00ADB3; flex: none; margin-top: 1px; }
+.ep-authx__form { flex: 1 1 50%; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+.ep-authx__form-inner { width: 100%; max-width: 400px; }
+@media (max-width: 900px) { .ep-authx__brand { display: none; } }
 
 /* Banner (Atlassian Flag-style) action links — underline on hover. */
 .ds-banner__link { text-decoration: none; }

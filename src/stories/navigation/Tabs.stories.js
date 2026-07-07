@@ -1,7 +1,7 @@
 /** NAVIGATION / Tabs → Quasar: QTabs + QTab + QTabPanels (wrap as PrestoTabs) */
 import { ref } from 'vue'
 export default {
-  title: 'Navigation/Tabs',
+  title: 'Components/Navigation/Tabs',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview
@@ -11,7 +11,7 @@ Switch between related views within the same context, without navigating away.
 - 2–6 peer views of one object (Hotel: Overview / Rooms / Amenities / Reviews).
 
 ## When not to use
-- Top-level app sections → **App Navigation**. Sequential flow → **Stepper**.
+- Top-level app sections → **App Shell** (sidebar). Sequential flow → **Stepper**.
 
 ## Quasar mapping
 \`Tabs → QTabs + QTab + QTabPanels\` (native compound). Recommended wrapper \`PrestoTabs\`.

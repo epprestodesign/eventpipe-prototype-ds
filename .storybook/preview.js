@@ -55,52 +55,29 @@ const preview = {
     options: {
       storySort: {
         order: [
-          'Getting Started', ['Introduction', 'Architecture & Conventions', 'Story Template'],
-          'Foundations', [
-            'Palette', 'Colors', 'Typography', 'Icons', 'Imagery', 'Hero Banner', 'Elevation',
-            'Spacing', 'Border Radius', 'Breakpoints', 'Motion',
+          'Getting Started',
+          'Foundations',
+          'Components', [
+            'Overview',
+            'Actions', 'Navigation', 'Forms', 'Feedback & Status',
+            'Layout & Structure', 'Media & Visuals', 'Typography & Content',
           ],
-          'Inputs', [
-            'Button', 'Checkbox', 'Checkbox Tree', 'Radio Group', 'Choice Chips', 'Switch',
-            'Text Field', 'Text Area', 'Phone Field', 'Select', 'Autocomplete',
-            'Date Picker', 'Time Picker', 'Slider', 'Range',
-            'Rating', 'Quantity Stepper', 'Transfer List',
+          'App Chrome',
+          'Account',
+          'Pages', [
+            '01 Users', '02 Events', '03 Pickup Reports', '04 Reports', '05 Hotels',
+            '06 Hotel Brands', '07 Amenities', '08 Room Types', '09 Venues', '10 Event Companies',
+            '11 Companies', '12 Requests', '14 Admin Tools', '15 Pipe Tools', '16 Webhooks',
+            '17 Company Settings',
           ],
-          'Data Display', [
-            'Amenity', 'Avatar', 'Badge', 'Chip', 'Divider', 'Icon',
-            'List', 'List Item', 'Accordion', 'Rating', 'Table', 'Tooltip', 'Typography',
-          ],
-          'Feedback', [
-            'Alert', 'Banner', 'Dialog', 'Snackbar', 'Toast',
-            'Progress', 'Skeleton', 'Backdrop',
-          ],
-          'Layout', [
-            'Box', 'Card', 'Container', 'Grid', 'Stack', 'Image List', 'Section Header', 'Side Panel',
-          ],
-          'Navigation', [
-            'Global Nav', 'Tabs', 'Menu', 'Breadcrumbs', 'Pagination', 'Stepper', 'App Navigation',
-          ],
-          'Browse Hotels', [
-            'Booking Widget', 'Hotel Listing Card', 'Availability Dialog', 'Hotel Map', 'Search & Filters', 'Forms', 'Empty States', 'Loading States',
-          ],
-          'Hotel Details', [
-            // Both flow folders list their components in the SAME order.
-            'Book Reservation', ['Hotel Detail Page', 'Rooms', 'Room Card', 'Room Booking Dialog'],
-            'Group Block', ['Hotel Detail Page', 'Rooms', 'Room Card', 'Room Booking Dialog'],
-            'Photo Gallery', 'Detail Tabs', 'Hotel Summary Header', 'Amenities', 'Policies & Property',
-          ],
-          'Checkout Experience', [
-            'Checkout Page',
-            'Steps', ['Review Order', 'Contact Info', 'Payment', 'Review Reservation'],
-            'Payment Dialogs',
-          ],
-          'Confirmation', [
-            'Confirmation Page',
+          'Design Requests', [
+            '🟢 DES-207 Communications | Email Template Editor', [
+              'V1 · Notifications Preferences',
+              'V2 · Configured Template',
+              'Components',
+            ],
           ],
           '*',
-          'Manage Booking', [
-            'Account',
-          ],
         ],
       },
     },

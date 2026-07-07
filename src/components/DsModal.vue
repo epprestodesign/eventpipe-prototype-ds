@@ -96,10 +96,10 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', onKey); lockScro
 .dsm__title { font-size: 1.1875rem; font-weight: 700; margin: 0; color: var(--ds-color-text); line-height: 1.25; }
 .dsm__sub { margin: 0; font-size: 0.8125rem; color: var(--ds-color-text-subtle); }
 
-.dsm__close { width: 38px; height: 38px; flex: none; border: 0; border-radius: 50%; background: var(--ds-palette-slate-100); color: var(--ds-color-text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s ease; }
-.dsm__close:hover { background: var(--ds-palette-slate-200); }
+.dsm__close { width: 38px; height: 38px; flex: none; border: 0; border-radius: 50%; background: var(--ds-palette-graphite-100); color: var(--ds-color-text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s ease; }
+.dsm__close:hover { background: var(--ds-palette-graphite-200); }
 .dsm__head--center .dsm__close { position: absolute; left: 12px; background: none; }
-.dsm__head--center .dsm__close:hover { background: var(--ds-palette-slate-100); }
+.dsm__head--center .dsm__close:hover { background: var(--ds-palette-graphite-100); }
 
 .dsm__body { position: relative; flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 20px; }
 .dsm__body--flush { padding: 0; overflow: hidden; }

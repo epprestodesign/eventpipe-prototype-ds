@@ -1,7 +1,7 @@
 /** INPUTS / Radio Group → Quasar: QOptionGroup (type=radio) / QRadio (native) */
 import { ref } from 'vue'
 export default {
-  title: 'Inputs/Radio Group',
+  title: 'Components/Forms/Radio Group',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

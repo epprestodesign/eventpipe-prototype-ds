@@ -1,6 +1,6 @@
 /** FEEDBACK / Skeleton → Quasar: QSkeleton (native) */
 export default {
-  title: 'Feedback/Skeleton',
+  title: 'Components/Feedback & Status/Skeleton',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview
