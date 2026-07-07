@@ -1,0 +1,35 @@
+{
+  "sections": [
+    {
+      "name": "Teams Management",
+      "open": true,
+      "items": [
+        { "title": "STP - Compliance Reminder - Early Stage", "desc": "Reminds non-compliant teams about their Stay-to-Play requirement; the cadence and tone here are intentionally encouraging rather than punitive.", "send": true, "forced": false, "custom": true },
+        { "title": "STP - Compliance Reminder - Escalation", "desc": "A firmer follow-up for teams still below their room-night commitment as the deadline nears.", "send": true, "forced": false, "custom": false },
+        { "title": "STP - Welcome Email", "desc": "Introduces the team to their booking site and requirements.", "send": true, "forced": false, "custom": false },
+        { "title": "STP - Previously Compliant Notice", "desc": "Notifies a team that was previously meeting its requirement but has since fallen out of compliance — it summarizes the current shortfall, the criteria that must be met, and the deadline before penalties apply.", "send": true, "forced": false, "custom": true },
+        { "title": "STP - Deadline Approaching", "desc": "A time-sensitive reminder sent a few days before the hotel cutoff so teams can book remaining rooms.", "send": false, "forced": false, "custom": false },
+        { "title": "STP - Compliance Achieved", "desc": "Congratulates a team once it meets its requirement.", "send": true, "forced": false, "custom": false }
+      ]
+    },
+    {
+      "name": "Guests",
+      "open": false,
+      "items": [
+        { "title": "Reservation Confirmation", "desc": "Contains reservation details, including dates, location, and confirmation number.", "send": true, "forced": true, "custom": false },
+        { "title": "Hotel Confirmation", "desc": "Includes the reservation confirmation number and key booking details.", "send": true, "forced": false, "custom": true },
+        { "title": "Pre - Arrival", "desc": "Provides important details to help guests prepare for their upcoming stay.", "send": false, "forced": false, "custom": false },
+        { "title": "Reservation Cancellation", "desc": "Confirms that a reservation has been canceled, including relevant details.", "send": true, "forced": true, "custom": false }
+      ]
+    },
+    {
+      "name": "Hotels",
+      "open": false,
+      "items": [
+        { "title": "Hotel User Account Creation", "desc": "Provides account access details for a new hotel user account.", "send": true, "forced": false, "custom": false },
+        { "title": "RFP Invite", "desc": "Invites the hotel user to submit a proposal for an upcoming opportunity.", "send": false, "forced": false, "custom": false },
+        { "title": "Contract Fully Executed", "desc": "Confirms the contract has been signed and is now finalized.", "send": true, "forced": true, "custom": false }
+      ]
+    }
+  ]
+}
