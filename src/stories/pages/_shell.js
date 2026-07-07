@@ -24,9 +24,9 @@ export const PAGES_NAV = [
 // Build a Storybook story that renders `slot` inside the App Shell.
 export function page({ active, org = '365 Sports Travel', user = 'Justin Girard', components = {}, setup = () => ({}), slot = '' }) {
   return {
-    render: () => ({
+    render: (args) => ({
       components: { AppShell, ...components },
-      setup: () => ({ nav: PAGES_NAV, ...setup() }),
+      setup: () => ({ nav: PAGES_NAV, ...setup(args) }),
       template: `
         <div style="height:100vh">
           <app-shell :items="nav" active="${active}" org="${org}" user="${user}" bleed>

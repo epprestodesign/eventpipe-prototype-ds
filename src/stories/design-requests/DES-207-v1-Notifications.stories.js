@@ -104,12 +104,37 @@ const settingsMarkup = `
     </div>
   </div>`
 
+// Storybook controls: a Header + Subtext text control for every email template,
+// grouped by section. Keys map back onto SECTIONS[si].items[ii].
+const TEMPLATE_ARG_TYPES = {}
+const TEMPLATE_ARGS = {}
+SECTIONS.forEach((s, si) => {
+  s.items.forEach((it, ii) => {
+    const base = `s${si}i${ii}`
+    TEMPLATE_ARG_TYPES[`${base}_title`] = { name: `${it.title} · Header`, control: 'text', table: { category: s.name } }
+    TEMPLATE_ARG_TYPES[`${base}_desc`] = { name: `${it.title} · Subtext`, control: 'text', table: { category: s.name } }
+    TEMPLATE_ARGS[`${base}_title`] = it.title
+    TEMPLATE_ARGS[`${base}_desc`] = it.desc
+  })
+})
+// Rebuild the sections tree, applying any header/subtext overrides from controls.
+function sectionsFromArgs(args = {}) {
+  return SECTIONS.map((s, si) => ({
+    ...s,
+    items: s.items.map((it, ii) => ({
+      ...it,
+      title: args[`s${si}i${ii}_title`] ?? it.title,
+      desc: args[`s${si}i${ii}_desc`] ?? it.desc,
+    })),
+  }))
+}
+
 export const Default = page({
   active: 'none',
   org: 'Traveloc',
   user: 'Mike Addesa',
   components: { DsListItem, DsSectionHeader, DsInfoGrid },
-  setup: () => ({ sections: ref(JSON.parse(JSON.stringify(SECTIONS))), settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true) }),
+  setup: (args) => ({ sections: ref(sectionsFromArgs(args)), settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true) }),
   slot: `
     ${travelocHeader}
     <div v-show="tab === 'notifications'" style="padding:24px 32px 40px; background:var(--ds-color-surface-sunken); min-height:100%;">
@@ -124,6 +149,8 @@ export const Default = page({
     </div>`,
 })
 Default.parameters = { layout: 'fullscreen' }
+Default.argTypes = TEMPLATE_ARG_TYPES
+Default.args = TEMPLATE_ARGS
 
 /* ---- Locked / Upsell: company without Teams Management ---- */
 const upsellBanner = `
