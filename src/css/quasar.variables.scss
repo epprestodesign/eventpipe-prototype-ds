@@ -11,13 +11,13 @@
 // system lives in ds-palette.scss + ds-color-tokens.scss.
 // (Quasar's SASS color fns need solid hex, so literals are used here;
 //  alpha tokens stay as CSS custom properties only.)
-// Brand = Navy (Presto). Primary is the deep navy anchor (#01113E) for strong
-// contrast on actions; neutrals use Slate; status colors use palette defaults.
-$primary:   #01113E;   // background.brand.bold → Navy 900
-$secondary: #475569;   // Slate 600
-$accent:    #2C4380;   // Navy 500 (mid brand accent)
+// Brand = Azure (EventPipe). Primary is the #1876D2 CTA blue; neutrals use
+// Graphite; the dark navy (#00123D) is reserved for app chrome / sidebar.
+$primary:   #1876D2;   // background.brand.bold → Azure 600
+$secondary: #565B67;   // Graphite 700
+$accent:    #1462B0;   // Azure 700 (deep brand accent)
 
-$dark:      #01113E;   // Navy 900
+$dark:      #00123D;   // Navy 900 (app chrome / sidebar)
 $dark-page: #030A26;   // Navy 950
 
 $positive:  #16A34A;   // success.bold → Green 600

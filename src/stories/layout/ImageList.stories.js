@@ -17,7 +17,7 @@ const items = [
   { src: restaurant, title: 'Restaurant' },
 ]
 export default {
-  title: 'Layout/Image List',
+  title: 'Components/Media & Visuals/Image List',
   component: DsImageList,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

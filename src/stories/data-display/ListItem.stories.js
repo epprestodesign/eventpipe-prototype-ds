@@ -3,7 +3,7 @@ import DsListItem from '../../components/DsListItem.vue'
 import DsRating from '../../components/DsRating.vue'
 
 export default {
-  title: 'Data Display/List Item',
+  title: 'Components/Layout & Structure/List Item',
   component: DsListItem,
   tags: ['autodocs'],
   argTypes: {

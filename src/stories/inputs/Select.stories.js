@@ -1,8 +1,9 @@
 /** INPUTS / Select → Quasar: QSelect (native) */
 import { ref } from 'vue'
+import DsSelect from '../../components/DsSelect.vue'
 const roomTypes = ['Standard Queen', 'Deluxe King', 'Twin/Double', 'Ocean View Suite', 'Family Room', 'Executive Suite']
 export default {
-  title: 'Inputs/Select',
+  title: 'Components/Forms/Select',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview
@@ -31,4 +32,21 @@ export const Multiple = {
 export const Rooms = {
   parameters: { docs: { description: { story: 'A compact occupancy selector — number of rooms.' } } },
   render: () => ({ setup: () => ({ v: ref(1), opts: [1,2,3,4,5] }), template: `<q-select v-model="v" :options="opts" outlined label="Rooms" style="max-width:200px" />` }),
+}
+
+/** EventPipe labeled select via DsSelect (the "Target Hotel" field) — gray label
+ *  above, outlined control, chevron. Composes into the Form Field anatomy. */
+export const Labeled = {
+  render: () => ({
+    components: { DsSelect },
+    setup: () => ({ hotel: ref('Grand Plaza Hotel'), producer: ref(null),
+      hotels: ['Grand Plaza Hotel', 'The Summit Lodge Denver', 'Pinnacle Hotel Denver', 'Skyline Suites Denver'],
+      producers: ['Team Travel Source', 'Global Sports Group', 'Summit Events Co.'] }),
+    template: `
+      <div class="column q-gutter-lg" style="max-width:340px">
+        <ds-select v-model="hotel" :options="hotels" label="Target Hotel" required />
+        <ds-select v-model="producer" :options="producers" label="Event Producer" placeholder="Data" clearable
+          tooltip="Who is running this event." />
+      </div>`,
+  }),
 }

@@ -1,7 +1,7 @@
 /** INPUTS / Rating → Quasar: QRating (native) */
 import { ref } from 'vue'
 export default {
-  title: 'Inputs/Rating',
+  title: 'Components/Forms/Rating',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

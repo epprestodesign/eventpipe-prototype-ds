@@ -15,7 +15,7 @@ const rows = [
   { guest: 'Katherine Johnson', room: 'Family Room', checkin: 'Jun 6', nights: 5, status: 'Cancelled', total: '$1,120' },
 ]
 export default {
-  title: 'Data Display/Table',
+  title: 'Components/Layout & Structure/Table',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview
@@ -47,4 +47,31 @@ export const WithStatusChips = {
         </q-td>
       </template>
     </q-table>` }),
+}
+
+/** EventPipe data table — brand-blue header, row selection, zebra rows
+ *  (the "Select Reservations to Move" table). Apply `class="ds-table"`. */
+const epColumns = [
+  { name: 'guest', label: 'Guest Name', field: 'guest', align: 'left' },
+  { name: 'hotel', label: 'Hotel', field: 'hotel', align: 'left' },
+  { name: 'pipe', label: 'Pipe ID', field: 'pipe', align: 'left' },
+  { name: 'block', label: 'Group Block ID', field: 'block', align: 'left' },
+  { name: 'team', label: 'Team', field: 'team', align: 'left' },
+  { name: 'org', label: 'Organization', field: 'org', align: 'left' },
+  { name: 'checkin', label: 'Check In', field: 'checkin', align: 'left' },
+  { name: 'nights', label: 'Nights', field: 'nights', align: 'left' },
+]
+const epRows = [
+  { guest: 'John Smith', hotel: 'The Summit Lodge Denver.', pipe: 'R-01337893', block: 'G-00081615', team: 'Engineering', org: 'Acme Corp', checkin: 'Thu, 05/01/2025', nights: 3 },
+  { guest: 'Emily Johnson', hotel: 'Pinnacle Hotel Denver.', pipe: 'R-01337912', block: 'G-00081623', team: 'Product', org: 'Acme Corp', checkin: 'Fri, 05/02/2025', nights: 2 },
+  { guest: 'Michael Brown', hotel: 'Mountain View Inn Denver.', pipe: 'R-01337925', block: 'G-00081634', team: 'Product', org: 'Acme Corp', checkin: 'Sat, 05/03/2025', nights: 2 },
+  { guest: 'Sarah Davis', hotel: 'Skyline Suites Denver.', pipe: 'R-01337941', block: 'G-00081645', team: 'Product', org: 'Acme Corp', checkin: 'Sun, 05/04/2025', nights: 3 },
+  { guest: 'David Wilson', hotel: 'Alpine Retreat Denver.', pipe: 'R-01337956', block: 'G-00081652', team: 'Engineering', org: 'Acme Corp', checkin: 'Mon, 05/05/2025', nights: 1 },
+  { guest: 'Ashley Martinez', hotel: 'Canyon Crest Hotel Denver.', pipe: 'R-01337968', block: 'G-00081667', team: 'Engineering', org: 'Acme Corp', checkin: 'Tue, 05/06/2025', nights: 1 },
+]
+export const EventPipe = {
+  parameters: { docs: { description: { story: 'Brand-blue header + row selection + zebra rows via `class="ds-table"`.' } } },
+  render: () => ({ setup: () => ({ epColumns, epRows, selected: ref([epRows[0], epRows[1]]) }), template: `
+    <q-table class="ds-table" :rows="epRows" :columns="epColumns" row-key="pipe" selection="multiple"
+      v-model:selected="selected" flat hide-bottom :pagination="{ rowsPerPage: 0 }" />` }),
 }

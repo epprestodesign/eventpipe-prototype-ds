@@ -1,7 +1,7 @@
 /** INPUTS / Date Picker → Quasar: QDate (native) */
 import { ref } from 'vue'
 export default {
-  title: 'Inputs/Date Picker',
+  title: 'Components/Forms/Date Picker',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

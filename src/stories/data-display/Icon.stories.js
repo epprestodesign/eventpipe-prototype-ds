@@ -1,6 +1,6 @@
 /** DATA DISPLAY / Icon → Quasar: QIcon (native). See Foundations/Icons for the system. */
 export default {
-  title: 'Data Display/Icon',
+  title: 'Components/Media & Visuals/Icon',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

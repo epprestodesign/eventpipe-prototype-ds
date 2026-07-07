@@ -1,6 +1,6 @@
 /** NAVIGATION / Menu → Quasar: QMenu (+ QList) (wrap as PrestoMenu) */
 export default {
-  title: 'Navigation/Menu',
+  title: 'Components/Actions/Menu',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview
@@ -10,7 +10,7 @@ A popover list of actions or options, anchored to a trigger.
 - Overflow actions (⋮), context menus, account menus.
 
 ## When not to use
-- Persistent primary nav → **App Navigation**. Single choice form field → **Select**.
+- Persistent primary nav → **App Shell** (sidebar). Single choice form field → **Select**.
 
 ## Quasar mapping
 \`Menu → QMenu\` (native; child of the anchor). Recommended wrapper \`PrestoMenu\`.

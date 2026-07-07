@@ -288,7 +288,7 @@
   --ds-palette-stone-900: #1C1917;
   --ds-palette-stone-950: #0C0A09;
 
-  /* navy — Presto brand ramp, anchored on #01113E (900). Hue ~224°. */
+  /* navy — app chrome / sidebar ramp, anchored on #00123D (900). Hue ~224°. */
   --ds-palette-navy-50: #EEF1F8;
   --ds-palette-navy-100: #D5DCEC;
   --ds-palette-navy-200: #ADBAD8;
@@ -298,6 +298,34 @@
   --ds-palette-navy-600: #1B2F63;
   --ds-palette-navy-700: #16265C;
   --ds-palette-navy-800: #0B1A4C;
-  --ds-palette-navy-900: #01113E;
+  --ds-palette-navy-900: #00123D;
   --ds-palette-navy-950: #030A26;
+
+  /* azure — EventPipe brand / primary-action ramp, anchored on #1876D2 (600).
+     Hue ~209°. Drives CTAs, selected states, focus rings, links. */
+  --ds-palette-azure-50: #E8F1FB;
+  --ds-palette-azure-100: #C8DFF6;
+  --ds-palette-azure-200: #A3C9F0;
+  --ds-palette-azure-300: #74AEE9;
+  --ds-palette-azure-400: #4593E0;
+  --ds-palette-azure-500: #2380DA;
+  --ds-palette-azure-600: #1876D2;
+  --ds-palette-azure-700: #1462B0;
+  --ds-palette-azure-800: #114F8E;
+  --ds-palette-azure-900: #0D3D6E;
+  --ds-palette-azure-950: #08284A;
+
+  /* graphite — EventPipe neutral ramp, anchored on #8C92A0 (500). Cool gray,
+     hue ~222°. Replaces Slate for text, icons, borders, neutral surfaces. */
+  --ds-palette-graphite-50: #F6F7F8;
+  --ds-palette-graphite-100: #ECEEF0;
+  --ds-palette-graphite-200: #DADDE2;
+  --ds-palette-graphite-300: #C2C6CE;
+  --ds-palette-graphite-400: #A6ABB6;
+  --ds-palette-graphite-500: #8C92A0;
+  --ds-palette-graphite-600: #6F7583;
+  --ds-palette-graphite-700: #565B67;
+  --ds-palette-graphite-800: #3D414A;
+  --ds-palette-graphite-900: #262930;
+  --ds-palette-graphite-950: #15171B;
 }

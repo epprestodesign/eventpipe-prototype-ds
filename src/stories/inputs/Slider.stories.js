@@ -1,7 +1,7 @@
 /** INPUTS / Slider → Quasar: QSlider (+ QRange) (native) */
 import { ref } from 'vue'
 export default {
-  title: 'Inputs/Slider',
+  title: 'Components/Forms/Slider',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview
