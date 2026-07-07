@@ -1,5 +1,5 @@
 /** DES-207 / V1 · Notifications Preferences (Phase 1) — full App Shell experience. */
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { page } from '../pages/_shell'
 import { travelocHeader, companySettingsSections } from './_des207'
 import DsListItem from '../../components/DsListItem.vue'
@@ -134,7 +134,13 @@ export const Default = page({
   org: 'Traveloc',
   user: 'Mike Addesa',
   components: { DsListItem, DsSectionHeader, DsInfoGrid },
-  setup: (args) => ({ sections: ref(sectionsFromArgs(args)), settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true) }),
+  setup: (args) => {
+    // Rebuild the sections whenever a Header/Subtext control changes (args is
+    // reactive in Storybook's Vue renderer), so edits preview live — no Save needed.
+    const sections = ref([])
+    watchEffect(() => { sections.value = sectionsFromArgs(args) })
+    return { sections, settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true) }
+  },
   slot: `
     ${travelocHeader}
     <div v-show="tab === 'notifications'" style="padding:24px 32px 40px; background:var(--ds-color-surface-sunken); min-height:100%;">
