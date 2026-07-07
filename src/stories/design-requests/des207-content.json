@@ -5,7 +5,7 @@
       "open": true,
       "items": [
         {
-          "title": "STP - Compliance Reminder - Early Stage - Hey Scott",
+          "title": "STP - Compliance Reminder - Early Stage",
           "desc": "Reminds non-compliant teams about their Stay-to-Play requirement; the cadence and tone here are intentionally encouraging rather than punitive.",
           "send": true,
           "forced": false,
