@@ -5,7 +5,7 @@
 import traveloc from '../../assets/logo/traveloc.png'
 
 export const travelocHeader = `
-  <div style="padding:20px 32px 0; background:var(--ds-color-surface);">
+  <div style="padding:20px 32px 0; background:var(--ds-color-surface); border-bottom:1px solid var(--ds-color-border-container);">
     <q-breadcrumbs active-color="primary" gutter="sm" class="text-body2 q-mb-md">
       <template #separator><q-icon name="chevron_right" size="18px" color="grey-5" /></template>
       <q-breadcrumbs-el label="Companies" />

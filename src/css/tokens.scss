@@ -22,13 +22,13 @@
   --ds-radius-pill: 999px;
   --ds-radius-button: 4px;   // crisp control corners, matches reference buttons
 
-  // Typography scale. PT Sans ships only 400 & 700, so "medium" resolves to
-  // 400 (regular) — deterministic body/label weight matching production.
-  // Emphasis (buttons, headings) uses --ds-font-weight-bold (700).
+  // Typography scale. Product Sans ships 400 / 500 / 700, so "medium" is a real
+  // 500 (section headers, h5/h6). Buttons use regular 400 to match production.
   --ds-font-size-sm: 0.8125rem;
   --ds-font-size-md: 0.9375rem;
   --ds-font-size-lg: 1.125rem;
-  --ds-font-weight-medium: 400;
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
   --ds-font-weight-bold: 700;
 
   // Elevation
@@ -36,6 +36,8 @@
   --ds-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.12);
   --ds-shadow-3: 0 8px 24px rgba(0, 0, 0, 0.16);
   --ds-shadow-4: 0 16px 40px rgba(0, 0, 0, 0.20);
+  // Card glow — matches viserys production .card (soft even glow, not a drop shadow).
+  --ds-shadow-card: 0 0 14px 0.4px rgba(0, 0, 0, 0.08);
 
   // Motion — durations
   --ds-duration-instant: 80ms;

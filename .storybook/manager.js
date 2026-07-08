@@ -4,8 +4,8 @@
  * des207-content.json, and commits to main via the GitHub API so the edited
  * copy sticks for everyone. Only shows on the V1 story (detected by its args). */
 import React, { useState } from 'react'
-import { addons, types, useArgs } from 'storybook/manager-api'
-import { WithTooltip, IconButton } from 'storybook/internal/components'
+import { addons, types, useArgs, useParameter } from 'storybook/manager-api'
+import { WithTooltip, IconButton, SyntaxHighlighter } from 'storybook/internal/components'
 import content from '../src/stories/design-requests/des207-content.json'
 
 const ADDON_ID = 'des207-publish'
@@ -109,5 +109,55 @@ addons.register(ADDON_ID, () => {
     title: 'Publish content',
     match: ({ viewMode }) => viewMode === 'story',
     render: () => h(Tool),
+  })
+})
+
+/* ---------------------------------------------------------------------------
+ * "Implementation" panel — shows a story's Vue + Quasar reference source as
+ * collapsible accordions. A story opts in via
+ *   parameters.implementation = { intro?, files: [{ name, lang, code }] }
+ * (the code strings are imported `?raw` in the story, so they never drift). */
+const PANEL_ID = 'des207-impl/panel'
+
+function Accordion({ file, open, onToggle }) {
+  return h('div', { style: { borderBottom: '1px solid #E1E4E8' } }, [
+    h('button', {
+      key: 'h', onClick: onToggle,
+      style: {
+        display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 14px',
+        border: 0, background: open ? '#F6F8FA' : 'transparent', cursor: 'pointer',
+        font: 'inherit', fontSize: '13px', fontWeight: 600, color: '#24292F', textAlign: 'left',
+      },
+    }, [
+      h('span', { key: 'c', style: { display: 'inline-block', width: '10px', color: '#6E7781', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform .12s' } }, '▶'),
+      h('span', { key: 'n', style: { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' } }, file.name),
+    ]),
+    open && h('div', { key: 'b', style: { maxHeight: '460px', overflow: 'auto' } },
+      h(SyntaxHighlighter, { language: file.lang || 'typescript', copyable: true, bordered: false, padded: true }, file.code)),
+  ])
+}
+
+function ImplPanel() {
+  const impl = useParameter('implementation', null)
+  const [openName, setOpenName] = useState(null)
+  if (!impl || !impl.files || !impl.files.length) {
+    return h('div', { style: { padding: '16px', fontSize: '13px', color: '#6E7781' } },
+      'No implementation reference for this story.')
+  }
+  // Default the first file open.
+  const active = openName ?? impl.files[0].name
+  return h('div', { style: { fontSize: '13px' } }, [
+    impl.intro && h('div', { key: 'i', style: { padding: '12px 14px', color: '#57606A', borderBottom: '1px solid #E1E4E8' } }, impl.intro),
+    ...impl.files.map((f) =>
+      h(Accordion, { key: f.name, file: f, open: active === f.name, onToggle: () => setOpenName(active === f.name ? '' : f.name) })),
+  ])
+}
+
+addons.register(PANEL_ID, () => {
+  addons.add(PANEL_ID, {
+    type: types.PANEL,
+    title: 'Implementation',
+    match: ({ viewMode }) => viewMode === 'story',
+    render: ({ active }) => (active ? h(ImplPanel) : null),
   })
 })

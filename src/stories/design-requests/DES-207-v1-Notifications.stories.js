@@ -11,6 +11,11 @@ import contentData from './des207-content.json'
 import DsListItem from '../../components/DsListItem.vue'
 import DsSectionHeader from '../../components/DsSectionHeader.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
+// Vue + Quasar (TypeScript) reference source, shown in the "Implementation" panel.
+import composableSrc from '../../app/notifications/useNotificationPreferences.ts?raw'
+import rowSrc from '../../app/notifications/NotificationRow.vue?raw'
+import sectionSrc from '../../app/notifications/NotificationSection.vue?raw'
+import pageSrc from '../../app/notifications/NotificationsPreferencesPage.vue?raw'
 
 const SECTIONS = contentData.sections
 
@@ -20,7 +25,7 @@ export default {
   parameters: { layout: 'fullscreen', docs: { description: { component: 'Phase 1 in the App Shell (Companies → Traveloc). Edit each template’s **Header / Subtext** in the **Controls** panel, then use the **Publish content** button in the Storybook toolbar to **Save** (commit to `main`, redeploy for everyone) or **Discard**.' } } },
 }
 
-const TITLE_STYLE = 'font-size:0.9375rem; font-weight:700; color:var(--ds-color-text);'
+const TITLE_STYLE = 'font-size:0.9375rem; font-weight:500; color:var(--ds-color-text);'
 // Shared column widths so the "Send Email" / "Template" headers line up with the controls.
 const COL_SEND = 'width:96px; display:flex; align-items:center; justify-content:center;'
 const COL_TMPL = 'width:132px; display:flex; align-items:center; justify-content:center; margin-left:24px;'
@@ -32,7 +37,7 @@ const colHeaders = `
   </div>`
 
 const notice = `
-  <div v-if="noticeShown" style="display:flex; align-items:flex-start; gap:12px; padding:16px 20px;
+  <div v-if="noticeShown" style="display:flex; align-items:flex-start; gap:12px; padding:16px 20px; margin-bottom:40px;
     background:var(--ds-color-background-info); border:1px solid var(--ds-color-background-info-bold); border-radius:var(--ds-radius-md);">
     <q-icon name="info" color="primary" size="22px" style="margin-top:1px; flex:none;" />
     <div style="flex:1;">
@@ -129,18 +134,29 @@ export const Default = page({
   },
   slot: `
     ${travelocHeader}
-    <div v-show="tab === 'notifications'" style="padding:24px 32px 40px; background:var(--ds-color-surface-sunken); min-height:100%;">
-      <div class="column q-gutter-md">
-        ${notice}
-        <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
+    <div v-show="tab === 'notifications'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
+      ${notice}
+      <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
+      <div style="display:flex; flex-direction:column; gap:16px; margin-top:12px;">
         ${sectionsMarkup}
       </div>
     </div>
-    <div v-show="tab === 'general'" style="padding:24px 32px 40px; background:var(--ds-color-surface-sunken); min-height:100%;">
+    <div v-show="tab === 'general'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
       ${settingsMarkup}
     </div>`,
 })
-Default.parameters = { layout: 'fullscreen' }
+Default.parameters = {
+  layout: 'fullscreen',
+  implementation: {
+    intro: 'Vue 3 + Quasar (TypeScript) reference — the real components behind this page. Page → Section → Row, with state in a composable.',
+    files: [
+      { name: 'useNotificationPreferences.ts', lang: 'typescript', code: composableSrc },
+      { name: 'NotificationRow.vue', lang: 'html', code: rowSrc },
+      { name: 'NotificationSection.vue', lang: 'html', code: sectionSrc },
+      { name: 'NotificationsPreferencesPage.vue', lang: 'html', code: pageSrc },
+    ],
+  },
+}
 Default.argTypes = TEMPLATE_ARG_TYPES
 Default.args = TEMPLATE_ARGS
 
@@ -191,15 +207,15 @@ export const LockedUpsell = page({
   setup: () => ({ locked: contentData.sections[0].items, settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true) }),
   slot: `
     ${travelocHeader}
-    <div v-show="tab === 'notifications'" style="padding:24px 32px 40px; background:var(--ds-color-surface-sunken); min-height:100%;">
-      <div class="column q-gutter-md">
-        ${notice}
-        <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
+    <div v-show="tab === 'notifications'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
+      ${notice}
+      <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
+      <div style="display:flex; flex-direction:column; gap:16px; margin-top:12px;">
         ${upsellBanner}
         ${lockedSectionMarkup}
       </div>
     </div>
-    <div v-show="tab === 'general'" style="padding:24px 32px 40px; background:var(--ds-color-surface-sunken); min-height:100%;">
+    <div v-show="tab === 'general'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
       ${settingsMarkup}
     </div>`,
 })

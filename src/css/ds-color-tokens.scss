@@ -3,21 +3,24 @@
 // Reference Tier-1 primitives. Components & utilities consume ONLY these.
 :root {
 
-  /* Text */
-  --ds-color-text: var(--ds-palette-graphite-900);
-  --ds-color-text-subtle: var(--ds-palette-graphite-600);
-  --ds-color-text-subtlest: var(--ds-palette-graphite-400);
+  /* Text — aligned to viserys production (#212529 body, #6C757D muted labels) */
+  --ds-color-text: #212529;
+  --ds-color-text-subtle: #6C757D;
+  --ds-color-text-subtlest: #8C92A0;
   --ds-color-text-inverse: #FFFFFF;
   --ds-color-text-disabled: var(--ds-palette-graphite-300);
-  --ds-color-text-brand: var(--ds-palette-azure-700);
+  --ds-color-text-brand: #2561FA;
   --ds-color-text-danger: var(--ds-palette-red-600);
   --ds-color-text-warning: var(--ds-palette-yellow-700);
   --ds-color-text-success: var(--ds-palette-green-700);
   --ds-color-text-info: var(--ds-palette-blue-600);
 
   /* Link */
-  --ds-color-link: var(--ds-palette-azure-700);
+  --ds-color-link: #2561FA;
   --ds-color-link-visited: var(--ds-palette-azure-800);
+
+  /* Brand accent green (EventPipe logo / accents) */
+  --ds-color-accent-green: #15AEB3;
 
   /* Icon */
   --ds-color-icon: var(--ds-palette-graphite-900);
@@ -28,9 +31,9 @@
   /* Border */
   --ds-color-border: var(--ds-palette-graphite-200);
   --ds-color-border-bold: var(--ds-palette-graphite-400);
-  --ds-color-border-brand: var(--ds-palette-azure-600);
+  --ds-color-border-brand: #2561FA;
   --ds-color-border-disabled: var(--ds-palette-graphite-200);
-  --ds-color-border-focused: var(--ds-palette-azure-600);
+  --ds-color-border-focused: #2561FA;
   --ds-color-border-container: #DFDFDF;   /* subtle standard border for body containers/cards */
 
   /* Background · neutral */
@@ -41,9 +44,9 @@
 
   /* Background · brand & selected */
   --ds-color-background-brand-subtlest: var(--ds-palette-azure-50);
-  --ds-color-background-brand-bold: var(--ds-palette-azure-600);
+  --ds-color-background-brand-bold: #2561FA;
   --ds-color-background-selected: var(--ds-palette-azure-100);
-  --ds-color-background-selected-bold: var(--ds-palette-azure-600);
+  --ds-color-background-selected-bold: #2561FA;
 
   /* Background · status */
   --ds-color-background-danger: var(--ds-palette-red-50);
@@ -59,16 +62,16 @@
 
   /* Surface */
   --ds-color-surface: #FFFFFF;
-  --ds-color-surface-canvas: #F8F9FA;   /* page/body background (EventPipe) */
+  --ds-color-surface-canvas: #F9F9FA;   /* page/body background (viserys --background-page-color) */
   --ds-color-surface-sunken: var(--ds-palette-graphite-50);
   --ds-color-surface-raised: #FFFFFF;
   --ds-color-surface-overlay: #FFFFFF;
 
   /* Surface · sidebar / app chrome (dark navy shell) */
-  --ds-color-surface-sidebar: var(--ds-palette-navy-900);          /* #00123D */
+  --ds-color-surface-sidebar: #01113E;          /* viserys sidebar nav background */
   --ds-color-sidebar-text: rgba(255, 255, 255, 0.72);
   --ds-color-sidebar-text-active: #FFFFFF;
   --ds-color-sidebar-icon: rgba(255, 255, 255, 0.72);
-  --ds-color-sidebar-hover: rgba(255, 255, 255, 0.06);
+  --ds-color-sidebar-hover: #03164A;            /* viserys hovered/active nav item */
   --ds-color-sidebar-border: rgba(255, 255, 255, 0.10);
 }

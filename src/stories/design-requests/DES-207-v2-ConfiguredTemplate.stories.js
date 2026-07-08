@@ -6,6 +6,11 @@ import DsField from '../../components/DsField.vue'
 import DsInput from '../../components/DsInput.vue'
 import DsSelect from '../../components/DsSelect.vue'
 import DsRichTextEditor from '../../components/DsRichTextEditor.vue'
+// Vue + Quasar (TypeScript) reference source, shown in the "Implementation" panel.
+import recurrenceSrc from '../../app/compliance-reminder/useRecurrence.ts?raw'
+import recurrenceFieldSrc from '../../app/compliance-reminder/RecurrenceField.vue?raw'
+import reminderSettingsSrc from '../../app/compliance-reminder/ReminderSettings.vue?raw'
+import editorSrc from '../../app/compliance-reminder/ComplianceReminderEditor.vue?raw'
 
 export default {
   title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/V2 · Configured Template',
@@ -209,4 +214,15 @@ export const Template = page({
       </q-card>
     </div>`,
 })
-Template.parameters = { layout: 'fullscreen' }
+Template.parameters = {
+  layout: 'fullscreen',
+  implementation: {
+    intro: 'Vue 3 + Quasar (TypeScript) reference — the real components behind this editor. Editor → ReminderSettings → RecurrenceField, with recurrence logic in a composable.',
+    files: [
+      { name: 'useRecurrence.ts', lang: 'typescript', code: recurrenceSrc },
+      { name: 'RecurrenceField.vue', lang: 'html', code: recurrenceFieldSrc },
+      { name: 'ReminderSettings.vue', lang: 'html', code: reminderSettingsSrc },
+      { name: 'ComplianceReminderEditor.vue', lang: 'html', code: editorSrc },
+    ],
+  },
+}
