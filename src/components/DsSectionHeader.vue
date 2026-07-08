@@ -53,12 +53,12 @@ defineProps({
 
 <style scoped>
 .dsh--section { margin-bottom: 16px; }
-.dsh--subsection { margin-bottom: 12px; }
+.dsh--subsection { margin-bottom: 4px; }
 .dsh__row { display: flex; align-items: center; gap: 16px; }
-.dsh__title { margin: 0; font-weight: 700; letter-spacing: -0.01em; }
-.dsh__title--accent { color: var(--ds-color-background-brand-bold); font-size: 1rem; white-space: nowrap; }
+.dsh__title { margin: 0; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+.dsh__title--accent { color: var(--ds-color-background-brand-bold); font-size: 1.125rem; font-weight: 500; white-space: nowrap; }
 .dsh__title--sub { color: var(--ds-color-text); font-size: 0.9375rem; white-space: nowrap; }
 .dsh__rule { flex: 1 1 auto; height: 1px; background: var(--ds-color-border); }
 .dsh__actions { flex: none; display: flex; align-items: center; gap: 8px; }
-.dsh__sub { margin-top: 4px; font-size: 0.8125rem; color: var(--ds-color-text-subtle); }
+.dsh__sub { margin-top: 2px; font-size: 0.8125rem; line-height: 1.35; color: var(--ds-color-text-subtle); }
 </style>

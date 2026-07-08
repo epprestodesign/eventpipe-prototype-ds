@@ -4,6 +4,7 @@
 // menu. White surface with a hairline bottom border + level-1 elevation
 // (--ds-shadow-1), matching the mock. Brand/focus accents use the DS azure.
 import { ref } from 'vue'
+import DsSearch from './DsSearch.vue'
 
 const props = defineProps({
   org: { type: String, default: 'Team Travel Source' },
@@ -38,15 +39,12 @@ const userItems = ['Profile', 'Account settings', 'Sign out']
 
     <!-- Right · search + user -->
     <div class="appbar__right">
-      <label class="appbar__search">
-        <q-icon name="search" size="20px" class="appbar__search-icon" />
-        <input
-          v-model="query"
-          class="appbar__search-input"
-          :placeholder="searchPlaceholder"
-          @keyup.enter="emit('search', query)"
-        />
-      </label>
+      <DsSearch
+        v-model="query"
+        class="appbar__search"
+        :placeholder="searchPlaceholder"
+        @search="emit('search', $event)"
+      />
 
       <button class="appbar__user" type="button">
         <span class="appbar__user-name">{{ user }}</span>
@@ -98,37 +96,8 @@ const userItems = ['Profile', 'Account settings', 'Sign out']
 /* Right cluster */
 .appbar__right { display: flex; align-items: center; gap: 16px; }
 
-/* Search */
-.appbar__search {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: 300px;
-  max-width: 40vw;
-  height: 40px;
-  padding: 0 14px;
-  border: 1px solid var(--ds-color-border);
-  border-radius: var(--ds-radius-md);
-  background: var(--ds-color-surface);
-  transition: border-color var(--ds-duration-fast) var(--ds-ease-standard),
-    box-shadow var(--ds-duration-fast) var(--ds-ease-standard);
-}
-.appbar__search:focus-within {
-  border-color: var(--ds-color-border-focused);
-  box-shadow: 0 0 0 3px var(--ds-palette-azure-100);
-}
-.appbar__search-icon { color: var(--ds-color-icon-subtle); flex: none; }
-.appbar__search-input {
-  flex: 1 1 auto;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  font: inherit;
-  font-size: 0.9375rem;
-  color: var(--ds-color-text);
-}
-.appbar__search-input::placeholder { color: var(--ds-color-text-subtlest); }
+/* Search — width/placement only; pill styling lives in DsSearch */
+.appbar__search { width: 300px; max-width: 40vw; }
 
 /* User menu */
 .appbar__user {

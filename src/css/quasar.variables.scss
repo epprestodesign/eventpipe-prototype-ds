@@ -11,13 +11,13 @@
 // system lives in ds-palette.scss + ds-color-tokens.scss.
 // (Quasar's SASS color fns need solid hex, so literals are used here;
 //  alpha tokens stay as CSS custom properties only.)
-// Brand = Azure (EventPipe). Primary is the #1876D2 CTA blue; neutrals use
-// Graphite; the dark navy (#00123D) is reserved for app chrome / sidebar.
-$primary:   #1876D2;   // background.brand.bold → Azure 600
+// Brand = EventPipe theme blue #2561FA (matches viserys production --theme-color);
+// neutrals use Graphite; the dark navy #083763 (--ep-blue) is app chrome / sidebar.
+$primary:   #2561FA;   // background.brand.bold → EventPipe theme blue
 $secondary: #565B67;   // Graphite 700
-$accent:    #1462B0;   // Azure 700 (deep brand accent)
+$accent:    #1D45F8;   // deeper brand blue (--blue-color)
 
-$dark:      #00123D;   // Navy 900 (app chrome / sidebar)
+$dark:      #01113E;   // EventPipe navy (app chrome / sidebar)
 $dark-page: #030A26;   // Navy 950
 
 $positive:  #16A34A;   // success.bold → Green 600
@@ -27,11 +27,11 @@ $warning:   #FACC15;   // warning.bold → Yellow 400 (needs dark text)
 
 // --- Typography ----------------------------------------------
 // Font family is imported in app.scss; here we tell Quasar to use it.
-// PT Sans ships only 400 & 700, so "semibold" UI resolves to 700.
-$typography-font-family: 'PT Sans', -apple-system, BlinkMacSystemFont,
+// Product Sans ships 400 / 500 / 700, so "medium" UI resolves to a true 500.
+$typography-font-family: 'Product Sans', -apple-system, BlinkMacSystemFont,
   'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
 // --- Shape / spacing tokens ----------------------------------
 $generic-border-radius: 4px;    // uniform 4px system, matches Presto reference
 $button-border-radius:  4px;    // crisp button corners, matches Presto reference
-$button-font-weight:    700;
+$button-font-weight:    400;   // production renders light button labels (Product Sans)
