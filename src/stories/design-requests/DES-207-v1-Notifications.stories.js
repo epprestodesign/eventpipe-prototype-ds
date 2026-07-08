@@ -5,12 +5,14 @@
  *  token + Save / Discard — Save commits the edited copy to main so it sticks
  *  for everyone. See .storybook/manager.js for the toolbar addon. */
 import { ref, watchEffect } from 'vue'
+import { useQuasar } from 'quasar'
 import { page } from '../pages/_shell'
 import { travelocHeader, companySettingsSections } from './_des207'
 import contentData from './des207-content.json'
 import DsListItem from '../../components/DsListItem.vue'
 import DsSectionHeader from '../../components/DsSectionHeader.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
+import DsConfirmDialog from '../../components/DsConfirmDialog.vue'
 // Vue + Quasar (TypeScript) reference source, shown in the "Implementation" panel.
 import composableSrc from '../../app/notifications/useNotificationPreferences.ts?raw'
 import rowSrc from '../../app/notifications/NotificationRow.vue?raw'
@@ -65,7 +67,7 @@ const sectionsMarkup = `
             <template #trailing>
               <div class="row items-center no-wrap">
                 <div style="${COL_SEND}">
-                  <q-checkbox v-model="it.send" :disable="it.forced" color="primary"><q-tooltip v-if="it.forced">Required — always sent</q-tooltip></q-checkbox>
+                  <q-checkbox :model-value="it.send" @update:model-value="onToggleSend(it, $event)" :disable="it.forced" color="primary"><q-tooltip v-if="it.forced">Required — always sent</q-tooltip></q-checkbox>
                 </div>
                 <div style="${COL_TMPL}">
                   <q-btn-dropdown split unelevated no-caps color="primary" label="Edit">
@@ -74,7 +76,7 @@ const sectionsMarkup = `
                       <q-item clickable v-close-popup><q-item-section avatar><q-icon name="visibility" /></q-item-section><q-item-section>Preview</q-item-section></q-item>
                       <template v-if="it.custom">
                         <q-separator />
-                        <q-item clickable v-close-popup><q-item-section avatar><q-icon name="undo" color="negative" /></q-item-section><q-item-section class="text-negative">Revert to default</q-item-section></q-item>
+                        <q-item clickable v-close-popup @click="openRevert(it)"><q-item-section avatar><q-icon name="undo" color="negative" /></q-item-section><q-item-section class="text-negative">Revert to default</q-item-section></q-item>
                       </template>
                     </q-list>
                   </q-btn-dropdown>
@@ -124,13 +126,31 @@ export const Default = page({
   active: 'none',
   org: 'Traveloc',
   user: 'Mike Addesa',
-  components: { DsListItem, DsSectionHeader, DsInfoGrid },
+  components: { DsListItem, DsSectionHeader, DsInfoGrid, DsConfirmDialog },
   setup: (args) => {
     // args is reactive in Storybook's Vue renderer — rebuild sections when a
     // Header/Subtext control changes so edits preview live.
     const sections = ref([])
     watchEffect(() => { sections.value = sectionsFromArgs(args) })
-    return { sections, settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true) }
+    // Revert-to-default confirmation (destructive edge case).
+    const revertOpen = ref(false)
+    const revertTarget = ref(null)
+    const openRevert = (it) => { revertTarget.value = it; revertOpen.value = true }
+    const confirmRevert = () => { if (revertTarget.value) revertTarget.value.custom = false }
+    // Toast on every Send-Email toggle.
+    const $q = useQuasar()
+    const onToggleSend = (it, value) => {
+      it.send = value
+      $q.notify({
+        message: it.title,
+        caption: value ? 'Send email turned on' : 'Send email turned off',
+        icon: value ? 'mark_email_read' : 'unsubscribe',
+        color: value ? 'positive' : 'grey-8',
+        position: 'bottom-right',
+        timeout: 2200,
+      })
+    }
+    return { sections, settings: companySettingsSections, tab: ref('notifications'), noticeShown: ref(true), revertOpen, revertTarget, openRevert, confirmRevert, onToggleSend }
   },
   slot: `
     ${travelocHeader}
@@ -140,6 +160,14 @@ export const Default = page({
       <div style="display:flex; flex-direction:column; gap:16px; margin-top:12px;">
         ${sectionsMarkup}
       </div>
+      <ds-confirm-dialog v-model="revertOpen" title="Revert to default template?" destructive
+        confirm-label="Revert to default" cancel-label="Keep custom" @confirm="confirmRevert">
+        <template #body>
+          This replaces <strong>{{ revertTarget?.title }}</strong> with the EventPipe default
+          template. Your company's custom changes will be <strong>permanently discarded</strong>
+          and can't be recovered.
+        </template>
+      </ds-confirm-dialog>
     </div>
     <div v-show="tab === 'general'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
       ${settingsMarkup}
