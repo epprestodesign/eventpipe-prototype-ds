@@ -13,7 +13,7 @@ Vertical collection of related rows — room options, amenities, booking summari
 - Tabular, sortable, multi-column data → **Table**.
 
 ## Quasar mapping
-\`List → QList + QItem + QItemSection\` (native). Recommended wrapper \`PrestoList\`
+\`List → QList + QItem + QItemSection\` (native). Recommended wrapper \`EpList\`
 for the common icon/title/meta/action row.
 ` } } },
 }

@@ -1,4 +1,4 @@
-/** NAVIGATION / Tabs → Quasar: QTabs + QTab + QTabPanels (wrap as PrestoTabs) */
+/** NAVIGATION / Tabs → Quasar: QTabs + QTab + QTabPanels (wrap as EpTabs) */
 import { ref } from 'vue'
 export default {
   title: 'Components/Navigation/Tabs',
@@ -14,7 +14,7 @@ Switch between related views within the same context, without navigating away.
 - Top-level app sections → **App Shell** (sidebar). Sequential flow → **Stepper**.
 
 ## Quasar mapping
-\`Tabs → QTabs + QTab + QTabPanels\` (native compound). Recommended wrapper \`PrestoTabs\`.
+\`Tabs → QTabs + QTab + QTabPanels\` (native compound). Recommended wrapper \`EpTabs\`.
 ` } } },
 }
 export const Basic = {

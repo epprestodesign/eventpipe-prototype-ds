@@ -32,6 +32,6 @@ $typography-font-family: 'Product Sans', -apple-system, BlinkMacSystemFont,
   'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
 // --- Shape / spacing tokens ----------------------------------
-$generic-border-radius: 4px;    // uniform 4px system, matches Presto reference
-$button-border-radius:  4px;    // crisp button corners, matches Presto reference
+$generic-border-radius: 4px;    // uniform 4px system, matches Eventpipe reference
+$button-border-radius:  4px;    // crisp button corners, matches Eventpipe reference
 $button-font-weight:    400;   // production renders light button labels (Product Sans)
