@@ -4,15 +4,15 @@ import { Meta } from '@storybook/addon-docs/blocks'
 
 # Eventpipe Design System
 
-A **themed [Quasar](https://quasar.dev) component library** for **Eventpipe** —
-the **event & group hotel booking** experience — documented and QA'd in Storybook.
+A **themed [Quasar](https://quasar.dev) component library** for **EventPipe** —
+the platform teams use to manage **event hotel room blocks** — documented and
+QA'd in Storybook.
 
-Eventpipe is built for booking hotel rooms around an **event**: holding a block of
-rooms for a group or team, reserving several rooms across hotels at once, or making
-a single stay. Every example, label, and edge case is written around that journey —
-searching near the event location, comparing rooms and amenities, holding or
-reserving rooms, paying, confirming, and managing the booking afterward. The
-library spans the **mobile booking app, desktop web, and host/admin surfaces**.
+EventPipe is a **B2B admin product**: event organizers, hotels, and companies
+coordinate room blocks, pickup, reporting, and communications. This library is the
+component system behind those screens — a Polaris-style set of function-grouped
+components, the design tokens they carry, the app scaffolding they sit in, and
+full page compositions built from them.
 
 > **Building with an AI agent?** Read **Getting Started → Architecture &
 > Conventions** first — it's the machine-oriented map (task → location,
@@ -22,142 +22,84 @@ library spans the **mobile booking app, desktop web, and host/admin surfaces**.
 
 ## How to read this library
 
-The sidebar is organized the way product and design think, not alphabetically.
-It has **two layers**:
+The sidebar is ordered the way product and design think, not alphabetically. Its
+top-level sections, in order:
 
-**1. Experience flows** — the booking journey, in order:
-
-`Browse Hotels` → `Hotel Details` → `Checkout Experience` → `Confirmation` → `Manage Booking`
-
-**2. Primitives** — the design-system building blocks every flow is assembled
-from: **Foundations, Inputs, Data Display, Feedback, Layout, Navigation**.
-
-Three recurring **booking modes** run through the flows and you'll see them named
-everywhere:
-
-- **`reserve`** — a single **hotel reservation** (one stay, check-in/out, one guest party).
-- **`hold`** — **holding rooms for a group or team** (multiple hotels, rooms held per night via quantity steppers, teams/block).
-- **`reservations`** — **multiple room reservations** at once (several hotels → rooms → booked nights, shown as date + rate rows; no quantity selector).
-
----
-
-## Categories at a glance
-
-| Category | What it's for |
+| Section | What it holds |
 | --- | --- |
-| **Foundations** | Design tokens made visible — palette, color, type, icons, imagery, elevation, spacing, radius, breakpoints, motion. |
-| **Inputs** | Form controls — buttons, fields, selects, pickers, toggles, steppers, **choice chips, range, checkbox tree, phone field**. |
-| **Data Display** | Read-only presentation — avatars, badges, chips, lists, **list item, accordion, rating**, tables, tooltips, typography. |
-| **Feedback** | Status & messaging — alerts, banners, dialogs, **modal** (`DsModal`), snackbars, **toasts**, progress, skeletons, backdrops. |
-| **Layout** | Structural primitives — box, **card**, container, grid, stack, image list, section header, **side panel** (right/left/center). |
-| **Navigation** | Wayfinding & chrome — global nav, tabs, menus, breadcrumbs, pagination, steppers. |
-| **Browse Hotels** | Discovery — search, filters (incl. an "All Filters" modal), listing cards, map (with search-radius), availability. |
-| **Hotel Details** | The chosen hotel — photo hero gallery, summary header, room selection (rooms carousel + room cards), amenities, policies, room booking dialog. |
-| **Checkout Experience** | The stepped checkout — review, contact/group, payment, review reservation. |
-| **Confirmation** | Post-booking success page + everything you need after booking. |
-| **Manage Booking** | The account page — profile, communications, payment, security, help. |
+| **Getting Started** | This intro, Architecture & Conventions, and the Components Overview. |
+| **Foundations** | Design tokens made visible — palette, colors, typography, icons, logos, imagery, elevation, spacing, border radius, breakpoints, motion. |
+| **Components** | The reusable library, grouped by **function** (Polaris-style): Actions · Navigation · Forms · Feedback & Status · Layout & Structure · Media & Visuals · Typography & Content. |
+| **App Chrome** | The full-screen scaffolds — App Bar, App Shell, Page Header, Save Bar. |
+| **Account** | Auth surfaces — Log in, Sign up, Forgot password, Verification. |
+| **Pages** | Complete admin pages assembled from the library (Users, Events, Reports, Hotels, and more). |
+| **Design Requests** | In-flight design work tied to a ticket (currently DES-207, the Communications / Email Template Editor). |
 
 ---
 
-## Experience flows
+## Brand at a glance
 
-### Browse Hotels
-**Discover and choose where to stay.** Search a destination, filter results,
-compare listings on cards or a map, and start a booking.
-
-- **Booking Widget** — destination + dates + guests search entry.
-- **Hotel Listing Card** — the core result card (**horizontal**; the vertical
-  orientation is deprecated), with a photo carousel, rating, price, and a
-  **group-booking** mode that adds an **Availability** secondary button opening
-  the **Availability Dialog** (hotel summary + a `hold`-mode rooms carousel).
-- **Hotel Map** — map-only results with price-pill markers and clustering (with a
-  zoom cutoff so pins de-cluster as you zoom in), native **+/- zoom** controls, and
-  a **search-radius** circle centered on the event location that's **two-way bound**
-  to a slider — zoom or ⌘-scroll the map and the radius follows; drag the slider and
-  the map reframes (Google Maps, with a graceful no-key fallback).
-- **Search & Filters** — one `Filter` component covering every filter type
-  (Amenities list/grid with **inline search**, **Room Type** chips always ordered
-  least→max bed occupancy (twin → double → queen → king → suite), Guest Rating,
-  Star Rating, Hotel class, **Brands tree with inline search**, Budget range with a
-  **per-night ⇄ total** toggle, **editable Min/Max** + price histogram, Property
-  Search + autocomplete). Long amenity lists collapse behind a **"View more /
-  Fewer"** toggle. An **All Filters** button opens a modal consolidating every
-  filter into accordion sections with a live "Show N results" footer.
-- **Forms, Empty States, Loading States** — supporting patterns for the flow.
-
-### Hotel Details
-**The chosen hotel, end to end.** A composed detail screen and the pieces it's
-built from — each is also its own story.
-
-- **Hotel Detail Page** — the full composition: hero gallery → sticky detail tabs
-  → summary header → room selection → about / amenities / policies.
-- **Photo Gallery** — the hero photo **mosaic** (lead image + cluster) with a
-  "See all photos" modal (reuses `DsImageList`).
-- **Detail Tabs** — Overview / Rooms / Property / Amenities / Policies section nav.
-- **Hotel Summary Header** — name + stars, address, guest score, popular
-  amenities, and a mini-map.
-- **Rooms** + **Room Card** — the "Select Your Room" **carousel** of room cards
-  (`reserve` & `hold` modes; sold-out, limited, discounted, refundable states).
-- **Room Booking Dialog** — the per-room booking modal (moved here from Browse).
-- **Amenities** + **Policies & Property** — categorized amenities and the
-  policies / "about the property" blocks.
-
-### Checkout Experience
-**Turn a selection into a booking.** An Airbnb-style stepped flow, with each step
-its own component and a sticky order-summary rail.
-
-- **Checkout Page** — orchestrates the steps; **Group Block**, **Reservation**, and
-  **Multiple Room Reservations** (`reservations` mode) variants.
-- **Steps** — *Review Order*, *Contact Info* (for `hold`, the group/teams block +
-  required Group Block Name; for `reserve`, **per-room guest information** that's
-  aware of the booking widget's room/traveler selection — team name + event
-  custom fields, and additional guests pre-seeded from occupancy; for
-  `reservations`, the same per-room forms **grouped by hotel/reservation**),
-  *Payment*, *Review Reservation* (protection + cancellation policy).
-- **Payment Dialogs** — Instacart-style payment-method and add-card surfaces.
-
-### Confirmation
-**The post-booking page.** A `ConfirmationPage` with **Reservation** and **Group
-Block** variants: success hero, itinerary, and post-booking modules — experience
-**rating**, **who's going**, **cancellation** + change/cancel, **add to
-calendar**, **location** (live map), **area tips**, **FAQ**, and **help/contact**.
-
-### Manage Booking
-**The account home** (pinned last). A two-column page: avatar + name + Edit
-profile on the left with a selectable menu; section content on the right —
-**Profile** (Basic info / Contact / More details / Additional travelers with a
-full-height edit modal), **Communications** toggles, **Payment methods** (add via
-the checkout dialog; edit/delete), **Security**, and **Help & feedback**.
+- **Primary — Azure `#2561FA`** for actions, links, and selected states
+  (`--ds-color-background-brand-bold`, `--ds-color-text-brand`).
+- **Neutrals — Graphite** ramps (`--ds-palette-graphite-*`) for text, borders, and surfaces.
+- **App chrome — EventPipe navy `#01113E`** for the sidebar / app bar; **accent green `#15AEB3`** for the logo and highlights.
+- **Type — Product Sans** (system-font fallback stack).
+- **Shape — uniform 4px radius**; **40px standard control height** for buttons and single-line fields.
 
 ---
 
-## Primitives (building blocks)
+## Components (grouped by function)
 
-The flows above are assembled from these. Each story has a **Docs** tab with
-usage, props, and guidance.
+Every component carries the tokens above. Each story has a **Docs** tab with usage,
+props, and guidance.
 
-- **Foundations** — the tokens themselves, made visible. Start here to understand
-  the palette, type scale, spacing, radius, and motion the whole system uses.
-- **Inputs** — every form control, including the booking-specific **Quantity
-  Stepper**, plus primitives extracted from the booking flows: **Choice Chips**
-  (chip toggle group), **Range** (dual-handle slider), **Checkbox Tree** (parent
-  selects children), and **Phone Field** (country-code input).
-- **Data Display** — avatars, badges, chips, dividers, icons, lists, tables,
-  tooltips, typography, plus **List Item** (the standard row), **Accordion**
-  (expand/collapse), **Rating** (read-only review score), and **Amenity** (the
-  atomic icon + label unit, sourced from the shared amenities catalog —
-  `src/lib/amenities.js`, the single source of truth used by the header,
-  amenities section, cards, and filters).
-- **Feedback** — alerts, banners (Atlassian-Flag style), dialogs, **Modal**
-  (`DsModal` — the centered dialog shell behind the availability / all-filters /
-  map dialogs), snackbars, **Toast** (DS-styled Quasar Notify) — all sharing one
-  hue convention — progress, skeletons, backdrops.
-- **Layout** — `Ds*` structural wrappers: Box, **Card** (the standard surface),
-  Container, Grid, Stack, Image List, Section Header, and **Side Panel** (the
-  slide-over chrome — right / left / center — behind the cart fly-out and the
-  profile edit sheet).
-- **Navigation** — Global Nav (brand + Manage Booking + cart, with a fly-out),
-  tabs, menus, breadcrumbs, pagination, steppers.
+- **Actions** — triggers & overlays: Button, Button Group, Link, Dropdown, Menu,
+  Popover, **Modal** (`DsModal`), Dialog, Backdrop, **Side Panel** (`DsSidePanel`).
+- **Navigation** — moving through the app: Breadcrumbs, Tabs, Pagination, Stepper,
+  **Search** (`DsSearch`).
+- **Forms** — the **label-above** field system; every input composes into
+  **Form Field** (`DsField`): Input (and Number / Payment / Date / File / Tags /
+  Group), Pin Input, Text Field, Text Area, URL Field, Search, Autocomplete,
+  Select, Multi-Select, Time Picker, Date Picker, Checkbox, Checkbox Tree, Radio
+  Group, Switch, Choice Chips, Slider, Range, Transfer List, File Upload, Rating.
+- **Feedback & Status** — communicating state: Badge, Badge Group, **Status**
+  (`DsStatus`), Alert, Banner, Progress, Skeleton, Loading Indicator / States,
+  Snackbar, **Toast**, Empty States.
+- **Layout & Structure** — surfaces & structure: Box, Container, Grid, Stack,
+  Divider, **Table**, **Card**, Card Headers, **Accordion**, Section Header,
+  **List** / **List Item**, **Info Grid**, **Stat**.
+- **Media & Visuals** — Avatar, Icon, Thumbnail, Image List, Carousel.
+- **Typography & Content** — Text, Heading, Paragraph, Chip, Tooltip.
+
+---
+
+## App Chrome & Account
+
+- **App Chrome** — the full-screen scaffolds the pages live in: **App Bar**,
+  **App Shell** (sidebar + content), **Page Header**, and the sticky **Save Bar**.
+- **Account** — the pre-app auth flows: **Log in**, **Sign up**, **Forgot
+  password**, **Verification**.
+
+---
+
+## Pages
+
+Full admin screens composed entirely from the library — the proof the system holds
+together at page scale. In sidebar order:
+
+**Users · Events · Pickup Reports · Reports · Hotels · Hotel Brands · Amenities ·
+Room Types · Venues · Event Companies · Companies · Requests · Admin Tools · Pipe
+Tools · Webhooks · Company Settings.**
+
+---
+
+## Design Requests
+
+Ticket-scoped design explorations that ship alongside the core library. Current:
+**🟢 DES-207 — Communications | Email Template Editor** (Notifications Preferences
+and Configured Template versions, plus the components built for it: Recipient
+Selector, Recurrence Picker, Reminder Config, Section Accordion, Send-Email
+Control, Template Status, and more).
 
 ---
 
@@ -167,10 +109,9 @@ usage, props, and guidance.
 | --- | --- |
 | Brand colors, base font, global radius | `src/css/quasar.variables.scss` |
 | Design tokens (palette, color roles, spacing, radius, type) | `src/css/ds-palette.scss`, `src/css/ds-color-tokens.scss`, `src/css/tokens.scss` |
-| Per-component overrides & global CSS (incl. `.ds-toast`) | `src/css/app.scss` |
+| Per-component overrides & global CSS (incl. the 40px control height) | `src/css/app.scss` |
 | Sidebar order / category IA | `.storybook/preview.js` (`storySort`) |
-| Amenities (catalog, filter list, popular set) | `src/lib/amenities.js` (single source of truth) |
-| Components | `src/components/` (top-level primitives + `browse/`, `details/`, `checkout/`, `confirmation/`, `managebooking/`) |
+| Components | `src/components/` (`Ds*` primitives + `AppBar` / `AppShell`) |
 | Stories | `src/stories/<category>/*.stories.js` |
 
 ## Workflow
@@ -182,6 +123,6 @@ usage, props, and guidance.
 
 ## Deploy
 
-The build output is a plain static site (GitHub Pages, Netlify, any static host).
-Pushing to `main` deploys to GitHub Pages via `.github/workflows/deploy.yml`.
-See `README.md` for details.
+The build output is a plain static site. Pushing to `main` deploys to GitHub Pages
+via `.github/workflows/deploy.yml` →
+**https://epprestodesign.github.io/eventpipe-prototype-ds/**. See `README.md` for details.

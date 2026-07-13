@@ -1,14 +1,15 @@
 # Eventpipe DS
 
-A **Quasar + Vue 3 design system**, documented and QA'd in **Storybook**, themed
-for **Eventpipe** — the **event & group hotel booking** experience ("Eventpipe
-Design System").
+A **Quasar + Vue 3 design system**, documented and QA'd in **Storybook**, for
+**EventPipe** — the admin platform for managing **event hotel room blocks** (events,
+pickup, reporting, communications, and admin). A Polaris-style component library
+grouped by function, its design tokens, app scaffolding, and full page compositions.
 
 - **Stack:** Vue 3 · Quasar 2 · Storybook 10 · Vite 6 · pnpm
-- **Font:** PT Sans (400 / 700)
-- **Brand:** primary **Navy `#01113E`** · neutrals **Slate** · page canvas `#F9F9FA`
-- **Shape:** uniform **4px** radius system (pills reserved for chips / rounded buttons)
-- **Color system:** Tailwind-based 3-tier tokens (primitives → semantic → Quasar bridge)
+- **Font:** Product Sans (system-font fallback stack)
+- **Brand:** primary **Azure `#2561FA`** · neutrals **Graphite** · app chrome **navy `#01113E`** · accent **green `#15AEB3`**
+- **Shape:** uniform **4px** radius · **40px** standard control height
+- **Color system:** 3-tier tokens (primitives → semantic → Quasar bridge)
 
 ## Live docs
 Storybook is published to GitHub Pages on every push to `main`:
@@ -27,13 +28,13 @@ A 3-tier token pipeline — change the brand in one place and every component re
 
 | Layer | File(s) | Purpose |
 | --- | --- | --- |
-| Primitives | `src/css/ds-palette.scss` | Raw Tailwind hue ramps + the **Navy** brand ramp (`--ds-palette-*`) |
-| Semantic | `src/css/ds-color-tokens.scss` | Roles (`--ds-color-*`) → primitives (brand = Navy, neutrals = Slate) |
+| Primitives | `src/css/ds-palette.scss` | Raw hue ramps + the **Azure** brand ramp (`--ds-palette-*`) |
+| Semantic | `src/css/ds-color-tokens.scss` | Roles (`--ds-color-*`) → primitives (brand = Azure, neutrals = Graphite) |
 | Utilities | `src/css/ds-utilities.scss` | `bg-ds-*` / `text-ds-*` / `border-ds-*` helpers |
 | Quasar bridge | `src/css/quasar.variables.scss` | `$primary…`, font, radius — so Quasar components reskin |
 | Tokens | `src/css/tokens.scss` | Spacing, radius, elevation, motion |
-| Type | `src/css/typography.scss` | PT Sans type scale + weights |
-| Overrides | `src/css/app.scss` | Global + per-component tweaks |
+| Type | `src/css/typography.scss` | Product Sans type scale + weights |
+| Overrides | `src/css/app.scss` | Global + per-component tweaks (incl. the 40px control height) |
 
 The Foundations **Palette** and **Colors** doc pages render from
 `src/stories/_tokens-data.js`. After editing the SCSS tokens, regenerate it:
@@ -43,24 +44,26 @@ node scripts/gen-tokens-data.mjs
 ```
 
 ## Storybook structure
-The sidebar mirrors how product & design think — **primitives** plus **experience flows**:
+The sidebar is ordered the way product & design think (set in `.storybook/preview.js`
+`storySort`). Top-level sections:
 
-- **Primitives:** Foundations · Inputs · Data Display · Feedback · Layout · Navigation
-- **Experience flows:** Browse Hotels · Hotel Details · Checkout Experience · Confirmation · Manage Booking
+- **Getting Started** — Introduction, Architecture & Conventions, Components Overview.
+- **Foundations** — tokens made visible: Palette, Colors, Typography, Icons, Logos,
+  Imagery, Elevation, Spacing, Border Radius, Breakpoints, Motion.
+- **Components** — the reusable library, grouped by **function** (Polaris-style):
+  Actions · Navigation · Forms · Feedback & Status · Layout & Structure ·
+  Media & Visuals · Typography & Content.
+- **App Chrome** — full-screen scaffolds: App Bar, App Shell, Page Header, Save Bar.
+- **Account** — auth surfaces: Log in, Sign up, Forgot password, Verification.
+- **Pages** — complete admin screens composed from the library: Users, Events,
+  Pickup Reports, Reports, Hotels, Hotel Brands, Amenities, Room Types, Venues,
+  Event Companies, Companies, Requests, Admin Tools, Pipe Tools, Webhooks,
+  Company Settings.
+- **Design Requests** — ticket-scoped design work (currently DES-207,
+  Communications | Email Template Editor).
 
-Flow surfaces that differ by booking type are split into **Book Reservation** and
-**Group Block** sub-folders (Hotel Details, Checkout Experience, Global Nav,
-Confirmation). Highlights:
-
-- **Browse Hotels** — Booking Widget (tabs / dropdown / radio flow selectors),
-  Hotel Listing Card (Horizontal + Vertical × Book Reservation + Group Block, each
-  with availability edge cases and a room-availability carousel), Search & Filters,
-  Hotel Map.
-- **Hotel Details** — a wireframe Hotel Detail Page plus its sections; the Room
-  Cards and "Select Your Room" Rooms carousel, split Book Reservation / Group Block.
-- **Checkout Experience** — the stepped Checkout Page, per-step stories, Payment
-  Dialogs, and the **Policies** agreement (single-hotel card / multi-hotel accordion
-  with per-hotel agreement checkboxes).
+> A story's sidebar placement comes from its `title` (e.g. `Components/Forms/Input`),
+> not its source folder.
 
 ## Imagery — using it in Claude prototypes
 
