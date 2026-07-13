@@ -21,7 +21,7 @@ variant; every example below is outlined.
 Always provide a \`label\`; surface errors with \`:rules\` / \`error\` + \`error-message\`.
 
 ## Quasar mapping
-\`Text Field → QInput\` (outlined). Recommended Tier-2 wrapper: \`PrestoTextField\`.
+\`Text Field → QInput\` (outlined). Recommended Tier-2 wrapper: \`EpTextField\`.
 ` } } },
 }
 

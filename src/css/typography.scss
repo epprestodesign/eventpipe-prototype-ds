@@ -31,7 +31,7 @@
 }
 
 // Make Quasar's heading classes use the brand font + tighter tracking.
-// PT Sans is a 400/700 family, so headings go bold (matches Presto production
+// PT Sans is a 400/700 family, so headings go bold (matches Eventpipe production
 // where section titles read as strong navy). Quasar's light default weights
 // (300–500) would fall back to 400 and look too thin otherwise.
 .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6 {

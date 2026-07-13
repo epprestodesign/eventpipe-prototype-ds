@@ -1,4 +1,4 @@
-/** NAVIGATION / Menu → Quasar: QMenu (+ QList) (wrap as PrestoMenu) */
+/** NAVIGATION / Menu → Quasar: QMenu (+ QList) (wrap as EpMenu) */
 export default {
   title: 'Components/Actions/Menu',
   tags: ['autodocs'],
@@ -13,7 +13,7 @@ A popover list of actions or options, anchored to a trigger.
 - Persistent primary nav → **App Shell** (sidebar). Single choice form field → **Select**.
 
 ## Quasar mapping
-\`Menu → QMenu\` (native; child of the anchor). Recommended wrapper \`PrestoMenu\`.
+\`Menu → QMenu\` (native; child of the anchor). Recommended wrapper \`EpMenu\`.
 ` } } },
 }
 export const Basic = {

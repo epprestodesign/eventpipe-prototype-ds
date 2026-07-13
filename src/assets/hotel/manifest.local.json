@@ -1,26 +1,26 @@
 {
   "rooms": [
-    { "file": "deluxe-king.jpg", "alt": "Deluxe king room", "credit": "Vojtech Bruzek", "creditUrl": "https://unsplash.com/@vojtechbruzek?utm_source=presto_ds&utm_medium=referral" }
+    { "file": "deluxe-king.jpg", "alt": "Deluxe king room", "credit": "Vojtech Bruzek", "creditUrl": "https://unsplash.com/@vojtechbruzek?utm_source=eventpipe_ds&utm_medium=referral" }
   ],
   "suites": [
-    { "file": "ocean-suite.jpg", "alt": "Ocean view suite", "credit": "Johannes W", "creditUrl": "https://unsplash.com/@johanneswre?utm_source=presto_ds&utm_medium=referral" }
+    { "file": "ocean-suite.jpg", "alt": "Ocean view suite", "credit": "Johannes W", "creditUrl": "https://unsplash.com/@johanneswre?utm_source=eventpipe_ds&utm_medium=referral" }
   ],
   "lobby": [
-    { "file": "lobby.jpg", "alt": "Hotel lobby", "credit": "Steven Van Elk", "creditUrl": "https://unsplash.com/@stevenvanelk?utm_source=presto_ds&utm_medium=referral" }
+    { "file": "lobby.jpg", "alt": "Hotel lobby", "credit": "Steven Van Elk", "creditUrl": "https://unsplash.com/@stevenvanelk?utm_source=eventpipe_ds&utm_medium=referral" }
   ],
   "pool": [
-    { "file": "pool.jpg", "alt": "Resort pool", "credit": "Cory Bjork", "creditUrl": "https://unsplash.com/@corybjork?utm_source=presto_ds&utm_medium=referral" }
+    { "file": "pool.jpg", "alt": "Resort pool", "credit": "Cory Bjork", "creditUrl": "https://unsplash.com/@corybjork?utm_source=eventpipe_ds&utm_medium=referral" }
   ],
   "spa": [
-    { "file": "spa.jpg", "alt": "Hotel spa", "credit": "Frederik Rosar", "creditUrl": "https://unsplash.com/@segerfredo?utm_source=presto_ds&utm_medium=referral" }
+    { "file": "spa.jpg", "alt": "Hotel spa", "credit": "Frederik Rosar", "creditUrl": "https://unsplash.com/@segerfredo?utm_source=eventpipe_ds&utm_medium=referral" }
   ],
   "dining": [
-    { "file": "restaurant.jpg", "alt": "Hotel restaurant", "credit": "Glenov Brankovic", "creditUrl": "https://unsplash.com/@glenovbrankovic?utm_source=presto_ds&utm_medium=referral" }
+    { "file": "restaurant.jpg", "alt": "Hotel restaurant", "credit": "Glenov Brankovic", "creditUrl": "https://unsplash.com/@glenovbrankovic?utm_source=eventpipe_ds&utm_medium=referral" }
   ],
   "exterior": [
-    { "file": "exterior.jpg", "alt": "Hotel exterior", "credit": "Brian Kairuz", "creditUrl": "https://unsplash.com/@briankairuz?utm_source=presto_ds&utm_medium=referral" }
+    { "file": "exterior.jpg", "alt": "Hotel exterior", "credit": "Brian Kairuz", "creditUrl": "https://unsplash.com/@briankairuz?utm_source=eventpipe_ds&utm_medium=referral" }
   ],
   "guests": [
-    { "file": "guest-portrait.jpg", "alt": "Hotel guest", "credit": "Amir Seilsepour", "creditUrl": "https://unsplash.com/@amiresel?utm_source=presto_ds&utm_medium=referral" }
+    { "file": "guest-portrait.jpg", "alt": "Hotel guest", "credit": "Amir Seilsepour", "creditUrl": "https://unsplash.com/@amiresel?utm_source=eventpipe_ds&utm_medium=referral" }
   ]
 }

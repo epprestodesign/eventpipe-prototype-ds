@@ -1,5 +1,5 @@
 {
-  "name": "presto-ds",
+  "name": "eventpipe-ds",
   "version": "0.1.0",
   "private": true,
   "description": "A themed Quasar component library, documented and QA'd in Storybook.",

@@ -1,7 +1,8 @@
-# Presto DS
+# Eventpipe DS
 
 A **Quasar + Vue 3 design system**, documented and QA'd in **Storybook**, themed
-for a consumer **hotel booking & reservation** experience ("Presto Design System").
+for **Eventpipe** — the **event & group hotel booking** experience ("Eventpipe
+Design System").
 
 - **Stack:** Vue 3 · Quasar 2 · Storybook 10 · Vite 6 · pnpm
 - **Font:** PT Sans (400 / 700)
@@ -12,7 +13,7 @@ for a consumer **hotel booking & reservation** experience ("Presto Design System
 ## Live docs
 Storybook is published to GitHub Pages on every push to `main`:
 
-**https://epprestodesign.github.io/presto-2026/**
+**https://epprestodesign.github.io/eventpipe-prototype-ds/**
 
 ## Local development
 ```bash
@@ -72,7 +73,7 @@ rebuilding the design system:
 - **Categories:** `rooms · suites · lobby · pool · spa · dining · bar · bathroom ·
   exterior · views · destinations · guests · amenities`
 
-> **Tell Claude (or any prototype):** "Use hotel imagery from the Presto DS imagery
+> **Tell Claude (or any prototype):** "Use hotel imagery from the hosted imagery
 > manifest at the URL above; pick by category; show the photographer `credit`."
 
 ### Option 1 — Any prototype (zero setup, recommended)

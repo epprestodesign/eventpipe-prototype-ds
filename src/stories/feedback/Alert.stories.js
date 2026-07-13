@@ -1,4 +1,4 @@
-/** FEEDBACK / Alert → Quasar: QBanner (inline; wrap as PrestoAlert severity API) */
+/** FEEDBACK / Alert → Quasar: QBanner (inline; wrap as EpAlert severity API) */
 export default {
   title: 'Components/Feedback & Status/Alert',
   tags: ['autodocs'],
@@ -21,7 +21,7 @@ The same hue convention is shared by **Snackbar** and **Toast**.
 - **Success** — emerald tint. **Info** — blue tint. **Warning** — amber tint. **Error** — rose/danger tint.
 
 ## Quasar mapping
-\`Alert → QBanner\` (inline). Recommended wrapper \`PrestoAlert\` mapping
+\`Alert → QBanner\` (inline). Recommended wrapper \`EpAlert\` mapping
 \`severity\` → icon + color tokens.
 ` } } },
 }

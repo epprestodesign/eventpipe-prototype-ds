@@ -12,7 +12,7 @@
 
 const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY
 const API = 'https://api.unsplash.com'
-const UTM = '?utm_source=presto_ds&utm_medium=referral'
+const UTM = '?utm_source=eventpipe_ds&utm_medium=referral'
 
 export const hasUnsplashKey = () => Boolean(ACCESS_KEY)
 
