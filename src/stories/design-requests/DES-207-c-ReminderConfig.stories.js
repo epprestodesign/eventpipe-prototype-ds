@@ -5,7 +5,7 @@ import DsInput from '../../components/DsInput.vue'
 import DsSelect from '../../components/DsSelect.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Reminder Config',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Reminder Config',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: 'Phase-2 compliance-reminder configuration, composed entirely from Form Field / Input Number / Select / Multi-Select / Checkbox group. Test email + BCC sit below the config, per the feedback.' } } },
 }

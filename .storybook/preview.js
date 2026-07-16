@@ -68,13 +68,22 @@ const preview = {
             '01 Users', '02 Events', '03 Pickup Reports', '04 Reports', '05 Hotels',
             '06 Hotel Brands', '07 Amenities', '08 Room Types', '09 Venues', '10 Event Companies',
             '11 Companies', '12 Requests', '14 Admin Tools', '15 Pipe Tools', '16 Webhooks',
-            '17 Company Settings',
+            '17 Company Settings', 'Drafts',
           ],
           'Design Requests', [
-            '🟢 DES-207 Communications | Email Template Editor', [
+            'DES-207 Communications | Email Template Editor', [
               'V1 · Notifications Preferences',
               'V2 · Configured Template',
               'Components',
+            ],
+            'DES-95 Customized Page Revamp', [
+              'Customize Event Site',
+              'Rob Concept #1',
+              'References', [
+                '01 · Live Event Edit',
+                '02 · Customize (Edit)',
+                '03 · Customize (View)',
+              ],
             ],
           ],
           '*',

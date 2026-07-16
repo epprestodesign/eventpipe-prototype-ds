@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import DsSelect from '../../components/DsSelect.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Recurrence Picker',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Recurrence Picker',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: 'Google-Calendar-style recurrence: a summary **Select** with presets, where "Custom…" opens a **Custom recurrence** dialog — Repeat every N day/week/month/year, day-of-week circles, and an Ends radio (Never / On date / After N occurrences). Composed from Select · Dialog · Radio · round Buttons · Input.' } } },
 }

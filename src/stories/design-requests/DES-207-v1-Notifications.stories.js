@@ -22,7 +22,7 @@ import pageSrc from '../../app/notifications/NotificationsPreferencesPage.vue?ra
 const SECTIONS = contentData.sections
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/V1 · Notifications Preferences',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/V1 · Notifications Preferences',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen', docs: { description: { component: 'Phase 1 in the App Shell (Companies → Traveloc). Edit each template’s **Header / Subtext** in the **Controls** panel, then use the **Publish content** button in the Storybook toolbar to **Save** (commit to `main`, redeploy for everyone) or **Discard**.' } } },
 }

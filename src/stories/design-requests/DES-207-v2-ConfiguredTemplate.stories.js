@@ -13,7 +13,7 @@ import reminderSettingsSrc from '../../app/compliance-reminder/ReminderSettings.
 import editorSrc from '../../app/compliance-reminder/ComplianceReminderEditor.vue?raw'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/V2 · Configured Template',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/V2 · Configured Template',
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen', docs: { description: { component: 'Phase 2 in the App Shell (drill-in from V1 via "Go Back to Preferences"). A **+ Compliance Reminder Settings** button expands the Phase-2 config (begin/end reminder days, a Google-Calendar-style **Recurrence Picker**, compliance statuses, recipients). Below it: Send Email Preview, the **Content** editor (Teams Management variables + inline `{{`), and BCC.' } } },
 }

@@ -2,7 +2,7 @@
 import DsListItem from '../../components/DsListItem.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Template Status',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Template Status',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: 'Five ways to show whether a row uses the **System Default** template or a **Custom** (edited) one. All composed from Badge / Button / Dropdown / Icon — pick one for the page.' } } },
 }

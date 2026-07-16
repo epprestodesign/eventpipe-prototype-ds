@@ -15,6 +15,13 @@ const props = defineProps({
   minHeight: { type: String, default: '360px' },
   tokens: { type: Array, default: () => [] },
   defaultContent: { type: String, default: '' },
+  // Toolbar actions — on by default (email-template editor). Turn off for plain
+  // rich-text fields like the Event Description that don't merge tokens.
+  showRestore: { type: Boolean, default: true },
+  showPersonalization: { type: Boolean, default: true },
+  // Toolbar layout: 'email' (default — DES-207 template editor) or 'description'
+  // (Edit Event's Event Description: quote, justify, Font Size, clear formatting).
+  layout: { type: String, default: 'email' },
 })
 const emit = defineEmits(['update:modelValue', 'restore'])
 
@@ -27,6 +34,14 @@ const FORMATS = [
   { label: 'Heading 1', block: 'H1' },
   { label: 'Heading 2', block: 'H2' },
   { label: 'Heading 3', block: 'H3' },
+]
+
+// Font-size options for the 'description' layout's Font Size dropdown.
+const FONT_SIZES = [
+  { label: 'Small', size: '2' },
+  { label: 'Normal', size: '3' },
+  { label: 'Large', size: '5' },
+  { label: 'Huge', size: '7' },
 ]
 
 // --- inline {{ trigger ---
@@ -104,7 +119,42 @@ onBeforeUnmount(() => { document.removeEventListener('mousedown', onDocMousedown
 <template>
   <DsField :label="label" :required="required">
     <div class="dsrte">
-      <div class="dsrte__toolbar">
+      <!-- 'description' layout: matches Edit Event's Event Description toolbar -->
+      <div v-if="layout === 'description'" class="dsrte__toolbar">
+        <button type="button" class="dsrte__btn" title="Bold" @click="cmd('bold')"><q-icon name="format_bold" size="20px" /></button>
+        <button type="button" class="dsrte__btn" title="Italic" @click="cmd('italic')"><q-icon name="format_italic" size="20px" /></button>
+        <button type="button" class="dsrte__btn" title="Underline" @click="cmd('underline')"><q-icon name="format_underlined" size="20px" /></button>
+        <span class="dsrte__sep"></span>
+        <button type="button" class="dsrte__btn" title="Quote" @click="cmd('formatBlock', 'BLOCKQUOTE')"><q-icon name="format_quote" size="20px" /></button>
+        <button type="button" class="dsrte__btn" title="Bulleted list" @click="cmd('insertUnorderedList')"><q-icon name="format_list_bulleted" size="20px" /></button>
+        <button type="button" class="dsrte__btn" title="Numbered list" @click="cmd('insertOrderedList')"><q-icon name="format_list_numbered" size="20px" /></button>
+        <span class="dsrte__sep"></span>
+        <button type="button" class="dsrte__btn" title="Align left" @click="cmd('justifyLeft')"><q-icon name="format_align_left" size="20px" /></button>
+        <button type="button" class="dsrte__btn" title="Align center" @click="cmd('justifyCenter')"><q-icon name="format_align_center" size="20px" /></button>
+        <button type="button" class="dsrte__btn" title="Align right" @click="cmd('justifyRight')"><q-icon name="format_align_right" size="20px" /></button>
+        <button type="button" class="dsrte__btn" title="Justify" @click="cmd('justifyFull')"><q-icon name="format_align_justify" size="20px" /></button>
+        <span class="dsrte__sep"></span>
+        <button type="button" class="dsrte__btn" title="Insert link" @click="addLink"><q-icon name="link" size="20px" /></button>
+        <span class="dsrte__sep"></span>
+        <button type="button" class="dsrte__btn dsrte__format">
+          <q-icon name="format_size" size="18px" /> <span>Font Size</span> <q-icon name="expand_more" size="18px" />
+          <q-menu anchor="bottom left" self="top left">
+            <q-list style="min-width:140px">
+              <q-item v-for="s in FONT_SIZES" :key="s.size" clickable v-close-popup @click="cmd('fontSize', s.size)">
+                <q-item-section>{{ s.label }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </button>
+        <span class="dsrte__sep"></span>
+        <button type="button" class="dsrte__btn" title="Clear formatting" @click="cmd('removeFormat')"><q-icon name="format_clear" size="20px" /></button>
+        <span class="dsrte__sep"></span>
+        <button type="button" class="dsrte__btn" title="Undo" @click="cmd('undo')"><q-icon name="undo" size="20px" /></button>
+        <button type="button" class="dsrte__btn" title="Redo" @click="cmd('redo')"><q-icon name="redo" size="20px" /></button>
+      </div>
+
+      <!-- 'email' layout (default): DES-207 template editor toolbar -->
+      <div v-else class="dsrte__toolbar">
         <button type="button" class="dsrte__btn" title="Bold" @click="cmd('bold')"><q-icon name="format_bold" size="20px" /></button>
         <button type="button" class="dsrte__btn" title="Italic" @click="cmd('italic')"><q-icon name="format_italic" size="20px" /></button>
         <button type="button" class="dsrte__btn" title="Underline" @click="cmd('underline')"><q-icon name="format_underlined" size="20px" /></button>
@@ -134,8 +184,8 @@ onBeforeUnmount(() => { document.removeEventListener('mousedown', onDocMousedown
 
         <span class="dsrte__spacer"></span>
 
-        <q-btn outline no-caps color="primary" class="dsrte__action" label="Restore to Default" @click="restoreDefault" />
-        <q-btn outline no-caps color="primary" class="dsrte__action" label="Personalization" icon-right="expand_more">
+        <q-btn v-if="showRestore" outline no-caps color="primary" class="dsrte__action" label="Restore to Default" @click="restoreDefault" />
+        <q-btn v-if="showPersonalization" outline no-caps color="primary" class="dsrte__action" label="Personalization" icon-right="expand_more">
           <q-menu anchor="bottom right" self="top right" :offset="[0, 8]">
             <ds-personalization-menu :tokens="tokens" @select="insertToken" />
           </q-menu>

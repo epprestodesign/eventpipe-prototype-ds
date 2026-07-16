@@ -24,7 +24,9 @@ const style = computed(() => ({ padding: PAD[props.padding] ?? PAD.md, borderRad
 </template>
 
 <style scoped>
-.ds-card { background: var(--ds-color-surface); border: 1px solid var(--ds-color-border); }
+/* Matches the global .q-card container style (light container border + subtle
+   card elevation) so DsCard and q-card read as one system. */
+.ds-card { background: var(--ds-color-surface); border: 1px solid var(--ds-color-border-container); box-shadow: var(--ds-shadow-card); }
 .ds-card--interactive { cursor: pointer; transition: border-color var(--ds-duration-fast) var(--ds-ease-standard), box-shadow var(--ds-duration-fast) var(--ds-ease-standard); }
 .ds-card--interactive:hover { border-color: var(--ds-color-border-bold); box-shadow: var(--ds-shadow-2, 0 4px 12px rgba(0, 0, 0, 0.08)); }
 </style>
