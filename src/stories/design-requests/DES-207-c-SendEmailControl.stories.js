@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Send-Email Control',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Send-Email Control',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: 'The "Send Email" control per row. **Editable** = a normal Checkbox. **Forced / locked** (mandatory emails) = a disabled checked checkbox, or a positive check icon. Composed from Checkbox + Icon — no new styles.' } } },
 }

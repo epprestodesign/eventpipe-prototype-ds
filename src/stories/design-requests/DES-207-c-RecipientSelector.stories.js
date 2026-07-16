@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsField from '../../components/DsField.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Recipient Selector',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Recipient Selector',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: 'Who receives the reminder — Team Manager, Group Block Contacts, or both. A Checkbox group inside a Form Field.' } } },
 }

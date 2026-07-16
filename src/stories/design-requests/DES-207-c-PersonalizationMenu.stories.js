@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsPersonalizationMenu from '../../components/DsPersonalizationMenu.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Personalization Menu',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Personalization Menu',
   component: DsPersonalizationMenu,
   tags: ['autodocs'],
   parameters: { layout: 'centered', docs: { description: { component: 'The searchable, grouped merge-token picker. Reused by the editor toolbar **Personalization** button and by the inline **`{{`** trigger (typing `{{` in the Text Formatter pops this at the caret). Emits `select` with the token name.' } } },

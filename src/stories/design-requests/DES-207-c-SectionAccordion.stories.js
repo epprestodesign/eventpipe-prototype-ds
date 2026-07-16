@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsListItem from '../../components/DsListItem.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Section Accordion',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Section Accordion',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: 'A collapsible notification **section** (the Shopify-style accordion), built from Quasar **q-expansion-item** inside a bordered **Card**, containing **Notification Rows** (List Item). Click the header to expand/collapse.' } } },
 }

@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsConfirmDialog from '../../components/DsConfirmDialog.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Revert to Default Dialog',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Revert to Default Dialog',
   component: DsConfirmDialog,
   tags: ['autodocs'],
   parameters: { layout: 'centered', docs: { description: { component: 'The destructive confirmation shown when a user chooses **Revert to default** on a customized template — restoring the EventPipe default and discarding the company edits. Built on the reusable **DsConfirmDialog** (Quasar QDialog + the DS `.ds-dialog` styling, `.ds-btn--danger` confirm).' } } },

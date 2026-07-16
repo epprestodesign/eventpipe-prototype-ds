@@ -1,6 +1,6 @@
 /** DES-207 / Components / Announcement Notice → info notice (library + tokens only). */
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Announcement Notice',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Announcement Notice',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: 'The temporary "new section" announcement — an info notice using the DS info tokens. Icon is top-aligned with the heading. Dismissible. Rolls out day one, removed later.' } } },
 }

@@ -1,9 +1,9 @@
-/** DESIGN REQUESTS / 🟢 DES-207 / Text Formatter → DsRichTextEditor (QEditor). */
+/** DESIGN REQUESTS / DES-207 / Text Formatter → DsRichTextEditor (QEditor). */
 import { ref } from 'vue'
 import DsRichTextEditor from '../../components/DsRichTextEditor.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Text Formatter',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Text Formatter',
   component: DsRichTextEditor,
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen', docs: { description: { component: `

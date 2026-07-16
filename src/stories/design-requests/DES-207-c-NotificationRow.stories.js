@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsListItem from '../../components/DsListItem.vue'
 
 export default {
-  title: 'Design Requests/🟢 DES-207 Communications | Email Template Editor/Components/Notification Row',
+  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Notification Row',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: 'A single notification-template row: **List Item** (title + wrapping description) with a trailing **Checkbox** (Send Email) plus an action — either an **Edit** button or a **vertical 3-dot menu**. Rows get generous internal padding (24px horizontal / ~20px vertical) via a per-row wrapper, so nothing sits on the edge.' } } },
 }
