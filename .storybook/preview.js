@@ -90,6 +90,8 @@ const preview = {
             ],
           ],
           '*',
+          // Experimental workspace — pinned to the very bottom (after the wildcard).
+          'Eventpipe Labs',
         ],
       },
     },

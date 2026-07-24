@@ -1,0 +1,52 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Eventpipe Labs/Bulk Reservation Edit/Overview" />
+
+# Bulk Reservation Edit — V1
+
+Purpose-built **bulk management of (placeholder) staff-room reservations** for Team
+Travel Source / Varsity. Resurrects the "Move" bulk-edit concept: select many
+reservations, change their fields in bulk, confirm, and review the results — a task
+the end-user portal can't do (no sort/filter/search, one reservation at a time).
+
+Editing the **Hotel** field effectively *moves* a reservation, so a bulk hotel change
+reads as *"moved to &lt;hotel&gt;."* All data in these screens is fake.
+
+## ▶ Pilotable prototype (start to finish)
+
+A standalone, clickable prototype is deployed alongside Storybook on GitHub Pages:
+
+- **Live:** [https://epprestodesign.github.io/eventpipe-prototype-ds/prototype/](https://epprestodesign.github.io/eventpipe-prototype-ds/prototype/) → **Bulk Reservation Edit**
+- **In Storybook:** the [Prototype — Full Flow](?path=/story/eventpipe-labs-bulk-reservation-edit--prototype) story runs the same self-contained component with no page reloads.
+- **Local dev:** `pnpm dev:prototype` (serves the prototype app at `http://localhost:6007`).
+
+The prototype and the story both mount `src/components/BulkReservationFlow.vue` — the
+single design-system element that owns the whole flow.
+
+## The flow, itemized
+
+| # | Screen | Storybook |
+| --- | --- | --- |
+| 1 | **Reservations List** — event-hotel Reservations tab; "…" menu → *Bulk Edit Reservations* | [open](?path=/story/eventpipe-labs-bulk-reservation-edit--reservations-list) |
+| 2 | **Bulk Edit — Select Reservations** (Step 1) — selectable, sortable table + pagination | [open](?path=/story/eventpipe-labs-bulk-reservation-edit--bulk-edit) |
+| 3 | **Bulk Edit — Edit Reservations** (Step 2) — inline-editable table + Bulk Edit menu | [open](?path=/story/eventpipe-labs-bulk-reservation-edit--bulk-edit) |
+| 4 | **Bulk Edit — Results** (Step 3) — success summary | [open](?path=/story/eventpipe-labs-bulk-reservation-edit--bulk-edit) |
+| 5 | **Results** — reservations list with success banner + *View Changes* | [open](?path=/story/eventpipe-labs-bulk-reservation-edit--results) |
+| 6 | **Activity Logs** — audit trail written by the bulk edit | [open](?path=/story/eventpipe-labs-bulk-reservation-edit--activity-logs) |
+
+### Bulk Edit field modals ([Components](?path=/docs/eventpipe-labs-bulk-reservation-edit-components--docs))
+
+The dialogs that ask **which value(s) to change** for the selected reservations:
+
+- **Per-row** — [Edit Names](?path=/story/eventpipe-labs-bulk-reservation-edit-components--edit-names) · [Edit Emails](?path=/story/eventpipe-labs-bulk-reservation-edit-components--edit-emails) · [Edit Check-in Dates](?path=/story/eventpipe-labs-bulk-reservation-edit-components--edit-check-in-dates)
+- **Apply-to-all** — [Edit Hotel](?path=/story/eventpipe-labs-bulk-reservation-edit-components--edit-hotel) · [Edit Group ID](?path=/story/eventpipe-labs-bulk-reservation-edit-components--edit-group) · [Edit Reservation Status](?path=/story/eventpipe-labs-bulk-reservation-edit-components--edit-reservation-status)
+- **Destructive** — [Delete Reservations](?path=/story/eventpipe-labs-bulk-reservation-edit-components--delete-reservations)
+
+## Phased rollout (from the brief)
+
+1. **Phase 1 (V1):** edit **name** and **email** on placeholder reservations.
+2. **Phase 2:** add check-in / check-out date changes.
+3. **Phase 3:** add room changes.
+
+The prototype exposes the full field set from the Figma so the whole flow is
+pilotable; the phased scope governs what actually ships first.

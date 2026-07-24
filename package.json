@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o storybook-static"
+    "build-storybook": "storybook build -o storybook-static",
+    "dev:prototype": "vite --config vite.prototype.config.js --port 6007",
+    "build:prototype": "vite build --config vite.prototype.config.js"
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.6.2",
