@@ -77,12 +77,15 @@ const preview = {
               'Components',
             ],
             'DES-95 Customized Page Revamp', [
-              'Customize Event Site',
-              'Rob Concept #1',
+              'Customized Event Site Edits 072426',
               'References', [
                 '01 · Live Event Edit',
                 '02 · Customize (Edit)',
                 '03 · Customize (View)',
+              ],
+              'Archive', [
+                'Customize Event Site',
+                'Rob Concept #1',
               ],
             ],
           ],

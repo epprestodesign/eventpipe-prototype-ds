@@ -426,3 +426,23 @@ body {
 
 /* DES-95 expandable-section (accordion) header — blue + bold, section-title size. */
 .des95-acc__hdr { color: var(--ds-color-text-brand); font-weight: 700; font-size: 1.0625rem; }
+
+/* DES-95 delete toast — a white "card" notification with a red left accent + shadow
+   so a deletion reads as its own event. Headline (message) + subheadline (caption). */
+.ds-delete-toast {
+  min-width: 340px;
+  border-left: 4px solid var(--ds-color-text-danger);
+  border-radius: var(--ds-radius-md);
+  box-shadow: var(--ds-shadow-card);
+}
+.ds-delete-toast .q-notification__message { font-weight: 700; }
+.ds-delete-toast .q-notification__caption { color: var(--ds-color-text-subtle); opacity: 1; }
+
+/* Floating DsNotification stack transition — slide up from the bottom + fade on
+   enter; slide back down + fade on leave; remaining items ease into place. */
+.dsn-toast-enter-active,
+.dsn-toast-leave-active { transition: opacity 0.32s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+.dsn-toast-enter-from { opacity: 0; transform: translateY(24px); }
+.dsn-toast-leave-to { opacity: 0; transform: translateY(24px); }
+.dsn-toast-leave-active { position: absolute; width: 100%; }
+.dsn-toast-move { transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1); }

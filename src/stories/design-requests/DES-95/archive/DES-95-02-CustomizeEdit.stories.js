@@ -6,20 +6,20 @@
  *  screen-capture artifact and not reproduced. Note: this baseline already shows
  *  the "Show Map View on Hotel List page" flag under Hotel List Details. */
 import { ref, reactive } from 'vue'
-import { page } from '../../pages/_shell'
-import DsPageHeader from '../../../components/DsPageHeader.vue'
-import DsInfoGrid from '../../../components/DsInfoGrid.vue'
-import DsSectionHeader from '../../../components/DsSectionHeader.vue'
-import DsField from '../../../components/DsField.vue'
-import DsInput from '../../../components/DsInput.vue'
-import DsFileField from '../../../components/DsFileField.vue'
-import DsRichTextEditor from '../../../components/DsRichTextEditor.vue'
-import DsLink from '../../../components/DsLink.vue'
-import DsCard from '../../../components/DsCard.vue'
-import { eventHeader, browseField, checkRow, EVENT_META, EVENT_TABS } from './_des95'
+import { page } from '../../../pages/_shell'
+import DsPageHeader from '../../../../components/DsPageHeader.vue'
+import DsInfoGrid from '../../../../components/DsInfoGrid.vue'
+import DsSectionHeader from '../../../../components/DsSectionHeader.vue'
+import DsField from '../../../../components/DsField.vue'
+import DsInput from '../../../../components/DsInput.vue'
+import DsFileField from '../../../../components/DsFileField.vue'
+import DsRichTextEditor from '../../../../components/DsRichTextEditor.vue'
+import DsLink from '../../../../components/DsLink.vue'
+import DsCard from '../../../../components/DsCard.vue'
+import { eventHeader, browseField, checkRow, EVENT_META, EVENT_TABS } from '../_des95'
 
 export default {
-  title: 'Design Requests/DES-95 Customized Page Revamp/Customize Event Site',
+  title: 'Design Requests/DES-95 Customized Page Revamp/Archive/Customize Event Site',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
@@ -54,8 +54,8 @@ export const Default = page({
         <div class="row items-center justify-between q-gutter-md no-wrap q-mb-md">
           <div style="font-size:1.25rem; font-weight:700; color:var(--ds-color-text-brand);">Customize Event Booking Site</div>
           <div class="row items-center q-gutter-sm no-wrap" style="flex:none;">
-            <q-btn outline no-caps color="primary" label="Cancel" href="/?path=/story/design-requests-des-95-customized-page-revamp-customize-event-site--saved" target="_top" />
-            <q-btn unelevated no-caps color="primary" label="Save Changes" href="/?path=/story/design-requests-des-95-customized-page-revamp-customize-event-site--saved" target="_top" />
+            <q-btn outline no-caps color="primary" label="Cancel" href="/?path=/story/design-requests-des-95-customized-page-revamp-archive-customize-event-site--saved" target="_top" />
+            <q-btn unelevated no-caps color="primary" label="Save Changes" href="/?path=/story/design-requests-des-95-customized-page-revamp-archive-customize-event-site--saved" target="_top" />
           </div>
         </div>
 
@@ -159,7 +159,7 @@ export const Saved = page({
         <div class="row items-center justify-between q-gutter-md no-wrap q-mb-md">
           <div style="font-size:1.25rem; font-weight:700; color:var(--ds-color-text-brand);">Customize Event Booking Site</div>
           <q-btn unelevated no-caps color="primary" label="Edit Information" style="flex:none;"
-            href="/?path=/story/design-requests-des-95-customized-page-revamp-customize-event-site--default" target="_top" />
+            href="/?path=/story/design-requests-des-95-customized-page-revamp-archive-customize-event-site--default" target="_top" />
         </div>
 
         <ds-card padding="lg">

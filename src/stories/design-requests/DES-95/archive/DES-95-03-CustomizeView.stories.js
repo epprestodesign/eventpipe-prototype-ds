@@ -5,17 +5,17 @@
  *  any field is being edited a "Save" button appears where "Edit Information" used
  *  to sit. Includes the new Customer Service Details fields (same data as 02). */
 import { ref, reactive, computed } from 'vue'
-import { page } from '../../pages/_shell'
-import DsPageHeader from '../../../components/DsPageHeader.vue'
-import DsInfoGrid from '../../../components/DsInfoGrid.vue'
-import DsSectionHeader from '../../../components/DsSectionHeader.vue'
-import DsCard from '../../../components/DsCard.vue'
-import DsLink from '../../../components/DsLink.vue'
-import DsConfirmDialog from '../../../components/DsConfirmDialog.vue'
-import { eventHeader, EVENT_META, EVENT_TABS } from './_des95'
+import { page } from '../../../pages/_shell'
+import DsPageHeader from '../../../../components/DsPageHeader.vue'
+import DsInfoGrid from '../../../../components/DsInfoGrid.vue'
+import DsSectionHeader from '../../../../components/DsSectionHeader.vue'
+import DsCard from '../../../../components/DsCard.vue'
+import DsLink from '../../../../components/DsLink.vue'
+import DsConfirmDialog from '../../../../components/DsConfirmDialog.vue'
+import { eventHeader, EVENT_META, EVENT_TABS } from '../_des95'
 
 export default {
-  title: 'Design Requests/DES-95 Customized Page Revamp/Rob Concept #1',
+  title: 'Design Requests/DES-95 Customized Page Revamp/Archive/Rob Concept #1',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
