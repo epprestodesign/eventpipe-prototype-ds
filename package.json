@@ -5,9 +5,6 @@
   "description": "A themed Quasar component library, documented and QA'd in Storybook.",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static"
   },
