@@ -42,6 +42,12 @@ jobs:
           # restrict it by HTTP referrer + Maps JS API in Google Cloud Console.
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
+      # Standalone prototypes → deployed alongside Storybook at
+      # /eventpipe-prototype-ds/prototype/. Runs AFTER build-storybook (which
+      # creates storybook-static); outputs into storybook-static/prototype.
+      - name: Build prototype
+        run: pnpm build:prototype
+
       - uses: actions/upload-pages-artifact@v5
         with:
           path: storybook-static
