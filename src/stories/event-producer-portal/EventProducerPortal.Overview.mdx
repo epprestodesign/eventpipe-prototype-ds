@@ -1,0 +1,57 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Event Producer Portal/Overview" />
+
+# Event Producer Portal — V1
+
+The **client-facing event portal** an Event Producer sees for their event —
+recreated on the EventPipe design system. Lighter top-bar chrome (no internal
+admin sidebar), a full event-detail header, and three tabs: **Hotels · Group
+Blocks · Reservations**. The Reservations tab is the launch point for the
+**Bulk Edit** wizard.
+
+Built for the Varsity / Team Travel Source demo. All data is fake.
+
+## ▶ Pilotable prototype (start to finish)
+
+A standalone, clickable prototype is deployed alongside Storybook on GitHub Pages:
+
+- **Live:** [https://epprestodesign.github.io/eventpipe-prototype-ds/prototype/#/event-producer-portal](https://epprestodesign.github.io/eventpipe-prototype-ds/prototype/#/event-producer-portal)
+- **In Storybook:** the [Prototype — Full Flow](?path=/story/event-producer-portal-event-producer-portal--prototype) story runs the same self-contained component with no page reloads.
+- **Local dev:** `pnpm dev:prototype` → `http://localhost:6007/#/event-producer-portal`.
+
+Both the prototype and the story mount `src/components/EventProducerPortalFlow.vue`
+— the single element that owns the whole portal + flow.
+
+## Featured event
+
+**2027 - DanceFest - Grand Nationals & NCA - Milwaukee - Classic** · Milwaukee, WI ·
+01/09/2027 – 01/10/2027 · venue **The Baird Center**. Hotels, group blocks, and
+295 contracted rooms on peak match the reference screenshots.
+
+## The flow, itemized
+
+| # | Screen | Storybook |
+| --- | --- | --- |
+| 1 | **Event Detail — Hotels** — summary tiles + hotel list | [open](?path=/story/event-producer-portal-event-producer-portal--hotels) |
+| 2 | **Event Detail — Group Blocks** — summary tiles + group cards | [open](?path=/story/event-producer-portal-event-producer-portal--group-blocks) |
+| 3 | **Event Detail — Reservations** — reservation cards + **Bulk Edit Reservations** | [open](?path=/story/event-producer-portal-event-producer-portal--reservations) |
+| 4 | **Bulk Edit — Select** (Step 1) — selectable table, shift-click, Edit Columns | [open](?path=/story/event-producer-portal-event-producer-portal--bulk-edit-select) |
+| 5 | **Bulk Edit — Edit** (Step 2) — inline edit of **name + email only** | [open](?path=/story/event-producer-portal-event-producer-portal--bulk-edit-edit) |
+| 6 | **Bulk Edit — Results** (Step 3) — success summary → back to Reservations | in the flow |
+
+## What changed for V1 (from the demo feedback)
+
+- **Removed the "Reserved On" column** — its wide footprint forced horizontal
+  scrolling. The default column set now fits without scroll.
+- **Editing restricted to guest _name_ and _email_** for the initial release
+  (Bulk Edit offers *Edit Names* / *Edit Emails* only; all other columns are
+  read-only). This will expand post-launch.
+- **Standardized placeholder data** — **Staff Member 1–50**, all sharing one
+  email address (`staff@teamtravelsource.com`).
+
+## Reused design-system elements
+
+`DsPageHeader` · `DsInfoGrid` · `DsStat` · `DsThumbnail` · `DsModal` — plus the
+shared `.ds-table`, status pills, stepper, pagination, and Edit-Columns patterns
+carried over from the Bulk Reservation Edit flow.
