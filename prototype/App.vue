@@ -4,6 +4,7 @@
 // PROTOS and render them by hash below.
 import { ref, onMounted, onUnmounted } from 'vue'
 import BulkReservationFlow from '../src/components/BulkReservationFlow.vue'
+import EventProducerPortalFlow from '../src/components/EventProducerPortalFlow.vue'
 
 const route = ref(window.location.hash || '#/')
 const onHash = () => { route.value = window.location.hash || '#/' }
@@ -11,6 +12,14 @@ onMounted(() => window.addEventListener('hashchange', onHash))
 onUnmounted(() => window.removeEventListener('hashchange', onHash))
 
 const PROTOS = [
+  {
+    id: 'event-producer-portal',
+    hash: '#/event-producer-portal',
+    title: 'Event Producer Portal',
+    tag: 'Event Producer Portal · V1',
+    desc: 'Client-facing event portal (Hotels · Group Blocks · Reservations) for the DanceFest Milwaukee event. The Reservations tab kicks off the 3-step Bulk Edit wizard — name + email only for the initial release.',
+    steps: ['Event Detail', 'Select Reservations', 'Edit Reservations', 'Results'],
+  },
   {
     id: 'bulk-reservation-edit',
     hash: '#/bulk-reservation-edit',
@@ -23,10 +32,13 @@ const PROTOS = [
 </script>
 
 <template>
+  <!-- Event Producer Portal prototype (deep-linked stages: /select, /edit, /results). -->
+  <event-producer-portal-flow v-if="route.startsWith('#/event-producer-portal')" deep-link />
+
   <!-- Home screen = the Bulk Reservation Edit flow (also at #/bulk-reservation-edit
        and its deep-linked stages: /select, /edit, /results, /activity).
        The itemized prototype index lives at #/prototypes. -->
-  <bulk-reservation-flow v-if="route === '#/' || route.startsWith('#/bulk-reservation-edit')" deep-link />
+  <bulk-reservation-flow v-else-if="route === '#/' || route.startsWith('#/bulk-reservation-edit')" deep-link />
 
   <!-- Landing / index (#/prototypes) -->
   <div v-else class="landing">

@@ -13,6 +13,9 @@ const quasarVariables = fileURLToPath(
 
 export default defineConfig(({ command }) => ({
   root: 'prototype',
+  // Read .env from the repo root (not prototype/) so VITE_IMAGERY_URL — the
+  // hosted hotel Imagery Library — is available to the standalone prototype.
+  envDir: fileURLToPath(new URL('.', import.meta.url)),
   // GitHub Pages serves the repo Storybook at /eventpipe-prototype-ds/; the
   // prototype is injected at /eventpipe-prototype-ds/prototype/.
   base: command === 'build' ? '/eventpipe-prototype-ds/prototype/' : '/',
