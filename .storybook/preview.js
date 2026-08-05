@@ -71,6 +71,11 @@ const preview = {
             '17 Company Settings', 'Drafts',
           ],
           'Design Requests', [
+            'Teams Mgmt Comms Phase 2', [
+              'V1 · Notifications Preferences',
+              'V2 · Configured Template',
+              'Components',
+            ],
             'DES-207 Communications | Email Template Editor', [
               'V1 · Notifications Preferences',
               'V2 · Configured Template',
