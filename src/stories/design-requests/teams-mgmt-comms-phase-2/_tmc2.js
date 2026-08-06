@@ -1,21 +1,20 @@
-/** Shared chrome for Teams Mgmt Comms Phase 2 V1/V2 — the Traveloc company header (breadcrumb +
- *  logo + name + General/Notifications tabs) and the "Go Back to Preferences"
- *  link. Both are template-string fragments; the consuming story's setup must
- *  provide a `tab` ref. */
-import traveloc from '../../../assets/logo/traveloc.png'
+/** Shared chrome for the Notification Preferences screen — the company header
+ *  (breadcrumb + logo + name + General/Notifications tabs) and the "Go Back to
+ *  Preferences" link. Both are template-string fragments; the consuming story's
+ *  setup must provide a `tab` ref and `company` (see _tmc2fixtures). */
 
-export const travelocHeader = `
+export const companyHeader = `
   <div style="padding:20px 32px 0; background:var(--ds-color-surface); border-bottom:1px solid var(--ds-color-border-container);">
     <q-breadcrumbs active-color="primary" gutter="sm" class="text-body2 q-mb-md">
       <template #separator><q-icon name="chevron_right" size="18px" color="grey-5" /></template>
       <q-breadcrumbs-el label="Companies" />
-      <q-breadcrumbs-el label="Traveloc" class="text-grey-6" />
+      <q-breadcrumbs-el :label="company.name" class="text-grey-6" />
     </q-breadcrumbs>
     <div class="row items-center q-gutter-md">
-      <img src="${traveloc}" alt="Traveloc" style="height:34px; width:auto;" />
+      <img :src="company.logo" :alt="company.name" style="height:34px; width:auto;" />
       <div style="flex:1;">
-        <div class="text-primary" style="font-size:1.25rem; font-weight:700;">Traveloc</div>
-        <div class="text-grey-6" style="font-size:0.8125rem;">Last updated: Fri, 08/16/2024 09:38 AM EST</div>
+        <div class="text-primary" style="font-size:1.25rem; font-weight:700;">{{ company.name }}</div>
+        <div class="text-grey-6" style="font-size:0.8125rem;">Last updated: {{ company.lastUpdated }}</div>
       </div>
     </div>
     <q-tabs v-model="tab" no-caps active-color="primary" indicator-color="primary" align="left" class="text-grey-7 q-mt-sm">
@@ -25,50 +24,113 @@ export const travelocHeader = `
   </div>`
 
 export const goBackLink = `
-  <a href="#" @click.prevent
+  <a href="#" @click.prevent="goBack"
     style="display:inline-flex; align-items:center; gap:2px; color:var(--ds-color-text-brand); text-decoration:none; font-weight:600; font-size:0.9375rem;">
     <q-icon name="chevron_left" size="18px" /> Go Back to Preferences
   </a>`
 
-/** Full Company Settings content shown under the General tab (Traveloc). */
-export const companySettingsSections = [
-  { title: 'Company Details', items: [
-    { label: 'Country', value: 'United States' }, { label: 'Address', value: '4400 Biscayne Blvd' }, { label: 'City', value: 'Miami' },
-    { label: 'State/Province', value: 'FL' }, { label: 'Postal Code', value: '33137' }, { label: 'Phone', value: '(305) 555-0142' },
-    { label: 'Website', value: 'https://traveloc.com/' }, { label: 'Travel Agent IATAN', value: '55-901234' }, { label: 'Privacy Policy URL', value: 'https://traveloc.com/privacy' },
-  ] },
-  { title: 'Customer Service Details', items: [
-    { label: 'Service Email', value: 'support@traveloc.com' }, { label: 'Phone Number', value: '(305) 555-0142' }, { label: 'Phone Number (Toll Free)', value: '(800) 555-0142' },
-    { label: 'Service Hours', value: '9-6, ET' },
-  ] },
-  { title: 'Hotel Services Info', items: [
-    { label: 'Hotel Service Contact Name', value: 'Dana Ruiz' }, { label: 'Hotel Service Email', value: 'hotels@traveloc.com' },
-    { label: 'Hotel Service Phone Number', value: '(305) 555-0177' }, { label: 'Hotel Service Phone Number (Toll Free)', value: '— —' }, { label: 'Hotel Service Hours', value: '9-6, ET' },
-  ] },
-  { title: 'Reconciliation & Invoice Settings', items: [
-    { label: 'Default Pickup Reconciliation Format', value: 'Night By Night' }, { label: 'Commission Calculation', value: 'Gross Rate (Reservation by Reservation Only)' }, { label: '', value: '' },
-    { label: 'Default Upload & Wash Requirement', value: 'No' }, { label: 'Automated Invoice Numbers', value: 'Yes' }, { label: 'Payment Terms', value: 'Net 30' },
-  ] },
-  { title: 'Branding', items: [
-    { label: 'Branded URL', value: 'https://reservations.traveloc.com' },
-    { label: 'Reservations - From Email Address', value: 'Traveloc<mailer@eventpipe.com>' },
-    { label: 'Group Blocks - From Email Address', value: 'Traveloc<mailer@eventpipe.com>' },
-    { label: 'Hotels - From Email Address', value: 'Traveloc<mailer@eventpipe.com>' },
-  ] },
-  { title: 'Feature Settings', items: [
-    { label: 'Track Earned Comp Rooms Default', value: 'Yes' }, { label: 'Upfront Markups', value: 'No' }, { label: 'Autofill Contract Signature', value: 'Yes' },
-    { label: 'Copy Event', value: 'Yes' }, { label: 'Hotel Addendum Notice', value: 'Yes' },
-  ] },
-  { title: 'Financial Info', items: [
-    { label: 'Account Number', value: 'acct_1PxUo1AC5e9uTRV' }, { label: 'Account Type', value: 'Standard' },
-    { label: 'EventPipe Reservation Fee', value: '$ 0.00 USD | $ 0.00 CAD' }, { label: 'Send EventPipe Reservation Fee To', value: 'Housing Company Stripe Account' },
-  ] },
-  { title: 'Application Features', items: [
-    { label: 'Waitlist', value: 'Yes' }, { label: 'Booking Protection', value: 'Yes' }, { label: 'Booking Protection After Policies', value: 'No' },
-    { label: 'Track Earned Comp Rooms', value: 'Yes' }, { label: 'Expedited Contracting', value: 'Yes' }, { label: 'Deposits - Set Date At Group Block', value: 'No' },
-    { label: 'Pickup Report', value: 'Yes' }, { label: 'Registration & Compliance Tools', value: 'Yes' }, { label: 'Branding', value: 'Yes' },
-  ] },
-  { title: 'Customization', items: [
-    { label: 'Booking Fee Display Name', value: 'Booking Fee' },
-  ] },
-]
+/* ---------------------------------------------------------------------------
+ * Shared notification-list chrome.
+ *
+ * Both Notification Preferences screens — Screens/Notification Preferences and
+ * First-Time Setup/Notification Preferences — render the same list. These live
+ * here so the two cannot drift: a row must look identical whether you are
+ * seeing it for the first time or editing it later.
+ */
+
+/** Row + column metrics. Send/Template column widths must match between the
+ *  header row and the row bodies or the columns visually misalign. */
+export const LIST_TITLE_STYLE = 'font-size:0.9375rem; font-weight:500; color:var(--ds-color-text);'
+export const COL_SEND = 'width:96px; display:flex; align-items:center; justify-content:center;'
+export const COL_TMPL = 'width:132px; display:flex; align-items:center; justify-content:center; margin-left:24px;'
+export const COL_HEAD = 'font-size:0.8125rem; font-weight:600; color:var(--ds-color-text-subtle); text-align:center;'
+
+export const colHeaders = `
+  <div style="padding:14px 28px 4px; display:flex; justify-content:flex-end;">
+    <div style="${COL_SEND}${COL_HEAD}">Send Email</div>
+    <div style="${COL_TMPL}${COL_HEAD}">Template</div>
+  </div>`
+
+/** The Template-column control. One definition so the affordance is the same on
+ *  both screens. `onEdit` / `onRevert` / `onDelete` are handler names in the
+ *  consuming setup; omit revert or delete to leave that item out — first-run has
+ *  nothing custom to revert and nothing user-added to delete. */
+export const templateActions = ({ onEdit = 'openEditor', onRevert = '', onDelete = '' } = {}) => `
+  <q-btn-dropdown split unelevated no-caps color="primary" label="Edit" @click="${onEdit}(it)">
+    <q-list style="min-width:190px">
+      <q-item clickable v-close-popup @click="${onEdit}(it)">
+        <q-item-section avatar><q-icon name="edit" /></q-item-section>
+        <q-item-section>Edit template</q-item-section>
+      </q-item>
+      <q-item clickable v-close-popup>
+        <q-item-section avatar><q-icon name="visibility" /></q-item-section>
+        <q-item-section>Preview</q-item-section>
+      </q-item>
+      ${onRevert ? `
+      <template v-if="it.custom">
+        <q-separator />
+        <q-item clickable v-close-popup @click="${onRevert}(it)">
+          <q-item-section avatar><q-icon name="undo" color="negative" /></q-item-section>
+          <q-item-section class="text-negative">Revert to default</q-item-section>
+        </q-item>
+      </template>` : ''}
+      ${onDelete ? `
+      <template v-if="it.userAdded">
+        <q-item clickable v-close-popup @click="${onDelete}(it)">
+          <q-item-section avatar><q-icon name="delete" color="negative" /></q-item-section>
+          <q-item-section class="text-negative">Delete template</q-item-section>
+        </q-item>
+      </template>` : ''}
+    </q-list>
+  </q-btn-dropdown>`
+
+/** Group-level From/Reply address card (DES-429 · P0-5).
+ *  Handles both states from one definition: unset shows a Required chip and no
+ *  resolved line; set shows what it currently sends as. Setup must provide
+ *  `fromAddress`, `fromOptions`, `fromAddressCustom` and `resolvedFrom`. */
+export const fromAddressCard = `
+  <q-card flat bordered style="margin-bottom:16px;">
+    <q-card-section style="padding:20px 28px;">
+      <div class="row items-center justify-between no-wrap q-mb-xs">
+        <div class="row items-center q-gutter-sm">
+          <div class="text-primary text-weight-bold">Teams Management From/Reply Address</div>
+          <q-chip v-if="!fromAddress" dense color="negative" text-color="white" label="Required" />
+        </div>
+        <q-badge color="grey-7" class="q-px-sm q-py-xs" style="flex:none;">Applies to all Teams Management emails</q-badge>
+      </div>
+      <div class="text-grey-8" style="font-size:0.8125rem; line-height:1.5; max-width:820px; margin-bottom:16px;">
+        Welcome emails, compliance reminders and notices all send from this one address.
+        It is <b>not set per template</b>, and there is <b>no event-level override</b> — the
+        Event Manager and Event Customer Support Contact already differ from event to event,
+        which is where the flexibility comes from.
+      </div>
+      <div class="row q-col-gutter-md">
+        <div class="col-12 col-sm-6">
+          <ds-select v-model="fromAddress" :options="fromOptions" label="From/Reply Address" required
+            placeholder="Select an address"
+            hint="Applies to ALL Teams Management emails, not just one template." />
+        </div>
+        <div class="col-12 col-sm-6" v-if="fromAddress === 'Other'">
+          <ds-input v-model="fromAddressCustom" type="email" label="Custom From Address" required
+            placeholder="teams@traveloc.com" hint="Replies from teams come back to this address." />
+        </div>
+      </div>
+      <div v-if="fromAddress" class="row items-center no-wrap q-mt-md" style="gap:6px; font-size:0.8125rem; color:var(--ds-color-text-subtle);">
+        <q-icon name="mail" size="16px" />
+        <span>Currently sending as <strong>{{ resolvedFrom }}</strong></span>
+      </div>
+      <div v-else class="row items-center no-wrap q-mt-md" style="gap:6px; font-size:0.8125rem; color:var(--ds-color-text-warning);">
+        <q-icon name="warning" size="16px" />
+        <span>Set this before enabling any template — nothing can send without it.</span>
+      </div>
+    </q-card-section>
+  </q-card>`
+
+/** "Add Compliance Reminder" affordance (DES-428 · P0-4).
+ *  Outline/bordered, matching the other add-actions in this folder
+ *  ("+ Add New Note", "+ Add New Compliance Credit" on Team Detail). */
+export const addReminderRow = (handler = 'openAdd') => `
+  <div class="row items-center no-wrap" style="padding:12px 28px 16px; gap:12px;">
+    <q-btn outline no-caps color="primary" icon="add" label="Add Compliance Reminder" @click="${handler}" style="flex:none;" />
+    <span class="text-grey-7" style="font-size:0.8125rem;">Add as many reminder templates as you need — there is no fixed early / mid / late limit.</span>
+  </div>`
