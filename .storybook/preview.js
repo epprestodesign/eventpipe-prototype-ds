@@ -72,8 +72,17 @@ const preview = {
           ],
           'Design Requests', [
             'Teams Mgmt Comms Phase 2', [
-              'V1 · Notifications Preferences',
-              'V2 · Configured Template',
+              'Requirements Coverage',
+              'First-Time Setup', [
+                'Notification Preferences',
+                'Default Emails',
+              ],
+              'Screens', [
+                'Notification Preferences',
+                'Company Settings',
+                'Event Registration Settings',
+                'Team Detail',
+              ],
               'Components',
             ],
             'DES-207 Communications | Email Template Editor', [
