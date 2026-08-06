@@ -12,3 +12,6 @@ storybook-static
 
 # Design reference screenshots — kept local only, not tracked
 references/
+
+# Local Netlify folder
+.netlify

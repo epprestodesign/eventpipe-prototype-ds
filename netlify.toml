@@ -1,0 +1,31 @@
+# Netlify build config.
+#
+# Mirrors .github/workflows/deploy.yml so both pipelines produce an identical
+# site: Storybook at the root, the standalone prototype at /prototype/.
+# build:prototype must run AFTER build-storybook — it writes into the
+# storybook-static directory that build-storybook creates.
+
+[build]
+  command = "pnpm build-storybook && pnpm build:prototype"
+  publish = "storybook-static"
+
+[build.environment]
+  NODE_VERSION = "24"
+  STORYBOOK_DISABLE_TELEMETRY = "1"
+  # Public URL of the separately-hosted imagery library (no secret).
+  VITE_IMAGERY_URL = "https://epprestodesign.github.io/presto-ds-imagery"
+  # VITE_GOOGLE_MAPS_API_KEY is a secret — set it in the Netlify UI under
+  # Site configuration › Environment variables, not here.
+
+# Storybook is a single-page app: deep links like /?path=/story/... resolve at
+# the root, but direct hits on unknown paths should still serve the app shell
+# rather than a 404. The prototype is a separate SPA under /prototype/.
+[[redirects]]
+  from = "/prototype/*"
+  to = "/prototype/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
