@@ -19,7 +19,7 @@ this folder — clickable, not a static comp.
 | **P0-5** | From/Reply address | Screens › Notification Preferences |
 | **P0-6** | Email template variables | Components › Personalization Menu |
 | **P0-7** | Email configuration options | Screens › Notification Preferences |
-| **P0-8** | Daily job rules & send eligibility | Four surfaces — see below |
+| **P0-8** | Daily job rules & send eligibility | Two surfaces — see below |
 | **P0-9** | Per-team communication log | Screens › Team Detail |
 | **P0-11** | Teams Mgmt locked upsell | Screens › Notification Preferences |
 | **P1-1** | Email preview & test send | Screens › Notification Preferences |
@@ -62,15 +62,22 @@ and **Sending Blocked** (gates failing).
 **Requested** — A checkbox on the team detail page opting a team out of *all*
 Teams Management communications. Every team is opted **in** by default.
 
-**Designed** — A checkbox in Goals & Restrictions, directly below the restriction
-overrides. A checkbox rather than a toggle: this card is saved by an explicit
-*Save Changes*, so a switch would wrongly imply the change takes effect on click.
+**Designed** — A single checkbox labelled *Opt out of Teams Management
+communications*, in its own **Teams Management Communications** card sitting
+between Goals & Restrictions and Compliance Credits. The card is built exactly
+like Compliance Credits — same bordered shell, padding and heading treatment,
+one control beneath the heading — so the page reads as a consistent stack of
+sections rather than one form with an unrelated control appended to it.
 
-**Edge cases covered**
+A checkbox rather than a toggle, matching the send-checkbox used throughout this
+folder. It first sat inside Goals & Restrictions; that card is compliance
+overrides and org fields, and a comms opt-out is neither, so it was promoted to
+its own section.
 
-- Switching it on raises an inline warning naming the three email types now suppressed.
-- The team's communications-status block flips to *paused* live.
-- The Communications Log tab shows a paused banner rather than looking simply empty.
+**Trimmed after review (2026-08-07)** — the first pass wrapped the checkbox in
+explanatory sub-text, an amber warning callout on the checked state, and a
+read-only communications-status panel. Review called all of it bloat: *"really
+just need checkbox with a label."* The label now carries the meaning on its own.
 
 **Find it** — *Screens › Team Detail* → **Details Notes**.
 
@@ -207,31 +214,41 @@ for `compliance-reminder` templates.
 **Requested** — A 6am EST job honouring event, team and config eligibility rules;
 one-time send flags; and a maximum of one email per team per day.
 
-**Designed** — Mostly engine logic, but it has three consequences a Hoco meets
-directly, so the design surfaces *why something is or isn't sending* in four
+**Designed** — Mostly engine logic, but it has consequences a Hoco meets
+directly, so the design surfaces *why something is or isn't sending* in two
 places:
 
 | Surface | Shows |
 | --- | --- |
 | Event Registration Settings | The two event gates — cutoff not passed, a booking link live |
-| Team Detail › Goals & Restrictions | Whether this team is receiving comms, and the one-time flags |
-| Team Detail › Communications Log | An eligibility banner above the record |
 | Template editor › Email Settings | The one-per-day rule and priority order |
 
 **Edge cases covered**
 
 - Event blocked: a warning states nothing sends regardless of toggles, and the
   toggle rows dim to make that unmissable.
-- Team opted out: both team surfaces flip live off the checkbox.
-- One-time flags are **read-only** — engine state that is reported, never edited.
 - The priority rule is stated where reminders are configured, because P0-4 now
   lets a Hoco create several reminders whose schedules overlap and produce one email.
+
+**Lost two surfaces on 2026-08-07.** P0-8 also had a *Communications status*
+block on Team Detail › Goals & Restrictions (receiving/not receiving, the
+read-only one-time send flags, *Currently eligible for*) and an eligibility
+banner on the Communications Log tab. Both were removed by the P0-2 and P0-9
+review — the status block sat inside the opt-out field that review reduced to a
+bare checkbox, and the banner was the "green notification area" review named
+directly. **Neither ticket asked for P0-8 to lose team-level representation; it
+went as a side effect.** The two surfaces above are arguably the more natural
+home — P0-8 is a job-rules requirement that reads at the event and config level —
+but if a Hoco needs to answer *"is this specific team getting email, and has its
+welcome already gone?"*, there is now nowhere on the team page that says so. The
+one-time send flags in particular are no longer visible anywhere in the design.
+Worth a deliberate decision rather than leaving it as fallout.
 
 **Deliberately absent** — no predicted next-send date and no upcoming-send count
 anywhere. Forecasting belongs to P1-2 (PipeSights), which is not yet specced.
 
 **Find it** — *Screens › Event Registration Settings* → **Sending Blocked**;
-*Screens › Team Detail*; *Screens › Notification Preferences*.
+*Screens › Notification Preferences*.
 
 ---
 
@@ -240,19 +257,31 @@ anywhere. Forecasting belongs to P1-2 (PipeSights), which is not yet specced.
 **Requested** — A per-team record of every automated communication with
 timestamp, email type, recipients and send status, sortable and filterable.
 
-**Designed** — A third tab on the team page. **View-only** — no resend, no row
-actions. Recipients are their **own column**, one address per line, never merged
-into another column. Status renders as a chip using the design system's status
-pattern.
+**Designed** — A third tab on the team page: a heading and a table, nothing else.
+**View-only** — no resend, no row actions. Recipients are their **own column**,
+one address per line, never merged into another column. Status renders as a chip
+using the design system's status pattern. Sortable column headers are the only
+control on the tab.
+
+**Trimmed after review (2026-08-07)** — review kept the table (*"the table part
+of the mock works well"*) and removed everything around it: the sub-text under
+the heading, the send-eligibility banner, and the email-type and date-range
+filter bar. *"Should be a simple log with sortable headers, that's it."*
+
+**The acceptance criteria are now stale.** DES-433 still reads *"Log is sortable
+**and filterable** by email type and date."* Filtering was built to that AC and
+then removed by this review. The ACs have been left untouched for Scott to amend
+— flagging it here so the gap is not read as an oversight.
 
 **Edge cases covered**
 
 - Multiple recipients on one send.
 - Bounced and Read statuses alongside Sent.
 - Sorting on *Sent* orders chronologically via a derived date, not the display string.
-- Filtering by email type and by date range, with a clear-filters action.
-- Opt-out shows a paused banner so an empty log is never ambiguous.
 - Test sends (P1-1) are excluded — this is the record of automated sends only.
+- An empty log reads *"No communications have been sent to this team yet."*
+  Note this no longer distinguishes *nothing sent yet* from *team opted out* —
+  the banner that drew that distinction was part of the trim.
 
 **Open question answered** — the ticket asks whether this should be a general team
 activity log or a dedicated communications log. The mock goes **dedicated**: a
