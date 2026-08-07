@@ -126,11 +126,59 @@ export const fromAddressCard = `
     </q-card-section>
   </q-card>`
 
+/** DES-429 · P0-5 (V2) — per-section config strip.
+ *
+ *  Review of the V1 card: too bloated, it showed a concrete resolved address it
+ *  cannot actually know, and it "feels independent of the Teams Management
+ *  Communications section ... over time there will be more sections like Guests,
+ *  Hotels, and each of those may have specific config parameters".
+ *
+ *  So this is a GENERIC per-section config slot, not a one-off for From/Reply:
+ *  it renders inside the section it configures, and a future section fills the
+ *  same slot with its own parameters. It states that the address resolves per
+ *  event rather than naming one, which is the honest answer — Event Manager and
+ *  Customer Support Contact both vary by event.
+ *
+ *  Lives here, not in a story file, because both Notification Preferences
+ *  screens render it and they must not drift. The caller supplies the section
+ *  wrapper: the configured screen loops over sections, first-run has one.
+ *  Setup must provide `fromAddress`, `fromAddressCustom` and `fromOptions`. */
+export const fromAddressSectionStrip = `
+  <div style="padding:14px 28px; background:var(--ds-color-surface-sunken);">
+    <div class="row items-start no-wrap q-gutter-md">
+      <div style="width:270px; flex:none;">
+        <ds-select v-model="fromAddress" :options="fromOptions" label="From/Reply Address" required />
+      </div>
+      <div v-if="fromAddress === 'Other'" style="width:270px; flex:none;">
+        <ds-input v-model="fromAddressCustom" type="email" label="Custom From Address" required
+          placeholder="teams@traveloc.com" />
+      </div>
+    </div>
+    <div class="text-grey-7" style="font-size:0.8125rem; line-height:1.5; margin-top:8px; white-space:nowrap;">
+      Applies to every template in this section. Event Manager and Customer Support Contact
+      differ from event to event, so the actual address is resolved as each email sends.
+    </div>
+  </div>
+  <q-separator />`
+
 /** "Add Compliance Reminder" affordance (DES-428 · P0-4).
  *  Outline/bordered, matching the other add-actions in this folder
- *  ("+ Add New Note", "+ Add New Compliance Credit" on Team Detail). */
+ *  ("+ Add New Note", "+ Add New Compliance Credit" on Team Detail).
+ *
+ *  The explanation sits in an info icon rather than a blurb beside the button:
+ *  review asked for the help to be available but not permanently occupying the
+ *  row, and for the copy to explain what you would USE this for rather than
+ *  restating that the limit is gone. */
 export const addReminderRow = (handler = 'openAdd') => `
-  <div class="row items-center no-wrap" style="padding:12px 28px 16px; gap:12px;">
+  <div class="row items-center no-wrap" style="padding:12px 28px 16px; gap:8px;">
     <q-btn outline no-caps color="primary" icon="add" label="Add Compliance Reminder" @click="${handler}" style="flex:none;" />
-    <span class="text-grey-7" style="font-size:0.8125rem;">Add as many reminder templates as you need — there is no fixed early / mid / late limit.</span>
+    <q-btn flat round dense color="grey-7" icon="info" size="sm" style="flex:none;" aria-label="About compliance reminder templates">
+      <q-tooltip max-width="340px" anchor="center right" self="center left"
+        class="text-body2" style="line-height:1.5; padding:10px 12px;">
+        Add additional Compliance Reminder templates to set a specific escalating tone or
+        cadence to your communications as your event draws closer. Be sure to set the
+        <b>Days until Event Start to Begin/End Reminders</b> to avoid overlapping with other
+        reminders you have in place.
+      </q-tooltip>
+    </q-btn>
   </div>`

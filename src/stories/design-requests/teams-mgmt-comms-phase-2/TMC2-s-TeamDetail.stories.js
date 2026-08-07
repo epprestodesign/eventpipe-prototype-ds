@@ -20,10 +20,11 @@ Two Phase 2 requirements land here:
 
 - **[DES-426 · P0-2](https://linear.app/eventpipe/issue/DES-426)** — Team-Level Communications Opt Out.
   A single checkbox labelled *Opt out of Teams Management communications*, in its own
-  **Teams Management Communications** card between *Goals & Restrictions* and *Compliance
-  Credits* — same bordered card, padding and heading treatment as Compliance Credits. Every
-  team is opted *in* by default, so the box ships unchecked. Checking it suppresses **all**
-  automated Teams Management email for this team.
+  **Communications** card between *Goals & Restrictions* and *Compliance Credits* — same
+  bordered card, padding and heading treatment as Compliance Credits. The header is the short
+  form; the full product name stays in the checkbox label, which is what has to be unambiguous.
+  Every team is opted *in* by default, so the box ships unchecked. Checking it suppresses
+  **all** automated Teams Management email for this team.
 - **[DES-433 · P0-9](https://linear.app/eventpipe/issue/DES-433)** — Communication Log.
   A third tab, **Communications Log**, holding a read-only table of every automated Teams
   Management email sent to this team: *Sent*, *Email Type*, *Recipients* (one address per line)
@@ -47,13 +48,12 @@ Two consequences worth knowing:
 1. **DES-433's acceptance criteria are now stale.** They still read *"Log is sortable **and
    filterable** by email type and date"*. Sorting is here; filtering was removed by the same
    review. The ACs have deliberately been left untouched for Scott to amend.
-2. **[DES-432 · P0-8](https://linear.app/eventpipe/issue/DES-432) is no longer surfaced on this
-   screen.** Its two surfaces here — the read-only *Communications status* block under the
-   checkbox and the banner on the log tab — went with the trim. P0-8 is still designed at
-   **Event Registration Settings** (the event-level eligibility block, plus the *Sending Blocked*
-   story) and in **Email Settings** on Notification Preferences (one email per team per day).
-   Those are arguably its more natural home: P0-8 is a job-rules requirement that reads at the
-   event and config level.
+2. **[DES-432 · P0-8](https://linear.app/eventpipe/issue/DES-432) is no longer surfaced here —
+   or anywhere.** Its two surfaces on this screen (the read-only *Communications status* block
+   under the checkbox, and the banner on the log tab) went with this trim. Its remaining
+   surfaces on Event Registration Settings and Notification Preferences were then removed
+   separately on 2026-08-07, because **P0-8 was never asked to be mocked**. It is engine
+   rules, and has no design in this folder by request.
 
 > **The P0-9 open question — activity log vs. communications log — is resolved in this mock as a
 > dedicated communications log.** A general team activity log would mix email sends with
@@ -97,11 +97,16 @@ const overrideRow = (label, calculated, control) => `
  *  bordered shell, same CARD_BODY padding, same H2 heading, one control under
  *  it. It sat inside Goals & Restrictions at first, but that card is a form of
  *  compliance overrides and org fields, and a comms opt-out is neither.
+ *
+ *  Header is "Communications", not "Teams Management Communications": next to
+ *  Goals & Restrictions and Compliance Credits the short form reads better, and
+ *  the checkbox label right beneath it already carries the full product name —
+ *  which is the string that has to be unambiguous, not the header.
  *  Unchecked by default — every team is opted IN unless someone opts it out. */
 const commsOptOutCard = `
   <q-card flat bordered style="${CARD}">
     <q-card-section style="${CARD_BODY}">
-      <div style="${H2}">Teams Management Communications</div>
+      <div style="${H2}">Communications</div>
       <q-checkbox v-model="commsOptOut" color="primary" dense
         label="Opt out of Teams Management communications" />
     </q-card-section>
