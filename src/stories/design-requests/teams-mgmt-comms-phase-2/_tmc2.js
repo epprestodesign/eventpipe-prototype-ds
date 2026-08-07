@@ -84,47 +84,35 @@ export const templateActions = ({ onEdit = 'openEditor', onRevert = '', onDelete
     </q-list>
   </q-btn-dropdown>`
 
-/** Group-level From/Reply address card (DES-429 · P0-5).
- *  Handles both states from one definition: unset shows a Required chip and no
- *  resolved line; set shows what it currently sends as. Setup must provide
- *  `fromAddress`, `fromOptions`, `fromAddressCustom` and `resolvedFrom`. */
-export const fromAddressCard = `
-  <q-card flat bordered style="margin-bottom:16px;">
-    <q-card-section style="padding:20px 28px;">
-      <div class="row items-center justify-between no-wrap q-mb-xs">
-        <div class="row items-center q-gutter-sm">
-          <div class="text-primary text-weight-bold">Teams Management From/Reply Address</div>
-          <q-chip v-if="!fromAddress" dense color="negative" text-color="white" label="Required" />
-        </div>
-        <q-badge color="grey-7" class="q-px-sm q-py-xs" style="flex:none;">Applies to all Teams Management emails</q-badge>
-      </div>
-      <div class="text-grey-8" style="font-size:0.8125rem; line-height:1.5; max-width:820px; margin-bottom:16px;">
-        Welcome emails, compliance reminders and notices all send from this one address.
-        It is <b>not set per template</b>, and there is <b>no event-level override</b> — the
-        Event Manager and Event Customer Support Contact already differ from event to event,
-        which is where the flexibility comes from.
-      </div>
-      <div class="row q-col-gutter-md">
-        <div class="col-12 col-sm-6">
-          <ds-select v-model="fromAddress" :options="fromOptions" label="From/Reply Address" required
-            placeholder="Select an address"
-            hint="Applies to ALL Teams Management emails, not just one template." />
-        </div>
-        <div class="col-12 col-sm-6" v-if="fromAddress === 'Other'">
-          <ds-input v-model="fromAddressCustom" type="email" label="Custom From Address" required
-            placeholder="teams@traveloc.com" hint="Replies from teams come back to this address." />
-        </div>
-      </div>
-      <div v-if="fromAddress" class="row items-center no-wrap q-mt-md" style="gap:6px; font-size:0.8125rem; color:var(--ds-color-text-subtle);">
-        <q-icon name="mail" size="16px" />
-        <span>Currently sending as <strong>{{ resolvedFrom }}</strong></span>
-      </div>
-      <div v-else class="row items-center no-wrap q-mt-md" style="gap:6px; font-size:0.8125rem; color:var(--ds-color-text-warning);">
-        <q-icon name="warning" size="16px" />
-        <span>Set this before enabling any template — nothing can send without it.</span>
-      </div>
-    </q-card-section>
-  </q-card>`
+/** Unsaved-changes bar.
+ *
+ *  Appears the moment anything on the preferences list differs from what was
+ *  last saved — a Send Email checkbox, the From/Reply address, a reminder added
+ *  or deleted — and is the only way to commit any of it. Nothing on these
+ *  screens takes effect until Save: a reminder you add does not reach Event
+ *  Registration Settings until then, and Discard puts it back as it was.
+ *
+ *  Fixed to the bottom of the viewport rather than the end of the page, because
+ *  the list is long enough to scroll and a bar you have to hunt for is worse
+ *  than no bar. Shared by both Notification Preferences screens so they cannot
+ *  drift. The consuming setup must provide `dirty`, `saveChanges` and
+ *  `discardChanges`.
+ *
+ *  Deliberately NOT rendered on the template editor: that view has its own
+ *  Cancel / Save in the header, right beside the field being edited, and two
+ *  competing save affordances on one screen is worse than either alone. */
+export const unsavedChangesBar = `
+  <transition name="q-transition--fade">
+    <div v-if="dirty" role="status" aria-live="polite"
+      style="position:fixed; left:50%; bottom:28px; transform:translateX(-50%); z-index:3000;
+             display:flex; align-items:center; gap:12px; padding:10px 12px 10px 22px;
+             background:rgba(72,72,72,0.94); border-radius:var(--ds-radius-lg);
+             box-shadow:0 6px 24px rgba(0,0,0,0.28);">
+      <span style="color:#fff; font-size:0.9375rem; font-weight:500; white-space:nowrap;">Unsaved Changes</span>
+      <q-btn unelevated no-caps color="white" text-color="primary" label="Discard" @click="discardChanges" />
+      <q-btn unelevated no-caps color="primary" label="Save" @click="saveChanges" />
+    </div>
+  </transition>`
 
 /** DES-429 · P0-5 (V2) — per-section config strip.
  *

@@ -167,58 +167,93 @@ picker. The AC text is stale, not missed.
 
 ---
 
+## Saving — cross-cutting, both Notification Preferences screens
+
+Not a numbered requirement, but it governs how every setting on these two
+screens behaves, so it belongs here.
+
+**Nothing takes effect until Save.** An unsaved-changes bar appears fixed to the
+bottom of the viewport the moment anything differs from the last save — a Send
+Email checkbox, the From/Reply address, a reminder added or deleted — offering
+**Discard** and **Save**.
+
+| | Behaviour |
+| --- | --- |
+| Adding a reminder | Row appears in the list immediately, but is **staged**. It does not reach Event Registration Settings as an event-level toggle until Save |
+| Deleting a reminder | Staged the same way. A reminder that was never saved is simply dropped; a saved one is removed on Save |
+| Send Email checkboxes | Held by row id rather than mutating the row, so a Controls-panel edit rebuilding the list cannot lose them |
+| Discard | Drops all staging and restores From/Reply to its last-saved value |
+
+The shared session store (`_tmc2store.js`) therefore holds **only saved
+templates** — that store is what Event Registration Settings reads, so an
+unsaved edit must not be visible there.
+
+**Deliberately not on the template editor.** That view has its own Cancel / Save
+in the header, next to the field being edited. Two competing save affordances on
+one screen would be worse than either alone.
+
+**No toast on toggling a checkbox.** There used to be one. Once the bar existed
+it was also untrue — *"Send email turned off"* claims something happened, when
+nothing does until Save. Toasts now fire only on things that actually completed:
+adding a reminder, saving, and a real test send.
+
+**Session-scoped, and that is the honest limit.** Storybook keeps one preview
+iframe as you move between stories, so a saved template survives navigation to
+Event Registration Settings. A hard browser reload clears it. It stands in for
+the server; it is not one.
+
+---
+
 ## P0-5 · From/Reply address
 
 **Requested** — A From/Reply setting offering Event Manager, Event Customer
 Support Contact, or a custom address.
 
-**Designed — two versions, side by side for comparison.**
+**Designed** — a single row inside the **Teams Management** section it
+configures: the From/Reply select, the custom address field when *Other* is
+chosen, and one line of help beneath. It applies to every template in the
+section — not per template, and with no event-level override.
 
-**V1** — one card at the top of the notifications list, above every section. It
-applies to all Teams Management emails, not per template. Choosing *Other*
-reveals a custom address field. The template editor echoes a **concrete resolved
-address** read-only, with a link back to the list to change it.
+Nothing names a concrete mailbox. *Event Manager* and *Event Customer Support
+Contact* are per-event roles, so the editor and the email preview report the
+role and when it resolves — *Event Manager — resolved per event when the email
+sends*. *Other* is a literal address, so that one still resolves normally.
 
-**V2** — the current direction, from review on 2026-08-07. Three changes:
+**This replaced an earlier design** (briefly shown as "V1" alongside it) that put
+the setting in its own card above every section, and echoed a concrete resolved
+address in the editor. Review on 2026-08-07 made three points, and all three are
+now the design:
 
-| | V1 | V2 |
-| --- | --- | --- |
-| Placement | Own card above every section | Inside the **Teams Management** section it configures |
-| Size | Heading, Required chip, badge, four-line explainer, resolved-address footer | One row — the select, plus the custom field for *Other* |
-| Editor From line | *Johnny HoCo &lt;johnny.hoco@traveloc.com&gt;* | *Event Manager — resolved per event when the email sends* |
-
-The three review points, and what each changed:
-
-1. *"Too bloated with information"* → the card became a single row.
+1. *"Too bloated with information"* → card became a single row.
 2. *"The preview email that shows below it doesn't make sense b/c the first 2
    selections are relative to the event so you don't know what address any
-   particular email would really come from"* → **correct, and V1 was wrong.**
-   *Event Manager* and *Event Customer Support Contact* are per-event roles, so
-   naming one mailbox was never truthful, and the email preview inherited that
-   false certainty. V2 shows the role and states when it resolves. *Other* is a
-   literal address, so it still resolves normally.
+   particular email would really come from"* → **correct, and the old design was
+   wrong.** Naming one mailbox was never truthful, and the email preview
+   inherited that false certainty.
 3. *"It feels independent of the Teams Management Communications section ... over
    time there will be more sections like Guests, Hotels, and each of those may
-   have specific config parameters"* → this drove the structure. The V2 strip is
-   built as a **generic per-section config slot**, not a one-off for From/Reply.
-   Future sections fill the same slot instead of each adding another
-   free-floating card to the top of the page.
+   have specific config parameters"* → this drove the structure. The strip is a
+   **generic per-section config slot**, not a one-off for From/Reply. Future
+   sections fill the same slot instead of each adding another free-floating card
+   to the top of the page. It is one shared component
+   (`fromAddressSectionStrip`), used by both Notification Preferences screens so
+   they cannot drift.
 
 **Edge cases covered**
 
 - Custom address selected but not yet typed.
-- V2: *Other* still shows the literal address in the editor, because there it is knowable.
+- *Other* still shows the literal address in the editor, because there it is knowable.
 
-**Dropped in V2** — the Required chip and the "nothing can send until this is
-set" warning went with the trim. Worth a look: it is the one thing V1 said that
-V2 does not.
+**Dropped with the old design** — the Required chip and the "nothing can send
+until this is set" warning went with the trim. Worth a look: on first run the
+address is genuinely unset, and nothing now says so.
 
 **Diverges from the written AC** — the ticket says the support-contact option
 should respect an event-level override. The newer direction is **no event-level
 override**: Event Manager and Support Contact already vary per event, which is
 where the flexibility comes from.
 
-**Find it** — *Screens › Notification Preferences* → **V1** and **V2**;
+**Find it** — *Screens › Notification Preferences*;
 *First-Time Setup › Notification Preferences* (unset state).
 
 ---

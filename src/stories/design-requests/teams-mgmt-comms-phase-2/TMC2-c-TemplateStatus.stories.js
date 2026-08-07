@@ -4,7 +4,17 @@ import DsListItem from './components/DsListItem.vue'
 export default {
   title: 'Design Requests/Teams Mgmt Comms Phase 2/Components/Template Status',
   tags: ['autodocs'],
-  parameters: { layout: 'padded', docs: { description: { component: 'Five ways to show whether a row uses the **System Default** template or a **Custom** (edited) one. All composed from Badge / Button / Dropdown / Icon — pick one for the page.' } } },
+  parameters: { layout: 'padded', docs: { description: { component: `
+Five ways to show whether a row uses the **System Default** template or a
+**Custom** (edited) one. All composed from Badge / Button / Dropdown / Icon.
+
+> **Decided (2026-08-07): only customised templates are badged.** Default is the
+> normal state, so labelling it said nothing and added noise to every row. The
+> screens in this folder show a **Custom** badge when a template has been edited
+> and nothing at all otherwise — so of the options below, the half that labels
+> the default state is **not** what shipped. Kept here as the record of what was
+> considered.
+` } } },
 }
 
 const row = (title, statusRight) => `
