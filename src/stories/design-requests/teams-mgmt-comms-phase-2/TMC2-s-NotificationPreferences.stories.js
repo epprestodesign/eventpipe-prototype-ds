@@ -18,11 +18,12 @@ import {
   DEFAULT_EMAILS, MERGE_VALUES, EVENT, USER,
 } from './_tmc2fixtures'
 import {
-  companyHeader, goBackLink, colHeaders, fromAddressCard, fromAddressSectionStrip,
+  companyHeader, goBackLink, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
   addReminderRow, templateActions,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL, COL_HEAD,
 } from './_tmc2'
 import { emailPaper, mergeFieldToggle, renderBody, resolveMergeFields, OPEN, CLOSE } from './_tmc2email'
+import { addedTemplates, addTemplate, removeTemplate } from './_tmc2store'
 import contentData from './tmc2-content.json'
 import DsListItem from './components/DsListItem.vue'
 import DsSectionHeader from './components/DsSectionHeader.vue'
@@ -233,7 +234,7 @@ const testSendDialog = `
       </q-card-section>
       <q-card-section style="padding:0 28px 8px;">${testSendNote}</q-card-section>
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat no-caps color="primary" label="Cancel" v-close-popup />
+        <q-btn flat no-caps color="primary" label="Cancel" @click="testOpen = false" />
         <q-btn unelevated no-caps color="primary" label="Send test" :disable="!testEmail.trim()"
           @click="confirmTestSend" />
       </q-card-actions>
@@ -260,7 +261,7 @@ const addReminderDialog = `
         </div>
       </q-card-section>
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat no-caps color="primary" label="Cancel" v-close-popup />
+        <q-btn flat no-caps color="primary" label="Cancel" @click="addOpen = false" />
         <q-btn unelevated no-caps color="primary" label="Add Reminder" :disable="!newName.trim()" @click="confirmAdd" />
       </q-card-actions>
     </q-card>
@@ -296,22 +297,28 @@ const sectionConfigStrip = `
   </template>`
 
 /* ---- View 1: the preferences list ---- */
-const makeListView = (variant) => `
+const listView = `
   <div style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
     ${notice}
     <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
-    ${variant === 'v2' ? '' : fromAddressCard}
     <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
       <q-card flat bordered v-for="s in sections" :key="s.name">
         <q-expansion-item :default-opened="s.open" :label="s.name" header-class="text-primary text-weight-bold">
           <q-separator />
-          ${variant === 'v2' ? sectionConfigStrip : ''}
+          ${sectionConfigStrip}
           ${colHeaders}
           <template v-for="(it, i) in s.items" :key="it.id">
             <q-separator v-if="i > 0" />
-            <!-- DES-428 · P0-4 — the only marker separating the closed set of
-                 fixed templates above from the open-ended reminders below.
-                 Deliberately a quiet label, not a heading or a second card. -->
+            <!-- DES-428 · P0-4 — the two groups are labelled the same quiet way:
+                 the closed set that ships with every account, then the
+                 open-ended reminders a Hoco builds. The split is about which
+                 group can grow, which is what "Standard" vs "Compliance
+                 Reminders" says. Small labels, not headings or second cards. -->
+            <div v-if="startsFixedGroup(s, i)"
+              style="padding:14px 28px 2px; font-size:0.75rem; font-weight:600; letter-spacing:0.04em;
+                     text-transform:uppercase; color:var(--ds-color-text-subtle);">
+              Standard Emails
+            </div>
             <div v-if="startsReminderGroup(s, i)"
               style="padding:14px 28px 2px; font-size:0.75rem; font-weight:600; letter-spacing:0.04em;
                      text-transform:uppercase; color:var(--ds-color-text-subtle);">
@@ -347,6 +354,7 @@ const makeListView = (variant) => `
     </div>
 
     ${addReminderDialog}
+    ${unsavedChangesBar}
 
     <ds-confirm-dialog v-model="revertOpen" title="Revert to default template?" destructive
       confirm-label="Revert to default" cancel-label="Keep custom" @confirm="confirmRevert">
@@ -441,7 +449,7 @@ const emailSettings = `
               </div>
             </q-card-section>
             <q-card-actions align="right" class="q-pa-md">
-              <q-btn flat no-caps color="primary" label="Cancel" v-close-popup />
+              <q-btn flat no-caps color="primary" label="Cancel" @click="showCustom = false" />
               <q-btn unelevated no-caps color="primary" label="Done" @click="done" />
             </q-card-actions>
           </q-card>
@@ -451,7 +459,7 @@ const emailSettings = `
   </div>`
 
 /* ---- View 2: the template editor ---- */
-const makeEditorView = (variant) => `
+const editorView = `
   <div style="padding:20px 32px 40px; background:var(--ds-color-surface-sunken); min-height:100%;">
     <div class="q-mb-md">${goBackLink}</div>
     <q-card flat bordered>
@@ -459,7 +467,11 @@ const makeEditorView = (variant) => `
         <div class="row items-center justify-between">
           <div class="row items-center q-gutter-sm no-wrap">
             <h2 style="margin:0; font-size:1.375rem; font-weight:700; color:var(--ds-color-text);">{{ editing?.title || 'Compliance Reminder' }}</h2>
-            <q-badge outline color="primary" class="q-px-sm q-py-xs">{{ isReminder ? 'Recurring reminder' : 'Triggered email' }}</q-badge>
+            <!-- Only reminders are badged. "Triggered email" labelled the normal
+                 case on every other template and told you nothing — the same
+                 reason the Default badge came off the list. What is worth
+                 saying here is that this one recurs. -->
+            <q-badge v-if="isReminder" outline color="primary" class="q-px-sm q-py-xs">Recurring reminder</q-badge>
           </div>
           <div class="row items-center q-gutter-sm">
             <!-- DES-428 · P0-4 — delete the template you are looking at.
@@ -468,12 +480,10 @@ const makeEditorView = (variant) => `
                  primary actions so it is never the accidental click. -->
             <q-btn v-if="editing && editing.userAdded" flat no-caps color="negative"
               icon="delete" label="Delete" @click="deleteEditing" />
-            ${variant === 'v2' ? `
-            <!-- V2 only — preview from the editor header, beside Cancel. In V1
-                 preview is reachable only from the row menu on the list, which
-                 means backing out of the template to see what it looks like. -->
+            <!-- Preview from the editor header, beside Cancel: deciding a
+                 template looks wrong is something you do while reading it. -->
             <q-btn flat no-caps color="primary" icon="visibility" label="Preview email"
-              @click="openPreview(editing)" />` : ''}
+              @click="openPreview(editing)" />
             <q-btn outline no-caps color="primary" label="Cancel" @click="goBack" />
             <q-btn unelevated no-caps color="primary" label="Save" @click="goBack" />
           </div>
@@ -481,38 +491,6 @@ const makeEditorView = (variant) => `
       </q-card-section>
       <q-separator />
       <q-card-section style="padding:24px 32px;">
-        <!-- Resolved From/Reply address — read-only here; set once on the list (DES-429 · P0-5). -->
-        <div class="q-mb-lg" style="max-width:520px;">
-          <ds-field label="From/Reply Address"
-            hint="Set once for all Teams Management emails. Change it on the Notifications list.">
-            <div class="row items-center no-wrap" style="gap:10px; padding:7px 12px; border:1px solid var(--ds-color-border);
-              border-radius:var(--ds-radius-md); background:var(--ds-color-surface-sunken);">
-              <q-icon name="lock" size="16px" color="grey-7" />
-              <span style="font-size:0.9375rem; color:var(--ds-color-text);">{{ fromDisplay }}</span>
-              <q-space />
-              <q-btn flat dense no-caps color="primary" label="Change" @click="goBack" style="flex:none;" />
-            </div>
-          </ds-field>
-        </div>
-
-        <!-- Same test send as the row menu and the preview modal, kept inline so
-             it is at hand while editing copy (DES-436 · P1-1). -->
-        <div class="q-mb-lg" style="max-width:520px;">
-          <ds-field label="Send test email to">
-            <q-input v-model="preview" outlined dense placeholder="Email Address" hide-bottom-space>
-              <template #append>
-                <q-btn flat dense no-caps color="primary" label="Send test"
-                  :disable="!preview.trim()" @click="sendEditorTest" />
-              </template>
-            </q-input>
-          </ds-field>
-          ${variant === 'v2' ? '' : `
-          <div class="q-mt-sm row items-center q-gutter-md no-wrap">
-            <q-btn flat dense no-caps color="primary" icon="visibility" label="Preview email"
-              @click="openPreview(editing)" style="flex:none;" />
-          </div>`}
-          <div class="q-mt-sm">${testSendNote}</div>
-        </div>
 
         <div class="q-mb-lg">
           <ds-rich-text-editor v-model="content" label="Content" required :default-content="content" />
@@ -537,11 +515,11 @@ const generalTab = `
     </div>
   </div>`
 
-const makeBody = (variant) => `
+const body = `
   ${companyHeader}
   <div v-show="tab === 'notifications'">
-    <div v-if="view === 'list'">${makeListView(variant)}</div>
-    <div v-else>${makeEditorView(variant)}</div>
+    <div v-if="view === 'list'">${listView}</div>
+    <div v-else>${editorView}</div>
     <!-- Both dialogs live outside the view switch so a test send is reachable
          from the list, the preview modal and the editor (DES-436 · P1-1). -->
     ${previewDialog}
@@ -586,9 +564,10 @@ const SEED_TYPES = SECTIONS.map((s) =>
 
 const isReminder = (it) => it.type === 'compliance-reminder'
 
-function sectionsFromArgs(args = {}, added = []) {
+function sectionsFromArgs(args = {}, added = [], sendEdits = {}) {
+  const withEdit = (it) => (sendEdits[it.id] === undefined ? it : { ...it, send: sendEdits[it.id] })
   return SECTIONS.map((s, si) => {
-    const seeded = s.items.map((it, ii) => ({
+    const seeded = s.items.map((it, ii) => withEdit({
       ...it,
       id: `s${si}i${ii}`,
       type: SEED_TYPES[si][ii],
@@ -605,7 +584,11 @@ function sectionsFromArgs(args = {}, added = []) {
      * user-added row survives a Controls edit rebuilding the list. */
     return {
       ...s,
-      items: [...seeded.filter((it) => !isReminder(it)), ...seeded.filter(isReminder), ...added],
+      items: [
+        ...seeded.filter((it) => !isReminder(it)),
+        ...seeded.filter(isReminder),
+        ...added.map(withEdit),
+      ],
     }
   })
 }
@@ -613,14 +596,88 @@ function sectionsFromArgs(args = {}, added = []) {
 const COMPONENTS = { DsListItem, DsSectionHeader, DsInfoGrid, DsConfirmDialog, DsField, DsInput, DsSelect, DsRichTextEditor }
 const SETTINGS_SECTIONS = [...COMPANY_SECTIONS_TOP, { title: 'Reconciliation & Invoice Settings', items: COMPANY_RECON }, ...COMPANY_SECTIONS_BOTTOM]
 
-const makeStory = (variant) => tmc2Page({
+export const NotificationPreferences = tmc2Page({
   active: 'none',
   components: COMPONENTS,
   setup: (args) => {
+    /* Group-level From/Reply address (DES-429 · P0-5) — one value for every
+     * Teams Management email; no per-template and no per-event override.
+     * Declared here, above the save model, because `dirty` compares against it. */
+    const fromAddress = ref('Event Manager')
+    const fromAddressCustom = ref('')
+    const savedFrom = ref(fromAddress.value)
+    const savedFromCustom = ref(fromAddressCustom.value)
+
+    /* SAVE MODEL — nothing here takes effect until Save.
+     *
+     * The shared store (_tmc2store.js) holds only SAVED templates, because that
+     * store is what Event Registration Settings reads: a reminder must not turn
+     * up as an event-level toggle while it is still an unsaved edit. So adds and
+     * deletes are staged locally and only applied to the store on Save, and
+     * Discard simply drops the staging.
+     *
+     * `sendEdits` holds Send-Email changes by row id rather than mutating the
+     * row, so a Controls edit rebuilding the list cannot lose them and Discard
+     * is a single assignment. */
+    const pendingAdds = ref([])
+    const pendingDeletes = ref([])
+    const sendEdits = ref({})
+    let stagedSeq = 0
+
+    // Saved templates minus anything staged for deletion, plus anything staged
+    // for addition — what the list should show right now.
+    const visibleAdded = computed(() => [
+      ...addedTemplates.value.filter((t) => !pendingDeletes.value.includes(t.id)),
+      ...pendingAdds.value,
+    ])
+
     // args is reactive in Storybook's Vue renderer — rebuild when a control changes.
-    const added = ref([])
     const sections = ref([])
-    watchEffect(() => { sections.value = sectionsFromArgs(args, added.value) })
+    watchEffect(() => {
+      sections.value = sectionsFromArgs(args, visibleAdded.value, sendEdits.value)
+    })
+
+    const dirty = computed(() => pendingAdds.value.length > 0
+      || pendingDeletes.value.length > 0
+      || Object.keys(sendEdits.value).length > 0
+      || fromAddress.value !== savedFrom.value
+      || fromAddressCustom.value !== savedFromCustom.value)
+
+    const saveChanges = () => {
+      pendingAdds.value.forEach((t) => addTemplate({
+        title: t.title, desc: t.desc, baseTitle: t.baseTitle,
+      }))
+      pendingDeletes.value.forEach((id) => {
+        const target = addedTemplates.value.find((t) => t.id === id)
+        if (target) removeTemplate(target)
+      })
+      // Send-Email edits are the prototype's stand-in for persistence: fold them
+      // into the store objects that survive, so they read back the same way.
+      addedTemplates.value.forEach((t) => {
+        if (sendEdits.value[t.id] !== undefined) t.send = sendEdits.value[t.id]
+      })
+      pendingAdds.value = []
+      pendingDeletes.value = []
+      sendEdits.value = {}
+      savedFrom.value = fromAddress.value
+      savedFromCustom.value = fromAddressCustom.value
+      $q.notify({
+        message: 'Changes saved',
+        caption: 'Teams Management notification preferences updated',
+        icon: 'check_circle',
+        color: 'positive',
+        position: 'bottom-right',
+        timeout: 2400,
+      })
+    }
+
+    const discardChanges = () => {
+      pendingAdds.value = []
+      pendingDeletes.value = []
+      sendEdits.value = {}
+      fromAddress.value = savedFrom.value
+      fromAddressCustom.value = savedFromCustom.value
+    }
 
     // list ⇄ editor
     const view = ref('list')
@@ -630,10 +687,6 @@ const makeStory = (variant) => tmc2Page({
     // Drives the conditional config sections in the editor (DES-431 · P0-7).
     const isReminder = computed(() => editing.value?.type === 'compliance-reminder')
 
-    // Group-level From/Reply address (DES-429 · P0-5) — one value for every
-    // Teams Management email; no per-template and no per-event override.
-    const fromAddress = ref('Event Manager')
-    const fromAddressCustom = ref('')
     const resolvedFrom = computed(() => (fromAddress.value === 'Other'
       ? (fromAddressCustom.value || 'Custom address not set yet')
       : (FROM_ADDRESS_RESOLVED[fromAddress.value] || fromAddress.value)))
@@ -643,7 +696,7 @@ const makeStory = (variant) => tmc2Page({
      * the role instead, and says where the address comes from. `Other` is a
      * literal address in both, so it resolves the same either way. */
     const fromDisplay = computed(() => {
-      if (variant !== 'v2' || fromAddress.value === 'Other') return resolvedFrom.value
+      if (fromAddress.value === 'Other') return resolvedFrom.value
       return fromAddress.value + ' — resolved per event when the email sends'
     })
 
@@ -701,15 +754,15 @@ const makeStory = (variant) => tmc2Page({
     // toast on every Send-Email toggle
     const $q = useQuasar()
     const onToggleSend = (it, value) => {
-      it.send = value
-      $q.notify({
-        message: it.title,
-        caption: value ? 'Send email turned on' : 'Send email turned off',
-        icon: value ? 'mark_email_read' : 'unsubscribe',
-        color: value ? 'positive' : 'grey-8',
-        position: 'bottom-right',
-        timeout: 2200,
-      })
+      // Staged, not applied. Recorded even when it returns to its original
+      // value: the bar is about "you touched this", and un-toggling back is
+      // what Discard is for.
+      //
+      // No toast. It fired on every click, and once the unsaved-changes bar
+      // existed the toast was also wrong — "Send email turned off" claims
+      // something happened, when nothing has until Save. The bar is the honest
+      // feedback, and the checkbox itself shows the new state.
+      sendEdits.value = { ...sendEdits.value, [it.id]: value }
     }
 
     /* Unlimited compliance reminders (DES-428 · P0-4) — add duplicates the
@@ -721,27 +774,30 @@ const makeStory = (variant) => tmc2Page({
     const addOpen = ref(false)
     const newName = ref('')
     const newDesc = ref('')
-    let addSeq = 0
     const openAdd = () => { newName.value = ''; newDesc.value = ''; addOpen.value = true }
     const confirmAdd = () => {
       const name = newName.value.trim()
       if (!name) return
       const base = baseReminder.value
-      addSeq += 1
-      added.value.push({
-        id: 'tm-added-' + addSeq,
+      // Staged only — it reaches the store, and therefore Event Registration
+      // Settings, on Save.
+      stagedSeq += 1
+      pendingAdds.value = [...pendingAdds.value, {
+        id: 'tm-staged-' + stagedSeq,
+        key: 'tm-staged-' + stagedSeq,
         title: name,
         desc: newDesc.value.trim() || (base ? base.desc : ''),
+        baseTitle: base ? base.title : '',
+        type: 'compliance-reminder',
         send: true,
         forced: false,
-        custom: true,       // keeps the Custom badge + Revert to default path honest
-        userAdded: true,    // only these can be deleted
-        type: 'compliance-reminder',
-      })
+        custom: true,
+        userAdded: true,
+      }]
       addOpen.value = false
       $q.notify({
         message: name,
-        caption: 'Added as a copy of ' + (base ? base.title : 'the standard Compliance Reminder'),
+        caption: 'Added as a copy of ' + (base ? base.title : 'the standard Compliance Reminder') + ' — save to apply',
         icon: 'add_circle',
         color: 'positive',
         position: 'bottom-right',
@@ -752,8 +808,15 @@ const makeStory = (variant) => tmc2Page({
     const deleteTarget = ref(null)
     const openDelete = (it) => { deleteTarget.value = it; deleteOpen.value = true }
     const confirmDelete = () => {
-      const i = added.value.indexOf(deleteTarget.value)
-      if (i !== -1) added.value.splice(i, 1)
+      const target = deleteTarget.value
+      if (!target) return
+      // A staged add is dropped outright; a saved one is marked for removal and
+      // only leaves the store on Save.
+      if (pendingAdds.value.some((t) => t.id === target.id)) {
+        pendingAdds.value = pendingAdds.value.filter((t) => t.id !== target.id)
+      } else {
+        pendingDeletes.value = [...pendingDeletes.value, target.id]
+      }
       // Deleting from inside the editor has to leave the editor — the template
       // it is editing no longer exists.
       if (view.value === 'editor') { editing.value = null; view.value = 'list' }
@@ -769,6 +832,11 @@ const makeStory = (variant) => tmc2Page({
     const startsReminderGroup = (s, i) => s.name === TM_SECTION
       && s.items[i].type === 'compliance-reminder'
       && (i === 0 || s.items[i - 1].type !== 'compliance-reminder')
+    // Its counterpart on the closed set above it. Written symmetrically rather
+    // than as `i === 0` so it stays correct if the sort order ever changes.
+    const startsFixedGroup = (s, i) => s.name === TM_SECTION
+      && s.items[i].type !== 'compliance-reminder'
+      && (i === 0 || s.items[i - 1].type === 'compliance-reminder')
 
     // editor state
     const content = ref(DEFAULT_CONTENT)
@@ -813,7 +881,9 @@ const makeStory = (variant) => tmc2Page({
       view, editing, openEditor, goBack, isReminder,
       fromAddress, fromAddressCustom, resolvedFrom, fromDisplay, fromOptions: FROM_ADDRESS_OPTIONS,
       baseReminder, addOpen, newName, newDesc, openAdd, confirmAdd,
-      deleteOpen, deleteTarget, openDelete, confirmDelete, deleteEditing, startsReminderGroup,
+      dirty, saveChanges, discardChanges,
+      deleteOpen, deleteTarget, openDelete, confirmDelete, deleteEditing,
+      startsReminderGroup, startsFixedGroup,
       revertOpen, revertTarget, openRevert, confirmRevert, onToggleSend,
       // Preview + test send (DES-436 · P1-1). `fromLine` / `toLine` / `bodyLines`
       // / `subjectLine` / `eventName` are the contract of the shared emailPaper.
@@ -826,22 +896,9 @@ const makeStory = (variant) => tmc2Page({
       showCustom, every, unit, days, ends, endsOn, endsAfter, options, rec, onSelect, toggleDay, done, DAY_LABELS,
     }
   },
-  slot: makeBody(variant),
+  slot: body,
 })
 
-/* V1 — the original: From/Reply as its own card above every section, resolving
- * to one concrete address. Kept unchanged so the review comparison holds. */
-export const V1 = makeStory('v1')
-
-/* V2 — DES-429 review. Three changes, all from the same feedback:
- *  1. The config moved INSIDE the Teams Management section it configures,
- *     as a generic per-section slot future sections (Guests, Hotels) can reuse.
- *  2. Trimmed from a full card — heading, Required chip, badge, four-line
- *     explainer, resolved-address footer — to a single row.
- *  3. No concrete resolved address anywhere. The first two options are
- *     per-event roles, so naming one mailbox was never truthful; the editor and
- *     the email preview now show the role and say when it resolves. */
-export const V2 = makeStory('v2')
 
 const IMPLEMENTATION = {
   intro: 'Vue 3 + Quasar (TypeScript) reference — the real components behind this screen. Page → Section → Row for the list; Editor → ReminderSettings → RecurrenceField for the drill-in.',
@@ -857,22 +914,9 @@ const IMPLEMENTATION = {
   ],
 }
 
-// Both versions share the same Controls and the same implementation reference —
-// they differ only in where the From/Reply config sits and how it reports.
-// Assigned explicitly rather than in a loop: Storybook's CSF indexer reads these
-// statically, and a loop leaves it with nothing to find.
-// Without an explicit name Storybook renders the export as "V 1" — it splits on
-// the digit boundary.
-V1.storyName = 'V1'
-V2.storyName = 'V2'
-
-V1.parameters = { layout: 'fullscreen', implementation: IMPLEMENTATION }
-V1.argTypes = TEMPLATE_ARG_TYPES
-V1.args = TEMPLATE_ARGS
-
-V2.parameters = { layout: 'fullscreen', implementation: IMPLEMENTATION }
-V2.argTypes = TEMPLATE_ARG_TYPES
-V2.args = TEMPLATE_ARGS
+NotificationPreferences.parameters = { layout: 'fullscreen', implementation: IMPLEMENTATION }
+NotificationPreferences.argTypes = TEMPLATE_ARG_TYPES
+NotificationPreferences.args = TEMPLATE_ARGS
 
 /* ---- Locked / upsell: company without Teams Management (DES-435 · P0-11) ---- */
 const upsellBanner = `

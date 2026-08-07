@@ -88,7 +88,7 @@ export const CalendarStyle = {
             </q-card-section>
 
             <q-card-actions align="right" class="q-pa-md">
-              <q-btn flat no-caps color="primary" label="Cancel" v-close-popup />
+              <q-btn flat no-caps color="primary" label="Cancel" @click="showCustom = false" />
               <q-btn unelevated no-caps color="primary" label="Done" @click="done" />
             </q-card-actions>
           </q-card>

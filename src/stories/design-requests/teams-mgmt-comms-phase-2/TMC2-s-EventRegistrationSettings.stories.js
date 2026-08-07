@@ -6,9 +6,10 @@
  *
  *  A P0-8 send-eligibility block and a SendingBlocked story were removed on
  *  2026-08-07: P0-8 was never asked to be mocked. */
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { tmc2Page, eventHeader } from './_tmc2shell'
 import { EVENT, TM_TEMPLATES } from './_tmc2fixtures'
+import { addedTemplates } from './_tmc2store'
 import DsSelect from './components/DsSelect.vue'
 import DsInput from './components/DsInput.vue'
 import DsField from './components/DsField.vue'
@@ -160,7 +161,14 @@ const eventComms = `
           <q-separator v-if="ti" />
           <div class="row items-center no-wrap" style="padding:14px 0; gap:24px;">
             <div style="flex:1; min-width:0;">
-              <div style="font-weight:700; color:var(--ds-color-text);">{{ t.title }}</div>
+              <div class="row items-center no-wrap q-gutter-sm">
+                <div style="font-weight:700; color:var(--ds-color-text);">{{ t.title }}</div>
+                <!-- DES-428 · P0-4 → DES-425 · P0-1. A reminder created at
+                     company level arrives here as its own row, off by default.
+                     Badged so it is obvious which rows came from this session
+                     rather than shipping with the account. -->
+                <q-badge v-if="t.userAdded" color="primary" class="q-px-sm q-py-xs" style="flex:none;">New</q-badge>
+              </div>
               <div style="font-size:0.875rem; color:var(--ds-color-text-subtle); line-height:1.45; margin-top:2px;">
                 {{ t.desc }}
               </div>
@@ -224,6 +232,11 @@ const MERGE_FIELD = '{' + '{' + 'noncompliance_policy' + '}' + '}'
 const MERGE_HINT = 'Optional. When filled, this text is inserted into Teams Management emails as its own paragraph via the '
   + MERGE_FIELD + ' merge field. Leave it blank and that section is omitted from the email entirely.'
 
+/* Copied once, not per story: Default and Configured are the same event in two
+ * configurations, and a reviewer toggling a template then switching story
+ * expects to find it as they left it. Never mutates the imported fixture. */
+const seededTemplates = TM_TEMPLATES.map((t) => ({ ...t }))
+
 const state = (over = {}) => () => {
   return {
     tab: ref('registration'),
@@ -248,8 +261,16 @@ const state = (over = {}) => () => {
     // DES-438 / P1-3
     noncompliancePolicy: ref(over.noncompliancePolicy ?? ''),
     mergeHint: MERGE_HINT,
-    // DES-425 / P0-1 — copies, so toggling in one story never mutates the fixture.
-    tmTemplates: ref(TM_TEMPLATES.map((t) => ({ ...t }))),
+    /* DES-425 / P0-1 — one row per company-level template.
+     *
+     * Seeded templates are copied so toggling in one story never mutates the
+     * fixture. Reminders created this session are appended live from the shared
+     * store, which is the whole point: a template made on the company
+     * Notification Preferences screen has to be switchable per event, and a
+     * static list could never show that. Their `eventOn` lives in the store
+     * object itself, so toggling it here and coming back finds it as you left
+     * it — the same as the seeded rows. */
+    tmTemplates: computed(() => [...seededTemplates, ...addedTemplates.value]),
     evt: EVENT,
   }
 }

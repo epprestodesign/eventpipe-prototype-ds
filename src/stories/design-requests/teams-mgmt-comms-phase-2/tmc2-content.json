@@ -5,17 +5,10 @@
       "open": true,
       "items": [
         {
-          "title": "STP - Compliance Reminder - Early Stage -Scott",
+          "title": "STP - Compliance Reminder",
           "desc": "Reminds non-compliant teams about their Stay-to-Play requirement; the cadence and tone here are intentionally encouraging rather than punitive.",
           "send": true,
-          "forced": false,
-          "custom": true
-        },
-        {
-          "title": "STP - Compliance Reminder - Escalation",
-          "desc": "A firmer follow-up for teams still below their room-night commitment as the deadline nears.",
-          "send": true,
-          "forced": false,
+          "forced": true,
           "custom": false
         },
         {
@@ -27,17 +20,10 @@
         },
         {
           "title": "STP - Previously Compliant Notice",
-          "desc": "Notifies a team that was previously meeting its requirement but has since fallen out of compliance — it summarizes the current shortfall, the criteria that must be met, and the deadline before penalties apply.",
+          "desc": "Notifies a team that was previously meeting its requirement but has since fallen out of compliance \u2014 it summarizes the current shortfall, the criteria that must be met, and the deadline before penalties apply.",
           "send": true,
           "forced": false,
           "custom": true
-        },
-        {
-          "title": "STP - Deadline Approaching",
-          "desc": "A time-sensitive reminder sent a few days before the hotel cutoff so teams can book remaining rooms.",
-          "send": false,
-          "forced": false,
-          "custom": false
         },
         {
           "title": "STP - Compliance Achieved",

@@ -8,8 +8,9 @@
 import { ref, computed } from 'vue'
 import { tmc2Page } from './_tmc2shell'
 import { COMPANY, DEFAULT_EMAILS, FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED } from './_tmc2fixtures'
+import { addedTemplates, addTemplate } from './_tmc2store'
 import {
-  companyHeader, colHeaders, fromAddressCard, fromAddressSectionStrip,
+  companyHeader, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
   addReminderRow, templateActions,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL,
 } from './_tmc2'
@@ -17,6 +18,7 @@ import DsListItem from './components/DsListItem.vue'
 import DsSectionHeader from './components/DsSectionHeader.vue'
 import DsSelect from './components/DsSelect.vue'
 import DsInput from './components/DsInput.vue'
+import DsConfirmDialog from './components/DsConfirmDialog.vue'
 
 export default {
   title: 'Design Requests/Teams Mgmt Comms Phase 2/First-Time Setup/Notification Preferences',
@@ -67,25 +69,29 @@ const firstRunBanner = `
   </div>`
 
 
-const makeSeededList = (variant) => `
+const seededList = `
   <q-card flat bordered>
     <q-expansion-item default-opened label="Teams Management" header-class="text-primary text-weight-bold">
       <q-separator />
-      ${variant === 'v2' ? fromAddressSectionStrip : ''}
+      ${fromAddressSectionStrip}
       ${colHeaders}
-      <template v-for="(it, i) in seeded" :key="it.key">
+      <template v-for="(it, i) in rows" :key="it.key">
         <q-separator v-if="i > 0" />
         <div style="padding:8px 28px;">
           <ds-list-item :subtitle="it.purpose" :bordered="false">
             <template #title>
               <span class="row items-center q-gutter-sm">
                 <strong style="${LIST_TITLE_STYLE}">{{ it.title }}</strong>
-                <q-badge color="grey-7" class="q-px-sm q-py-xs">Default</q-badge>
+                <!-- Only customised templates carry a badge. Default is the norm,
+                     and badging every row said nothing while adding noise —
+                     the same rule the configured screen already followed. On
+                     first run nothing is customised, so nothing shows. -->
+                <q-badge v-if="it.custom" color="primary" class="q-px-sm q-py-xs">Custom</q-badge>
               </span>
             </template>
             <template #trailing>
               <div class="row items-center no-wrap">
-                <div style="${COL_SEND}"><q-checkbox v-model="it.on" color="primary" /></div>
+                <div style="${COL_SEND}"><q-checkbox :model-value="it.on" @update:model-value="onToggleSend(it, $event)" color="primary" /></div>
                 <div style="${COL_TMPL}">${templateActions({ onEdit: 'noop' })}</div>
               </div>
             </template>
@@ -93,13 +99,13 @@ const makeSeededList = (variant) => `
         </div>
       </template>
       <q-separator />
-      ${addReminderRow('noop')}
+      ${addReminderRow('openAdd')}
     </q-expansion-item>
   </q-card>`
 
-const makeFirstRun = (variant) => tmc2Page({
+export const FirstRun = tmc2Page({
   active: 'none',
-  components: { DsListItem, DsSectionHeader, DsSelect, DsInput },
+  components: { DsListItem, DsSectionHeader, DsSelect, DsInput, DsConfirmDialog },
   setup: () => {
     const fromAddress = ref(null)
     const fromAddressCustom = ref('')
@@ -109,6 +115,84 @@ const makeFirstRun = (variant) => tmc2Page({
       fromAddress.value === 'Other'
         ? (fromAddressCustom.value || 'your custom address')
         : (FROM_ADDRESS_RESOLVED[fromAddress.value] || ''))
+    /* DES-428 · P0-4 — adding a reminder works here, not just on the configured
+     * screen: a brand-new customer setting up for the first time is exactly who
+     * needs a second reminder, and they have no reason to leave this page to
+     * get one. It writes to the shared session store (_tmc2store.js), so the
+     * new template also shows up as an event-level toggle on Event
+     * Registration Settings (DES-425 · P0-1). */
+    const seeded = ref(DEFAULT_EMAILS.map((e) => ({
+      key: e.key, title: e.title, purpose: e.purpose, on: true,
+    })))
+    const baseReminder = DEFAULT_EMAILS.find((e) => e.key === 'compliance-reminder')
+
+    /* Same save model as the configured screen: nothing takes effect until
+     * Save, so a reminder added here does not reach Event Registration Settings
+     * until then, and Discard drops it. Send-Email edits are held by row key
+     * rather than mutating the row, so Discard is one assignment. */
+    const pendingAdds = ref([])
+    const sendEdits = ref({})
+    let stagedSeq = 0
+
+    const rows = computed(() => [
+      ...seeded.value,
+      ...addedTemplates.value.map((t) => ({
+        key: t.key, title: t.title, purpose: t.desc, on: t.send, custom: true,
+      })),
+      ...pendingAdds.value,
+    ].map((r) => (sendEdits.value[r.key] === undefined ? r : { ...r, on: sendEdits.value[r.key] })))
+
+    const savedFrom = ref(fromAddress.value)
+    const savedFromCustom = ref(fromAddressCustom.value)
+
+    const dirty = computed(() => pendingAdds.value.length > 0
+      || Object.keys(sendEdits.value).length > 0
+      || fromAddress.value !== savedFrom.value
+      || fromAddressCustom.value !== savedFromCustom.value)
+
+    const onToggleSend = (row, value) => {
+      sendEdits.value = { ...sendEdits.value, [row.key]: value }
+    }
+
+    const saveChanges = () => {
+      pendingAdds.value.forEach((t) => addTemplate({
+        title: t.title, desc: t.purpose, baseTitle: t.baseTitle,
+      }))
+      seeded.value.forEach((r) => {
+        if (sendEdits.value[r.key] !== undefined) r.on = sendEdits.value[r.key]
+      })
+      pendingAdds.value = []
+      sendEdits.value = {}
+      savedFrom.value = fromAddress.value
+      savedFromCustom.value = fromAddressCustom.value
+    }
+
+    const discardChanges = () => {
+      pendingAdds.value = []
+      sendEdits.value = {}
+      fromAddress.value = savedFrom.value
+      fromAddressCustom.value = savedFromCustom.value
+    }
+
+    const addOpen = ref(false)
+    const newName = ref('')
+    const newDesc = ref('')
+    const openAdd = () => { newName.value = ''; newDesc.value = ''; addOpen.value = true }
+    const confirmAdd = () => {
+      const name = newName.value.trim()
+      if (!name) return
+      stagedSeq += 1
+      pendingAdds.value = [...pendingAdds.value, {
+        key: 'tm-staged-' + stagedSeq,
+        title: name,
+        purpose: newDesc.value.trim() || (baseReminder ? baseReminder.purpose : ''),
+        baseTitle: baseReminder ? baseReminder.title : '',
+        on: true,
+        custom: true,
+      }]
+      addOpen.value = false
+    }
+
     return {
       company: COMPANY,
       tab: ref('notifications'),
@@ -116,10 +200,21 @@ const makeFirstRun = (variant) => tmc2Page({
       fromAddressCustom,
       fromOptions: FROM_ADDRESS_OPTIONS,
       resolvedFrom,
-      // First run is a static state — the shared row actions are wired to a
-      // no-op here rather than duplicating the editor drill-in.
+      // Editing a template is still out of scope here — first run shows the
+      // state, it does not duplicate the editor drill-in.
       noop: () => {},
-      seeded: ref(DEFAULT_EMAILS.map((e) => ({ key: e.key, title: e.title, purpose: e.purpose, on: true }))),
+      seeded,
+      rows,
+      addOpen,
+      newName,
+      newDesc,
+      openAdd,
+      confirmAdd,
+      onToggleSend,
+      dirty,
+      saveChanges,
+      discardChanges,
+      baseReminderTitle: baseReminder ? baseReminder.title : 'the standard Compliance Reminder',
     }
   },
   slot: `
@@ -128,26 +223,39 @@ const makeFirstRun = (variant) => tmc2Page({
       ${firstRunBanner}
       <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
       <div style="margin-top:12px;">
-        ${variant === 'v2' ? '' : fromAddressCard}
-        ${makeSeededList(variant)}
+        ${seededList}
       </div>
     </div>
     <div v-show="tab === 'general'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
       <div class="text-grey-7">General company settings.</div>
-    </div>`,
+    </div>
+
+    ${unsavedChangesBar}
+
+    <!-- Same Add dialog as the configured screen, down to the confirm label. -->
+    <q-dialog v-model="addOpen">
+      <q-card flat bordered style="min-width:480px; border-radius:var(--ds-radius-lg);">
+        <q-card-section style="padding:28px 28px 4px;">
+          <div class="text-h6" style="font-weight:700;">Add Compliance Reminder</div>
+          <div class="text-grey-8" style="font-size:0.8125rem; line-height:1.5; margin-top:6px;">
+            The new template starts as a <b>copy of {{ baseReminderTitle }}</b> —
+            content, schedule, statuses and recipients included. Edit it once it is added.
+          </div>
+        </q-card-section>
+        <q-card-section style="padding:18px 28px 8px;">
+          <ds-input v-model="newName" label="Name" required placeholder="e.g. 30 Day Reminder" />
+          <div class="q-mt-md">
+            <ds-input v-model="newDesc" label="Description" placeholder="What this reminder is for"
+              hint="Optional — defaults to the copied description." />
+          </div>
+        </q-card-section>
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat no-caps color="primary" label="Cancel" @click="addOpen = false" />
+          <q-btn unelevated no-caps color="primary" label="Add Reminder" :disable="!newName.trim()"
+            @click="confirmAdd" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>`,
 })
 
-/** V1 — From/Reply as its own card above the section. Export name kept as
- *  `FirstRun` so the published `--first-run` URL already shared with the team
- *  keeps working; only the displayed name changes. */
-export const FirstRun = makeFirstRun('v1')
-FirstRun.storyName = 'V1'
 FirstRun.parameters = { layout: 'fullscreen' }
-
-/** V2 — the same first-run state with the DES-429 review applied: the From/Reply
- *  config moves inside the Teams Management section, as the same shared strip
- *  the configured screen uses (fromAddressSectionStrip in _tmc2.js), so the two
- *  screens cannot drift. */
-export const FirstRunV2 = makeFirstRun('v2')
-FirstRunV2.storyName = 'V2'
-FirstRunV2.parameters = { layout: 'fullscreen' }
