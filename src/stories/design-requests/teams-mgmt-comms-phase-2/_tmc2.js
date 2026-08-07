@@ -114,9 +114,9 @@ export const unsavedChangesBar = `
     </div>
   </transition>`
 
-/** DES-429 · P0-5 (V2) — per-section config strip.
+/** DES-429 · P0-5 — per-section config strip.
  *
- *  Review of the V1 card: too bloated, it showed a concrete resolved address it
+ *  Review of the earlier card: too bloated, it showed a concrete resolved address it
  *  cannot actually know, and it "feels independent of the Teams Management
  *  Communications section ... over time there will be more sections like Guests,
  *  Hotels, and each of those may have specific config parameters".

@@ -1,10 +1,8 @@
 /** Teams Mgmt Comms Phase 2 / Screens / Notification Preferences.
  *
- *  The former V1 (preferences list) and V2 (template editor) merged into one
- *  screen. They were always the same page — a list that drills into an editor —
- *  but living in two stories meant the "Edit" button and the "Go Back to
- *  Preferences" link were both dead ends. Here `view` swaps between them, so the
- *  round trip is real.
+ *  One screen, two views: `view` swaps between the preferences list and the
+ *  template editor, so Edit and "Go Back to Preferences" are a real round trip
+ *  rather than two dead ends in separate stories.
  *
  *  Everything renders against the shared Phase 2 tenant (see _tmc2fixtures):
  *  Traveloc / Mike Addesa.
@@ -51,14 +49,18 @@ export default {
   parameters: { layout: 'fullscreen', docs: { description: { component: `
 Company Settings → **Notifications**, for the Teams Management comms templates.
 
-Formerly split across *V1 · Notifications Preferences* and *V2 · Configured
-Template*. They are one screen: the list drills into the template editor, and the
+One screen with two views: the list drills into the template editor, and the
 editor comes back. **Click Edit on any template** to move between them.
 
 | View | What it is |
 | --- | --- |
-| **Preferences list** | Every notification, grouped by section, with a Send-Email toggle and an Edit action — plus the group-level From address and the *Add Compliance Reminder* affordance |
-| **Template editor** | The drill-in: content with merge fields, preview + BCC, the read-only resolved From address, and **Email Settings** (audience for every template, scheduling only for reminders) |
+| **Preferences list** | Every notification, grouped by section, with a Send-Email toggle and an Edit action — plus the section's From/Reply config and the *Add Compliance Reminder* affordance |
+| **Template editor** | The drill-in: content with merge fields, BCC, *Preview email* in the header, and **Email Settings** (audience for every template, scheduling only for reminders) |
+
+**Nothing on the list takes effect until Save.** An unsaved-changes bar appears
+whenever anything differs from the last save — a checkbox, the From/Reply
+address, a reminder added or deleted — and a reminder does not reach Event
+Registration Settings as an event-level toggle until you press Save.
 
 **Phase 2 requirements on this screen**
 
@@ -66,13 +68,15 @@ editor comes back. **Click Edit on any template** to move between them.
   emails: Event Manager, Event Customer Support Contact, or a custom *Other*
   address. Deliberately **not per template** and with **no event-level
   override** — the event manager and support contact already vary by event,
-  which supplies the flexibility. **This is what V1 and V2 differ on** — see
-  the table below.
+  which supplies the flexibility. See the section below for where it lives and
+  why.
 - **DES-428 · P0-4 — N compliance reminders.** *+ Add Compliance Reminder* opens a
   minimal Name/Description dialog and appends a template that starts as a **copy
   of the standard Compliance Reminder**, marked Custom. Unlimited — the fixed
   early/mid/late model is gone. User-added templates can be **deleted** from the
-  row menu; seeded ones can only be reverted.
+  row menu or from the editor header; seeded ones can only be reverted. Fixed
+  templates sort above reminders under quiet group labels, since the reminder
+  group is the one that grows.
 - **DES-431 · P0-7 — Conditional configuration.** Every template gets Compliance
   Statuses + Recipients; **only** \`compliance-reminder\` templates get the
   Scheduling block (begin/end days, recurrence). Driven off the row's \`type\`.
@@ -81,32 +85,28 @@ editor comes back. **Click Edit on any template** to move between them.
   Emails**, with **Show merge fields** to flip between the sent email and the
   template source. The row is matched to a seeded template by \`type\`, so custom
   reminders preview as the Compliance Reminder they were copied from. **Send test
-  email** — from the row menu, from the preview modal footer, or from the
-  editor's *Send test email to* field — asks for one address and sends there
-  only. Test sends are deliberately **not written to a team's Communications
-  Log**; that log is the record of automated sends (DES-433).
+  email** — from the row menu or from the preview modal footer — asks for one
+  address and sends there only. Test sends are deliberately **not written to a
+  team's Communications Log**; that log is the record of automated sends
+  (DES-433).
 - **DES-435 · P0-11 — Locked upsell** (\`Locked Upsell\` story): grayed-out Teams
   Management section, account-manager pitch, and a *concept* treatment for the
   locked **Compliance** nav entry that routes to an in-app value-prop page.
 
-### V1 vs V2 — DES-429 · P0-5
+### DES-429 · P0-5 — where the From/Reply config lives
 
-| | **V1** | **V2** |
-| --- | --- | --- |
-| Where the config lives | Its own card above *every* section | Inside the **Teams Management** section it configures |
-| Size | Card: heading, Required chip, badge, four-line explainer, resolved-address footer | One row: the select, plus the custom field when *Other* |
-| What the editor shows as From | A concrete mailbox — *Johnny HoCo <johnny.hoco@traveloc.com>* | The role, and when it resolves — *Event Manager — resolved per event when the email sends* |
+It sits **inside the Teams Management section it configures**, as a single row,
+and reports the *role* rather than a concrete mailbox — *Event Manager —
+resolved per event when the email sends*. That is the honest answer: the first
+two options are per-event roles, so no single address is knowable here. *Other*
+is a literal address and still resolves normally.
 
-**V2 exists because of three points in review.** The card was too bloated. The
-resolved address it showed was not truthful — *Event Manager* and *Event
-Customer Support Contact* are per-event roles, so no single mailbox is the
-answer, and the email preview inherited the same false certainty. And it read as
-independent of the section it belongs to.
-
-That last point drove the structure: the V2 strip is built as a **generic
-per-section config slot**, not a one-off for From/Reply. When *Guests* and
-*Hotels* sections arrive with their own parameters, they fill the same slot,
-rather than each adding another free-floating card at the top of the page.
+An earlier version put it in its own card above every section and named a
+concrete mailbox. Review on 2026-08-07 called it bloated, called the resolved
+address wrong, and asked for it to be tied to its section. The strip is
+deliberately a **generic per-section config slot**, so *Guests* and *Hotels*
+sections fill the same place later rather than each adding another free-floating
+card to the top of the page.
 
 Template copy is editable in the **Controls** panel and lives in
 \`tmc2-content.json\`.
@@ -276,9 +276,9 @@ const addReminderDialog = `
     </template>
   </ds-confirm-dialog>`
 
-/* ---- V2 · DES-429 · P0-5 — section-level config strip.
+/* ---- DES-429 · P0-5 — section-level config strip.
  *
- * Review of V1: the From/Reply card was too bloated, showed a concrete resolved
+ * Review of the earlier card: too bloated, showed a concrete resolved
  * address it cannot actually know, and "feels independent of the Teams
  * Management Communications section ... over time there will be more sections
  * like Guests, Hotels, and each of those may have specific config parameters".
@@ -691,10 +691,10 @@ export const NotificationPreferences = tmc2Page({
       ? (fromAddressCustom.value || 'Custom address not set yet')
       : (FROM_ADDRESS_RESOLVED[fromAddress.value] || fromAddress.value)))
     /* What the editor and the email preview show as the From line.
-     * V1 resolves to one concrete mailbox. Review called that out: the first two
-     * options are per-event roles, so no single address is truthful. V2 shows
-     * the role instead, and says where the address comes from. `Other` is a
-     * literal address in both, so it resolves the same either way. */
+     * The earlier design resolved to one concrete mailbox. Review called that
+     * out: the first two options are per-event roles, so no single address is
+     * truthful. This shows the role instead and says when it resolves. `Other`
+     * is a literal address, so it resolves normally. */
     const fromDisplay = computed(() => {
       if (fromAddress.value === 'Other') return resolvedFrom.value
       return fromAddress.value + ' — resolved per event when the email sends'
