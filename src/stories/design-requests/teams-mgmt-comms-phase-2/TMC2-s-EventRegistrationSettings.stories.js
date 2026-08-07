@@ -1,11 +1,14 @@
 /** Teams Mgmt Comms Phase 2 / Screens / Event Registration Settings.
  *  Rebuilt from the production captures in references/080626, then extended
  *  with the Phase 2 requirements that live on this tab: P0-1 (Event-Level
- *  Communications Toggle), P1-3 (Event-Level Non-Compliance Policy) and P0-8
- *  (event-level send eligibility gates). Everything else matches production. */
-import { ref, computed } from 'vue'
+ *  Communications Toggle) and P1-3 (Event-Level Non-Compliance Policy).
+ *  Everything else matches production.
+ *
+ *  A P0-8 send-eligibility block and a SendingBlocked story were removed on
+ *  2026-08-07: P0-8 was never asked to be mocked. */
+import { ref } from 'vue'
 import { tmc2Page, eventHeader } from './_tmc2shell'
-import { EVENT, TM_TEMPLATES, EVENT_SEND_GATES, EVENT_SEND_GATES_BLOCKED } from './_tmc2fixtures'
+import { EVENT, TM_TEMPLATES } from './_tmc2fixtures'
 import DsSelect from './components/DsSelect.vue'
 import DsInput from './components/DsInput.vue'
 import DsField from './components/DsField.vue'
@@ -21,41 +24,26 @@ Two Phase 2 requirements are now **BUILT** on this tab:
 
 - **[DES-425 · P0-1](https://linear.app/eventpipe/issue/DES-425)** — Event-Level Communications Toggle → the new **Teams Management Communications** card, between *Compliance* and *Restrictions*. One toggle per company-level template, controlling only whether it sends **for this event**. Deliberately toggle-only: there is **no template editing at event level** — content is authored once in *Company Settings › Notifications*.
 - **[DES-438 · P1-3](https://linear.app/eventpipe/issue/DES-438)** — Event-Level Non-Compliance Policy → the **Non-Compliance Policy** text area at the bottom of the *Compliance* card, feeding the \`{{noncompliance_policy}}\` merge field. Optional; left blank, the paragraph is omitted from the email entirely.
-- **[DES-432 · P0-8](https://linear.app/eventpipe/issue/DES-432)** — Event-Level Send Eligibility → the eligibility block at the **top of the Teams Management Communications card**, above the toggles.
 
-All are Teams-Management/STP dependent, so — like *Compliance* itself — they
+Both are Teams-Management/STP dependent, so — like *Compliance* itself — they
 only appear once **Compliance Tracking** is ticked. Everything else on the
 screen still matches production.
 
-### Event-level send gates (DES-432 · P0-8)
-
-The daily **6am EST** job checks two gates **for the event as a whole** before it
-looks at any per-template toggle:
-
-| Gate | Passes when |
-| --- | --- |
-| **Hotel cutoff** | The last \`EventHotel\` cutoff date has not passed |
-| **Booking link live** | At least one of the Group Block link or the Individual Reservation link is live |
-
-Both must pass. If either fails, **no Teams Management email sends for this
-event at all** — the per-template toggles are irrelevant while the event is
-blocked, so the toggle rows are dimmed (still interactive, so you can pre-set
-them) and a warning block spells out which gate failed and why.
-
-When both pass, the same block collapses to a quiet positive confirmation that
-lists each gate with its current value. This is the normal state, so it stays
-deliberately understated.
-
-No "next send date" or team-count forecast appears here — forward-looking views
-belong to **DES-437 (PipeSights)**.
-
-**Three states:**
+**Two states:**
 
 | Story | Shows |
 | --- | --- |
 | **Default** | Empty event — compliance tracking off, so the conditional fields and the Compliance / Teams Management Communications / Restrictions cards are hidden. Non-compliance policy is empty. |
-| **Configured** | Fully set up — every conditional revealed, matching the populated capture, plus a written non-compliance policy and one template switched off for this event. Both send gates pass, so the quiet positive confirmation shows. |
-| **SendingBlocked** | Identical to **Configured**, but both event send gates fail — the warning block explains that nothing will send, and the toggle rows are de-emphasised |
+| **Configured** | Fully set up — every conditional revealed, matching the populated capture, plus a written non-compliance policy and one template switched off for this event. |
+
+### Removed 2026-08-07 — DES-432 · P0-8
+
+This tab previously carried an **event-level send eligibility** block above the
+toggles (two gates: hotel cutoff not passed, a booking link live), plus a whole
+**SendingBlocked** story showing the failure state with the toggle rows dimmed.
+
+Both are gone. P0-8 was never requested as a mock — it was added to the design
+without being asked for, and review asked for it to come out.
 
 The checkboxes are live: ticking *Compliance Tracking* or the two *Team Selection
 Required* boxes reveals their dependent fields, so **Default** turns into
@@ -153,48 +141,6 @@ const compliance = `
  * off complianceTracking exactly like the Compliance card.
  */
 
-/* DES-432 / P0-8 — event-level send eligibility, rendered ABOVE the toggles.
- *
- * Two EVENT gates (last hotel cutoff not passed, at least one booking link
- * live) must BOTH pass or the daily 6am EST job sends nothing for the event,
- * whatever the per-template toggles say. Passing = a quiet positive line;
- * failing = a loud warning plus dimmed toggle rows. No forecasting here — next
- * send date / team counts are DES-437 (PipeSights), explicitly out of scope. */
-const sendGatesBlock = `
-      <div v-if="canSend"
-        style="max-width:760px; margin-bottom:18px; padding:10px 14px; border-radius:var(--ds-radius-md);
-               background:var(--ds-color-background-success);
-               border:1px solid var(--ds-color-background-success-bold);
-               color:var(--ds-color-text-success); font-size:0.8125rem; line-height:1.5;">
-        <div class="row items-center no-wrap" style="gap:6px;">
-          <q-icon name="check_circle" size="16px" style="flex:none;" />
-          <div style="font-weight:700;">This event is eligible to send.</div>
-        </div>
-        <div v-for="g in sendGates" :key="'pass-' + g.key" style="margin-left:22px; margin-top:2px;">
-          {{ g.label }} &mdash; {{ g.value }}
-        </div>
-      </div>
-
-      <div v-else
-        style="max-width:760px; margin-bottom:18px; padding:12px 16px; border-radius:var(--ds-radius-md);
-               background:var(--ds-color-background-warning);
-               border:1px solid var(--ds-color-background-warning-bold);
-               color:var(--ds-color-text-warning); line-height:1.5;">
-        <div class="row items-center no-wrap" style="gap:8px;">
-          <q-icon name="warning" size="20px" style="flex:none;" />
-          <div style="font-weight:700;">No Teams Management emails will send for this event.</div>
-        </div>
-        <div style="font-size:0.8125rem; margin:6px 0 0 28px;">
-          The daily send is blocked at the event level. Until this is resolved <strong>nothing</strong>
-          sends for this event, no matter how the templates below are toggled.
-        </div>
-        <div v-for="g in failedGates" :key="'fail-' + g.key" style="font-size:0.8125rem; margin:10px 0 0 28px;">
-          <div style="font-weight:700;">{{ g.label }}</div>
-          <div>{{ g.value }}</div>
-          <div style="opacity:0.85;">{{ g.detail }}</div>
-        </div>
-      </div>`
-
 const eventComms = `
   <q-card v-if="complianceTracking" flat bordered style="${CARD}">
     <q-card-section style="${CARD_BODY}">
@@ -209,9 +155,7 @@ const eventComms = `
         New events inherit the company-level on/off state.
       </div>
 
-${sendGatesBlock}
-
-      <div :style="canSend ? 'max-width:760px;' : 'max-width:760px; opacity:0.5;'">
+      <div style="max-width:760px;">
         <div v-for="(t, ti) in tmTemplates" :key="t.key">
           <q-separator v-if="ti" />
           <div class="row items-center no-wrap" style="padding:14px 0; gap:24px;">
@@ -281,10 +225,6 @@ const MERGE_HINT = 'Optional. When filled, this text is inserted into Teams Mana
   + MERGE_FIELD + ' merge field. Leave it blank and that section is omitted from the email entirely.'
 
 const state = (over = {}) => () => {
-  /* DES-432 / P0-8 — copied so a story never mutates the shared fixture, and
-   * held in a local const so canSend / failedGates can derive from it. */
-  const sendGates = ref((over.sendGates ?? EVENT_SEND_GATES).map((g) => ({ ...g })))
-
   return {
     tab: ref('registration'),
     entity: ref(over.entity ?? null),
@@ -310,10 +250,6 @@ const state = (over = {}) => () => {
     mergeHint: MERGE_HINT,
     // DES-425 / P0-1 — copies, so toggling in one story never mutates the fixture.
     tmTemplates: ref(TM_TEMPLATES.map((t) => ({ ...t }))),
-    // DES-432 / P0-8 — event-level send eligibility.
-    sendGates,
-    canSend: computed(() => sendGates.value.every((g) => g.passing)),
-    failedGates: computed(() => sendGates.value.filter((g) => !g.passing)),
     evt: EVENT,
   }
 }
@@ -345,14 +281,3 @@ export const Configured = tmc2Page({
   slot: body,
 })
 Configured.parameters = { layout: 'fullscreen' }
-
-/** DES-432 / P0-8 — the same configured event, but both EVENT-level gates fail:
- *  the last hotel cutoff has passed and no booking link is live. Nothing sends,
- *  whatever the toggles say, so they are dimmed under the warning. */
-export const SendingBlocked = tmc2Page({
-  active: 'events',
-  components: { DsSelect, DsInput, DsField },
-  setup: state({ ...CONFIGURED, sendGates: EVENT_SEND_GATES_BLOCKED }),
-  slot: body,
-})
-SendingBlocked.parameters = { layout: 'fullscreen' }

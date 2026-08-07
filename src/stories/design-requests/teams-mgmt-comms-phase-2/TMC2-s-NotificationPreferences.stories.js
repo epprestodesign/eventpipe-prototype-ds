@@ -15,10 +15,11 @@ import { tmc2Page } from './_tmc2shell'
 import {
   COMPANY, COMPANY_SECTIONS_TOP, COMPANY_RECON, COMPANY_SECTIONS_BOTTOM,
   FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED, COMPLIANCE_STATUSES,
-  DEFAULT_EMAILS, MERGE_VALUES, EVENT, USER, SEND_PRIORITY, SEND_PRIORITY_NOTE,
+  DEFAULT_EMAILS, MERGE_VALUES, EVENT, USER,
 } from './_tmc2fixtures'
 import {
-  companyHeader, goBackLink, colHeaders, fromAddressCard, addReminderRow, templateActions,
+  companyHeader, goBackLink, colHeaders, fromAddressCard, fromAddressSectionStrip,
+  addReminderRow, templateActions,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL, COL_HEAD,
 } from './_tmc2'
 import { emailPaper, mergeFieldToggle, renderBody, resolveMergeFields, OPEN, CLOSE } from './_tmc2email'
@@ -60,12 +61,12 @@ editor comes back. **Click Edit on any template** to move between them.
 
 **Phase 2 requirements on this screen**
 
-- **DES-429 · P0-5 — From/Reply address.** Set once, at the top of the list, for
-  *all* Teams Management emails: Event Manager, Event Customer Support Contact,
-  or a custom *Other* address. Deliberately **not per template** and with **no
-  event-level override** — the event manager and support contact already vary by
-  event, which supplies the flexibility. The editor shows the resolved address
-  **read-only** so you can confirm what it sends as.
+- **DES-429 · P0-5 — From/Reply address.** Set once for *all* Teams Management
+  emails: Event Manager, Event Customer Support Contact, or a custom *Other*
+  address. Deliberately **not per template** and with **no event-level
+  override** — the event manager and support contact already vary by event,
+  which supplies the flexibility. **This is what V1 and V2 differ on** — see
+  the table below.
 - **DES-428 · P0-4 — N compliance reminders.** *+ Add Compliance Reminder* opens a
   minimal Name/Description dialog and appends a template that starts as a **copy
   of the standard Compliance Reminder**, marked Custom. Unlimited — the fixed
@@ -83,17 +84,36 @@ editor comes back. **Click Edit on any template** to move between them.
   editor's *Send test email to* field — asks for one address and sends there
   only. Test sends are deliberately **not written to a team's Communications
   Log**; that log is the record of automated sends (DES-433).
-- **DES-432 · P0-8 — One email per team per day.** A note in **Email Settings**
-  states the rule and the priority order (Welcome → Previously Compliant →
-  Compliance Reminder). It matters more now that reminders are unlimited
-  (DES-428): several can qualify on the same run, and only the highest-priority
-  one sends. No next-send forecast is shown — that is DES-437.
 - **DES-435 · P0-11 — Locked upsell** (\`Locked Upsell\` story): grayed-out Teams
   Management section, account-manager pitch, and a *concept* treatment for the
   locked **Compliance** nav entry that routes to an in-app value-prop page.
 
+### V1 vs V2 — DES-429 · P0-5
+
+| | **V1** | **V2** |
+| --- | --- | --- |
+| Where the config lives | Its own card above *every* section | Inside the **Teams Management** section it configures |
+| Size | Card: heading, Required chip, badge, four-line explainer, resolved-address footer | One row: the select, plus the custom field when *Other* |
+| What the editor shows as From | A concrete mailbox — *Johnny HoCo <johnny.hoco@traveloc.com>* | The role, and when it resolves — *Event Manager — resolved per event when the email sends* |
+
+**V2 exists because of three points in review.** The card was too bloated. The
+resolved address it showed was not truthful — *Event Manager* and *Event
+Customer Support Contact* are per-event roles, so no single mailbox is the
+answer, and the email preview inherited the same false certainty. And it read as
+independent of the section it belongs to.
+
+That last point drove the structure: the V2 strip is built as a **generic
+per-section config slot**, not a one-off for From/Reply. When *Guests* and
+*Hotels* sections arrive with their own parameters, they fill the same slot,
+rather than each adding another free-floating card at the top of the page.
+
 Template copy is editable in the **Controls** panel and lives in
 \`tmc2-content.json\`.
+
+### Removed 2026-08-07 — DES-432 · P0-8
+
+**Email Settings** previously carried a *One email per team per day* note with
+the priority order. P0-8 was never requested as a mock, so it is gone.
 
 > The **Publish content** toolbar addon is intentionally not wired to this fork —
 > its arg keys are prefixed \`tmc2\` so it cannot commit into DES-207's
@@ -165,7 +185,11 @@ const previewDialog = `
               Rendered with sample data for {{ eventName }}. Nothing is sent by opening this.
             </div>
           </div>
-          <q-btn flat round dense icon="close" color="grey-7" v-close-popup style="flex:none;" />
+          <!-- Closes by setting the model directly rather than with
+               v-close-popup: the directive resolves the popup it is inside at
+               runtime, and these templates are compiled at runtime too, so an
+               explicit handler is the one thing guaranteed to work here. -->
+          <q-btn flat round dense icon="close" color="grey-7" @click="closePreview" style="flex:none;" />
         </div>
       </q-card-section>
       <q-separator />
@@ -183,9 +207,12 @@ const previewDialog = `
       <q-separator />
       <q-card-section style="padding:14px 26px;">${testSendNote}</q-card-section>
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat no-caps color="primary" label="Close" v-close-popup />
+        <q-btn flat no-caps color="primary" label="Close" @click="closePreview" />
+        <!-- Hands off to the test dialog instead of opening it on top: two
+             stacked modals meant closing the test send revealed the preview
+             still sitting behind it, which reads as "it won't close". -->
         <q-btn unelevated no-caps color="primary" icon="outgoing_mail" label="Send test"
-          @click="openTestSend(previewTarget)" />
+          @click="testFromPreview" />
       </q-card-actions>
     </q-card>
   </q-dialog>`
@@ -234,7 +261,7 @@ const addReminderDialog = `
       </q-card-section>
       <q-card-actions align="right" class="q-pa-md">
         <q-btn flat no-caps color="primary" label="Cancel" v-close-popup />
-        <q-btn unelevated no-caps color="primary" label="Add template" :disable="!newName.trim()" @click="confirmAdd" />
+        <q-btn unelevated no-caps color="primary" label="Add Reminder" :disable="!newName.trim()" @click="confirmAdd" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -248,19 +275,48 @@ const addReminderDialog = `
     </template>
   </ds-confirm-dialog>`
 
+/* ---- V2 · DES-429 · P0-5 — section-level config strip.
+ *
+ * Review of V1: the From/Reply card was too bloated, showed a concrete resolved
+ * address it cannot actually know, and "feels independent of the Teams
+ * Management Communications section ... over time there will be more sections
+ * like Guests, Hotels, and each of those may have specific config parameters".
+ *
+ * So this is deliberately built as a GENERIC per-section config slot, not a
+ * one-off for From/Reply: it renders inside the section it configures, directly
+ * under the section header, and any future section can fill the same slot with
+ * its own parameters. One row, no heading, no badge, no prose block.
+ *
+ * It states that the address is resolved per event rather than naming one,
+ * which is the honest answer — Event Manager and Customer Support Contact both
+ * vary by event, so no single address is correct here. */
+const sectionConfigStrip = `
+  <template v-if="s.name === 'Teams Management'">
+    ${fromAddressSectionStrip}
+  </template>`
+
 /* ---- View 1: the preferences list ---- */
-const listView = `
+const makeListView = (variant) => `
   <div style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
     ${notice}
     <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
-    ${fromAddressCard}
+    ${variant === 'v2' ? '' : fromAddressCard}
     <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
       <q-card flat bordered v-for="s in sections" :key="s.name">
         <q-expansion-item :default-opened="s.open" :label="s.name" header-class="text-primary text-weight-bold">
           <q-separator />
+          ${variant === 'v2' ? sectionConfigStrip : ''}
           ${colHeaders}
           <template v-for="(it, i) in s.items" :key="it.id">
             <q-separator v-if="i > 0" />
+            <!-- DES-428 · P0-4 — the only marker separating the closed set of
+                 fixed templates above from the open-ended reminders below.
+                 Deliberately a quiet label, not a heading or a second card. -->
+            <div v-if="startsReminderGroup(s, i)"
+              style="padding:14px 28px 2px; font-size:0.75rem; font-weight:600; letter-spacing:0.04em;
+                     text-transform:uppercase; color:var(--ds-color-text-subtle);">
+              Compliance Reminders
+            </div>
             <div style="padding:8px 28px;">
               <ds-list-item :subtitle="it.desc" :bordered="false">
                 <template #title>
@@ -332,30 +388,6 @@ const emailSettings = `
               </q-card-section>
             </q-card>
 
-            <!-- One-per-day priority rule (DES-432 · P0-8). Informational only —
-                 no next-send date or forecast, that is DES-437. -->
-            <q-card flat bordered class="q-mt-md" style="background:var(--ds-color-surface);">
-              <q-card-section style="padding:18px 22px;">
-                <div class="row items-center no-wrap q-gutter-sm q-mb-xs">
-                  <q-icon name="low_priority" size="18px" color="grey-7" style="flex:none;" />
-                  <div class="text-weight-bold text-grey-9">One email per team per day</div>
-                </div>
-                <div class="text-grey-8" style="font-size:0.8125rem; line-height:1.5; max-width:640px;">
-                  {{ sendPriorityNote }}
-                </div>
-                <ol style="margin:10px 0 0; padding-left:22px; font-size:0.8125rem; line-height:1.8; color:var(--ds-color-text);">
-                  <li v-for="(p, i) in sendPriority" :key="p">
-                    {{ p }}
-                    <span v-if="i === 0" class="text-grey-7">— highest priority, wins over the rest</span>
-                  </li>
-                </ol>
-                <div class="text-grey-8 q-mt-sm" style="font-size:0.8125rem; line-height:1.5; max-width:640px;">
-                  This bites harder now that you can add as many compliance reminders as you like:
-                  ten reminders whose schedules overlap still produce <b>one</b> email, and a Welcome
-                  Email or Previously Compliant Notice due the same day outranks every one of them.
-                </div>
-              </q-card-section>
-            </q-card>
 
             <q-card flat bordered class="q-mt-md" style="background:var(--ds-color-surface);">
               <q-card-section style="padding:18px 22px;">
@@ -419,7 +451,7 @@ const emailSettings = `
   </div>`
 
 /* ---- View 2: the template editor ---- */
-const editorView = `
+const makeEditorView = (variant) => `
   <div style="padding:20px 32px 40px; background:var(--ds-color-surface-sunken); min-height:100%;">
     <div class="q-mb-md">${goBackLink}</div>
     <q-card flat bordered>
@@ -429,7 +461,19 @@ const editorView = `
             <h2 style="margin:0; font-size:1.375rem; font-weight:700; color:var(--ds-color-text);">{{ editing?.title || 'Compliance Reminder' }}</h2>
             <q-badge outline color="primary" class="q-px-sm q-py-xs">{{ isReminder ? 'Recurring reminder' : 'Triggered email' }}</q-badge>
           </div>
-          <div class="row q-gutter-sm">
+          <div class="row items-center q-gutter-sm">
+            <!-- DES-428 · P0-4 — delete the template you are looking at.
+                 Only user-added reminders: the seeded three are a fixed set and
+                 can only be reverted. Kept visually quiet and separated from the
+                 primary actions so it is never the accidental click. -->
+            <q-btn v-if="editing && editing.userAdded" flat no-caps color="negative"
+              icon="delete" label="Delete" @click="deleteEditing" />
+            ${variant === 'v2' ? `
+            <!-- V2 only — preview from the editor header, beside Cancel. In V1
+                 preview is reachable only from the row menu on the list, which
+                 means backing out of the template to see what it looks like. -->
+            <q-btn flat no-caps color="primary" icon="visibility" label="Preview email"
+              @click="openPreview(editing)" />` : ''}
             <q-btn outline no-caps color="primary" label="Cancel" @click="goBack" />
             <q-btn unelevated no-caps color="primary" label="Save" @click="goBack" />
           </div>
@@ -444,7 +488,7 @@ const editorView = `
             <div class="row items-center no-wrap" style="gap:10px; padding:7px 12px; border:1px solid var(--ds-color-border);
               border-radius:var(--ds-radius-md); background:var(--ds-color-surface-sunken);">
               <q-icon name="lock" size="16px" color="grey-7" />
-              <span style="font-size:0.9375rem; color:var(--ds-color-text);">{{ resolvedFrom }}</span>
+              <span style="font-size:0.9375rem; color:var(--ds-color-text);">{{ fromDisplay }}</span>
               <q-space />
               <q-btn flat dense no-caps color="primary" label="Change" @click="goBack" style="flex:none;" />
             </div>
@@ -462,10 +506,11 @@ const editorView = `
               </template>
             </q-input>
           </ds-field>
+          ${variant === 'v2' ? '' : `
           <div class="q-mt-sm row items-center q-gutter-md no-wrap">
             <q-btn flat dense no-caps color="primary" icon="visibility" label="Preview email"
               @click="openPreview(editing)" style="flex:none;" />
-          </div>
+          </div>`}
           <div class="q-mt-sm">${testSendNote}</div>
         </div>
 
@@ -492,11 +537,11 @@ const generalTab = `
     </div>
   </div>`
 
-const body = `
+const makeBody = (variant) => `
   ${companyHeader}
   <div v-show="tab === 'notifications'">
-    <div v-if="view === 'list'">${listView}</div>
-    <div v-else>${editorView}</div>
+    <div v-if="view === 'list'">${makeListView(variant)}</div>
+    <div v-else>${makeEditorView(variant)}</div>
     <!-- Both dialogs live outside the view switch so a test send is reachable
          from the list, the preview modal and the editor (DES-436 · P1-1). -->
     ${previewDialog}
@@ -539,28 +584,36 @@ const SEED_TYPE_BY_TITLE = {
 const SEED_TYPES = SECTIONS.map((s) =>
   s.items.map((it) => (s.name === TM_SECTION ? (SEED_TYPE_BY_TITLE[it.title] || 'compliance-reminder') : 'other')))
 
+const isReminder = (it) => it.type === 'compliance-reminder'
+
 function sectionsFromArgs(args = {}, added = []) {
-  return SECTIONS.map((s, si) => ({
-    ...s,
-    items: [
-      ...s.items.map((it, ii) => ({
-        ...it,
-        id: `s${si}i${ii}`,
-        type: SEED_TYPES[si][ii],
-        title: args[`tmc2s${si}i${ii}_title`] ?? it.title,
-        desc: args[`tmc2s${si}i${ii}_desc`] ?? it.desc,
-      })),
-      // User-added compliance reminders (DES-428 · P0-4) live in their own ref so
-      // a Controls edit rebuilding the list does not drop them.
-      ...(s.name === TM_SECTION ? added : []),
-    ],
-  }))
+  return SECTIONS.map((s, si) => {
+    const seeded = s.items.map((it, ii) => ({
+      ...it,
+      id: `s${si}i${ii}`,
+      type: SEED_TYPES[si][ii],
+      title: args[`tmc2s${si}i${ii}_title`] ?? it.title,
+      desc: args[`tmc2s${si}i${ii}_desc`] ?? it.desc,
+    }))
+    if (s.name !== TM_SECTION) return { ...s, items: seeded }
+    /* DES-428 · P0-4 — fixed-type templates first, reminders after.
+     * Welcome, Previously Compliant and Compliance Achieved are a closed set:
+     * exactly one of each, forever. Compliance Reminders are open-ended and
+     * grow, so they sort last — otherwise every reminder a Hoco adds lands in
+     * among the fixed templates and the order reads as arbitrary.
+     * `added` is spread by reference, not copied, so a Send-Email toggle on a
+     * user-added row survives a Controls edit rebuilding the list. */
+    return {
+      ...s,
+      items: [...seeded.filter((it) => !isReminder(it)), ...seeded.filter(isReminder), ...added],
+    }
+  })
 }
 
 const COMPONENTS = { DsListItem, DsSectionHeader, DsInfoGrid, DsConfirmDialog, DsField, DsInput, DsSelect, DsRichTextEditor }
 const SETTINGS_SECTIONS = [...COMPANY_SECTIONS_TOP, { title: 'Reconciliation & Invoice Settings', items: COMPANY_RECON }, ...COMPANY_SECTIONS_BOTTOM]
 
-export const NotificationPreferences = tmc2Page({
+const makeStory = (variant) => tmc2Page({
   active: 'none',
   components: COMPONENTS,
   setup: (args) => {
@@ -584,6 +637,15 @@ export const NotificationPreferences = tmc2Page({
     const resolvedFrom = computed(() => (fromAddress.value === 'Other'
       ? (fromAddressCustom.value || 'Custom address not set yet')
       : (FROM_ADDRESS_RESOLVED[fromAddress.value] || fromAddress.value)))
+    /* What the editor and the email preview show as the From line.
+     * V1 resolves to one concrete mailbox. Review called that out: the first two
+     * options are per-event roles, so no single address is truthful. V2 shows
+     * the role instead, and says where the address comes from. `Other` is a
+     * literal address in both, so it resolves the same either way. */
+    const fromDisplay = computed(() => {
+      if (variant !== 'v2' || fromAddress.value === 'Other') return resolvedFrom.value
+      return fromAddress.value + ' — resolved per event when the email sends'
+    })
 
     /* Email preview + test send (DES-436 · P1-1).
      * A row is matched to a seeded template by `type`, so every row — including
@@ -605,6 +667,9 @@ export const NotificationPreferences = tmc2Page({
       ? OPEN + 'team_contact_email' + CLOSE
       : MERGE_VALUES.team_contact_email))
     const openPreview = (it) => { previewTarget.value = it; showRaw.value = false; previewOpen.value = true }
+    const closePreview = () => { previewOpen.value = false }
+    // Preview → test send is a hand-off, not a stack: close one, open the other.
+    const testFromPreview = () => { const it = previewTarget.value; previewOpen.value = false; openTestSend(it) }
 
     // Test send — reachable from the row menu, the preview modal and the editor.
     const testOpen = ref(false)
@@ -689,7 +754,21 @@ export const NotificationPreferences = tmc2Page({
     const confirmDelete = () => {
       const i = added.value.indexOf(deleteTarget.value)
       if (i !== -1) added.value.splice(i, 1)
+      // Deleting from inside the editor has to leave the editor — the template
+      // it is editing no longer exists.
+      if (view.value === 'editor') { editing.value = null; view.value = 'list' }
     }
+    // Delete from the editor's own header (DES-428 · P0-4). Same dialog and same
+    // rule as the row menu: only user-added reminders can be deleted.
+    const deleteEditing = () => { if (editing.value?.userAdded) openDelete(editing.value) }
+
+    /* DES-428 · P0-4 — true on the first Compliance Reminder in the Teams
+     * Management section, which is where the group label goes. Derived from
+     * position rather than stamped on the items so the row objects stay
+     * referentially intact for Send-Email toggles. */
+    const startsReminderGroup = (s, i) => s.name === TM_SECTION
+      && s.items[i].type === 'compliance-reminder'
+      && (i === 0 || s.items[i - 1].type !== 'compliance-reminder')
 
     // editor state
     const content = ref(DEFAULT_CONTENT)
@@ -732,42 +811,68 @@ export const NotificationPreferences = tmc2Page({
       company: COMPANY, settingsSections: SETTINGS_SECTIONS,
       sections, tab: ref('notifications'), noticeShown: ref(true),
       view, editing, openEditor, goBack, isReminder,
-      fromAddress, fromAddressCustom, resolvedFrom, fromOptions: FROM_ADDRESS_OPTIONS,
+      fromAddress, fromAddressCustom, resolvedFrom, fromDisplay, fromOptions: FROM_ADDRESS_OPTIONS,
       baseReminder, addOpen, newName, newDesc, openAdd, confirmAdd,
-      deleteOpen, deleteTarget, openDelete, confirmDelete,
+      deleteOpen, deleteTarget, openDelete, confirmDelete, deleteEditing, startsReminderGroup,
       revertOpen, revertTarget, openRevert, confirmRevert, onToggleSend,
       // Preview + test send (DES-436 · P1-1). `fromLine` / `toLine` / `bodyLines`
       // / `subjectLine` / `eventName` are the contract of the shared emailPaper.
       previewOpen, previewTarget, previewEmail, previewTitle, openPreview, showRaw,
-      bodyLines, subjectLine, toLine, fromLine: resolvedFrom, eventName: EVENT.name,
+      closePreview, testFromPreview,
+      bodyLines, subjectLine, toLine, fromLine: fromDisplay, eventName: EVENT.name,
       testOpen, testTarget, testTitle, testEmail, openTestSend, confirmTestSend, sendEditorTest,
-      // One-per-day priority rule (DES-432 · P0-8).
-      sendPriority: SEND_PRIORITY, sendPriorityNote: SEND_PRIORITY_NOTE,
       content, preview, bcc, showSettings, begin, end, statuses, recipients,
       statusOptions: COMPLIANCE_STATUSES,
       showCustom, every, unit, days, ends, endsOn, endsAfter, options, rec, onSelect, toggleDay, done, DAY_LABELS,
     }
   },
-  slot: body,
+  slot: makeBody(variant),
 })
-NotificationPreferences.parameters = {
-  layout: 'fullscreen',
-  implementation: {
-    intro: 'Vue 3 + Quasar (TypeScript) reference — the real components behind this screen. Page → Section → Row for the list; Editor → ReminderSettings → RecurrenceField for the drill-in.',
-    files: [
-      { name: 'useNotificationPreferences.ts', lang: 'typescript', code: composableSrc },
-      { name: 'NotificationRow.vue', lang: 'html', code: rowSrc },
-      { name: 'NotificationSection.vue', lang: 'html', code: sectionSrc },
-      { name: 'NotificationsPreferencesPage.vue', lang: 'html', code: pageSrc },
-      { name: 'useRecurrence.ts', lang: 'typescript', code: recurrenceSrc },
-      { name: 'RecurrenceField.vue', lang: 'html', code: recurrenceFieldSrc },
-      { name: 'ReminderSettings.vue', lang: 'html', code: reminderSettingsSrc },
-      { name: 'ComplianceReminderEditor.vue', lang: 'html', code: editorSrc },
-    ],
-  },
+
+/* V1 — the original: From/Reply as its own card above every section, resolving
+ * to one concrete address. Kept unchanged so the review comparison holds. */
+export const V1 = makeStory('v1')
+
+/* V2 — DES-429 review. Three changes, all from the same feedback:
+ *  1. The config moved INSIDE the Teams Management section it configures,
+ *     as a generic per-section slot future sections (Guests, Hotels) can reuse.
+ *  2. Trimmed from a full card — heading, Required chip, badge, four-line
+ *     explainer, resolved-address footer — to a single row.
+ *  3. No concrete resolved address anywhere. The first two options are
+ *     per-event roles, so naming one mailbox was never truthful; the editor and
+ *     the email preview now show the role and say when it resolves. */
+export const V2 = makeStory('v2')
+
+const IMPLEMENTATION = {
+  intro: 'Vue 3 + Quasar (TypeScript) reference — the real components behind this screen. Page → Section → Row for the list; Editor → ReminderSettings → RecurrenceField for the drill-in.',
+  files: [
+    { name: 'useNotificationPreferences.ts', lang: 'typescript', code: composableSrc },
+    { name: 'NotificationRow.vue', lang: 'html', code: rowSrc },
+    { name: 'NotificationSection.vue', lang: 'html', code: sectionSrc },
+    { name: 'NotificationsPreferencesPage.vue', lang: 'html', code: pageSrc },
+    { name: 'useRecurrence.ts', lang: 'typescript', code: recurrenceSrc },
+    { name: 'RecurrenceField.vue', lang: 'html', code: recurrenceFieldSrc },
+    { name: 'ReminderSettings.vue', lang: 'html', code: reminderSettingsSrc },
+    { name: 'ComplianceReminderEditor.vue', lang: 'html', code: editorSrc },
+  ],
 }
-NotificationPreferences.argTypes = TEMPLATE_ARG_TYPES
-NotificationPreferences.args = TEMPLATE_ARGS
+
+// Both versions share the same Controls and the same implementation reference —
+// they differ only in where the From/Reply config sits and how it reports.
+// Assigned explicitly rather than in a loop: Storybook's CSF indexer reads these
+// statically, and a loop leaves it with nothing to find.
+// Without an explicit name Storybook renders the export as "V 1" — it splits on
+// the digit boundary.
+V1.storyName = 'V1'
+V2.storyName = 'V2'
+
+V1.parameters = { layout: 'fullscreen', implementation: IMPLEMENTATION }
+V1.argTypes = TEMPLATE_ARG_TYPES
+V1.args = TEMPLATE_ARGS
+
+V2.parameters = { layout: 'fullscreen', implementation: IMPLEMENTATION }
+V2.argTypes = TEMPLATE_ARG_TYPES
+V2.args = TEMPLATE_ARGS
 
 /* ---- Locked / upsell: company without Teams Management (DES-435 · P0-11) ---- */
 const upsellBanner = `

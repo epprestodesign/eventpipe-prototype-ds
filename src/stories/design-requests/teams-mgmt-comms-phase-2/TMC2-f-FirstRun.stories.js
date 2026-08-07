@@ -9,7 +9,8 @@ import { ref, computed } from 'vue'
 import { tmc2Page } from './_tmc2shell'
 import { COMPANY, DEFAULT_EMAILS, FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED } from './_tmc2fixtures'
 import {
-  companyHeader, colHeaders, fromAddressCard, addReminderRow, templateActions,
+  companyHeader, colHeaders, fromAddressCard, fromAddressSectionStrip,
+  addReminderRow, templateActions,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL,
 } from './_tmc2'
 import DsListItem from './components/DsListItem.vue'
@@ -66,10 +67,11 @@ const firstRunBanner = `
   </div>`
 
 
-const seededList = `
+const makeSeededList = (variant) => `
   <q-card flat bordered>
     <q-expansion-item default-opened label="Teams Management" header-class="text-primary text-weight-bold">
       <q-separator />
+      ${variant === 'v2' ? fromAddressSectionStrip : ''}
       ${colHeaders}
       <template v-for="(it, i) in seeded" :key="it.key">
         <q-separator v-if="i > 0" />
@@ -95,7 +97,7 @@ const seededList = `
     </q-expansion-item>
   </q-card>`
 
-export const FirstRun = tmc2Page({
+const makeFirstRun = (variant) => tmc2Page({
   active: 'none',
   components: { DsListItem, DsSectionHeader, DsSelect, DsInput },
   setup: () => {
@@ -126,12 +128,26 @@ export const FirstRun = tmc2Page({
       ${firstRunBanner}
       <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
       <div style="margin-top:12px;">
-        ${fromAddressCard}
-        ${seededList}
+        ${variant === 'v2' ? '' : fromAddressCard}
+        ${makeSeededList(variant)}
       </div>
     </div>
     <div v-show="tab === 'general'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
       <div class="text-grey-7">General company settings.</div>
     </div>`,
 })
+
+/** V1 — From/Reply as its own card above the section. Export name kept as
+ *  `FirstRun` so the published `--first-run` URL already shared with the team
+ *  keeps working; only the displayed name changes. */
+export const FirstRun = makeFirstRun('v1')
+FirstRun.storyName = 'V1'
 FirstRun.parameters = { layout: 'fullscreen' }
+
+/** V2 — the same first-run state with the DES-429 review applied: the From/Reply
+ *  config moves inside the Teams Management section, as the same shared strip
+ *  the configured screen uses (fromAddressSectionStrip in _tmc2.js), so the two
+ *  screens cannot drift. */
+export const FirstRunV2 = makeFirstRun('v2')
+FirstRunV2.storyName = 'V2'
+FirstRunV2.parameters = { layout: 'fullscreen' }
