@@ -101,18 +101,51 @@ export const templateActions = ({ onEdit = 'openEditor', onRevert = '', onDelete
  *  Deliberately NOT rendered on the template editor: that view has its own
  *  Cancel / Save in the header, right beside the field being edited, and two
  *  competing save affordances on one screen is worse than either alone. */
+/* Transition CSS for the save bar, injected once per session.
+ *
+ * Injected here rather than rendered as a <style> inside the Vue template: these
+ * are runtime-compiled template strings, and whether a <style> element inside one
+ * reliably applies is not something worth depending on. Guarded on `document`
+ * because Storybook's indexer evaluates these modules in Node at build time.
+ *
+ * Hand-written rather than using a Quasar slide transition because the bar's
+ * centring already owns translateX, and a canned slide would overwrite it. */
+const SAVE_BAR_STYLE_ID = 'tmc2-savebar-transition'
+if (typeof document !== 'undefined' && !document.getElementById(SAVE_BAR_STYLE_ID)) {
+  const el = document.createElement('style')
+  el.id = SAVE_BAR_STYLE_ID
+  el.textContent = `
+    .tmc2-savebar-enter-active { transition: transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1), opacity 200ms ease-out; }
+    .tmc2-savebar-leave-active { transition: transform 180ms cubic-bezier(0.4, 0, 1, 1), opacity 140ms ease-in; }
+    .tmc2-savebar-enter-from,
+    .tmc2-savebar-leave-to { transform: translateY(calc(100% + 28px)); opacity: 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .tmc2-savebar-enter-active,
+      .tmc2-savebar-leave-active { transition: opacity 160ms linear; }
+      .tmc2-savebar-enter-from,
+      .tmc2-savebar-leave-to { transform: none; opacity: 0; }
+    }`
+  document.head.appendChild(el)
+}
+
 export const unsavedChangesBar = `
-  <transition name="q-transition--fade">
-    <div v-if="dirty" role="status" aria-live="polite"
-      style="position:fixed; left:50%; bottom:28px; transform:translateX(-50%); z-index:3000;
-             display:flex; align-items:center; gap:12px; padding:10px 12px 10px 22px;
-             background:rgba(72,72,72,0.94); border-radius:var(--ds-radius-lg);
-             box-shadow:0 6px 24px rgba(0,0,0,0.28);">
-      <span style="color:#fff; font-size:0.9375rem; font-weight:500; white-space:nowrap;">Unsaved Changes</span>
-      <q-btn unelevated no-caps color="white" text-color="primary" label="Discard" @click="discardChanges" />
-      <q-btn unelevated no-caps color="primary" label="Save" @click="saveChanges" />
-    </div>
-  </transition>`
+  <!-- The wrapper is fixed and holds the horizontal centring; the bar inside it
+       animates on Y alone, so the two transforms never fight. pointer-events are
+       off on the wrapper so the empty strip cannot swallow clicks. -->
+  <div style="position:fixed; left:50%; bottom:28px; transform:translateX(-50%);
+              z-index:3000; pointer-events:none;">
+    <transition name="tmc2-savebar">
+      <div v-if="dirty" role="status" aria-live="polite"
+        style="display:flex; align-items:center; gap:12px; padding:10px 12px 10px 22px;
+               pointer-events:auto;
+               background:rgba(72,72,72,0.94); border-radius:var(--ds-radius-lg);
+               box-shadow:0 6px 24px rgba(0,0,0,0.28);">
+        <span style="color:#fff; font-size:0.9375rem; font-weight:500; white-space:nowrap;">Unsaved Changes</span>
+        <q-btn unelevated no-caps color="white" text-color="primary" label="Discard" @click="discardChanges" />
+        <q-btn unelevated no-caps color="primary" label="Save" @click="saveChanges" />
+      </div>
+    </transition>
+  </div>`
 
 /** DES-429 · P0-5 — per-section config strip.
  *
@@ -135,14 +168,26 @@ export const fromAddressSectionStrip = `
   <div style="padding:14px 28px; background:var(--ds-color-surface-sunken);">
     <div class="row items-start no-wrap q-gutter-md">
       <div style="width:270px; flex:none;">
-        <ds-select v-model="fromAddress" :options="fromOptions" label="From/Reply Address" required />
+        <ds-select v-model="fromAddress" :options="fromOptions" label="From/Reply Address" required
+          clearable placeholder="Select an address" />
       </div>
       <div v-if="fromAddress === 'Other'" style="width:270px; flex:none;">
         <ds-input v-model="fromAddressCustom" type="email" label="Custom From Address" required
           placeholder="teams@traveloc.com" />
       </div>
     </div>
-    <div class="text-grey-7" style="font-size:0.8125rem; line-height:1.5; margin-top:8px; white-space:nowrap;">
+    <!-- Unset is a blocking state, not a neutral one: with no address the daily
+         job has nothing to send as, so every template in the section is stalled
+         however it is configured. The line SWAPS rather than stacking, so the
+         strip stays one row of help either way. -->
+    <div v-if="!fromAddress" class="row items-center no-wrap"
+      style="gap:6px; margin-top:8px; font-size:0.8125rem; line-height:1.5;
+             color:var(--ds-color-text-warning); white-space:nowrap;">
+      <q-icon name="warning" size="16px" style="flex:none;" />
+      <span><b>Required.</b> No Teams Management email can send until this is set &mdash; not even
+        templates switched on for an event.</span>
+    </div>
+    <div v-else class="text-grey-7" style="font-size:0.8125rem; line-height:1.5; margin-top:8px; white-space:nowrap;">
       Applies to every template in this section. Event Manager and Customer Support Contact
       differ from event to event, so the actual address is resolved as each email sends.
     </div>

@@ -221,6 +221,34 @@ export const COMPLIANCE_STATUSES = [
  */
 const mf = (name) => '{' + '{' + name + '}' + '}'
 
+/* Every Teams Management email is the same eight paragraphs in the same order.
+ * The skeleton lives here rather than being retyped four times, so the shape is
+ * enforced instead of merely conventional: a team gets a recognisable email
+ * whichever one arrives, and a new template cannot drift out of the pattern.
+ *
+ *   1  Greeting
+ *   2  Situation   — why this email exists. Differs per type.
+ *   3  Numbers     — requirement, booked, remaining. Differs per type.
+ *   4  Group block info   — drops out when the team has none.
+ *   5  Action      — where to book. Differs per type.
+ *   6  Cutoff      — the date that matters.
+ *   7  Non-compliance policy — drops out when the event has not set one.
+ *   8  Sign-off
+ *
+ * Slots 4 and 7 are merge fields alone. renderBody removes any paragraph that
+ * resolves to nothing, so an event with no policy and a team with no group block
+ * simply receive a six-paragraph email — no blank lines, no orphan headings. */
+const emailBody = ({ situation, numbers, action, cutoff }) => [
+  `Hi ${mf('team_contact_name')},`,
+  situation,
+  numbers,
+  mf('team_group_block_info'),
+  action,
+  cutoff,
+  mf('noncompliance_policy'),
+  `Questions? Contact ${mf('event_manager_name')} at ${mf('event_manager_email')}.`,
+]
+
 export const DEFAULT_EMAILS = [
   {
     key: 'welcome',
@@ -233,16 +261,12 @@ export const DEFAULT_EMAILS = [
       { label: 'Recipients', value: 'Team Housing Contact' },
       { label: 'Scheduling', value: 'One-time — sent once per team' },
     ],
-    body: [
-      `Hi ${mf('team_contact_name')},`,
-      `${mf('entity_name')} is registered for ${mf('event_name')} in ${mf('event_start_date')} – ${mf('event_end_date')}. This event is Stay-to-Play, which means teams are asked to book their rooms through the official event housing block.`,
-      `Your requirement is ${mf('compliance_goal')} ${mf('compliance_criteria')}. Nothing has been booked yet.`,
-      `You can book here: ${mf('booking_link')}`,
-      `${mf('team_group_block_info')}`,
-      `The last date to book at event rates is ${mf('last_cutoff_date')} — ${mf('days_until_cutoff')} from today.`,
-      `${mf('noncompliance_policy')}`,
-      `Questions? Contact ${mf('event_manager_name')} at ${mf('event_manager_email')}.`,
-    ],
+    body: emailBody({
+      situation: `${mf('entity_name')} is registered for ${mf('event_name')}, ${mf('event_start_date')} – ${mf('event_end_date')}. This event is Stay-to-Play, which means teams are asked to book their rooms through the official event housing block.`,
+      numbers: `The requirement is ${mf('compliance_goal')} ${mf('compliance_criteria')}. Currently booked: ${mf('compliance_progress_booked')}. Short by ${mf('compliance_progress_remaining')}.`,
+      action: `You can book here: ${mf('booking_link')}`,
+      cutoff: `The last date to book at event rates is ${mf('last_cutoff_date')}, ${mf('days_until_cutoff')} from today.`,
+    }),
   },
   {
     key: 'compliance-reminder',
@@ -257,16 +281,12 @@ export const DEFAULT_EMAILS = [
       { label: 'Compliance statuses', value: 'Not Started, In Progress, Previously Compliant' },
       { label: 'Recipients', value: 'Team Housing Contact, Group Block Creators' },
     ],
-    body: [
-      `Hi ${mf('team_contact_name')},`,
-      `A reminder about the Stay-to-Play requirement for ${mf('event_name')}, which starts in ${mf('days_until_event')}.`,
-      `${mf('entity_name')} has booked ${mf('compliance_progress_booked')} of ${mf('compliance_goal')} ${mf('compliance_criteria')} — ${mf('compliance_progress_remaining')} to go.`,
-      `${mf('team_group_block_info')}`,
-      `Book here: ${mf('booking_link')}`,
-      `Rooms at event rates are released after ${mf('last_cutoff_date')}, ${mf('days_until_cutoff')} from today.`,
-      `${mf('noncompliance_policy')}`,
-      `Questions? Contact ${mf('event_manager_name')} at ${mf('event_manager_email')}.`,
-    ],
+    body: emailBody({
+      situation: `A reminder about the Stay-to-Play requirement for ${mf('event_name')}, which starts in ${mf('days_until_event')}.`,
+      numbers: `The requirement is ${mf('compliance_goal')} ${mf('compliance_criteria')}. Currently booked: ${mf('compliance_progress_booked')}. Short by ${mf('compliance_progress_remaining')}.`,
+      action: `You can book here: ${mf('booking_link')}`,
+      cutoff: `The last date to book at event rates is ${mf('last_cutoff_date')}, ${mf('days_until_cutoff')} from today.`,
+    }),
   },
   {
     key: 'previously-compliant',
@@ -279,16 +299,34 @@ export const DEFAULT_EMAILS = [
       { label: 'Recipients', value: 'Team Housing Contact, Group Block Creators' },
       { label: 'Scheduling', value: 'One-time — resets if the team becomes compliant again' },
     ],
-    body: [
-      `Hi ${mf('team_contact_name')},`,
-      `${mf('entity_name')} was previously meeting the Stay-to-Play requirement for ${mf('event_name')}, but recent changes have brought the booking count below it.`,
-      `The requirement is ${mf('compliance_goal')} ${mf('compliance_criteria')}. Currently booked: ${mf('compliance_progress_booked')}. Short by ${mf('compliance_progress_remaining')}.`,
-      `${mf('team_group_block_info')}`,
-      `You can rebook here: ${mf('booking_link')}`,
-      `The last date to book at event rates is ${mf('last_cutoff_date')}, ${mf('days_until_cutoff')} from today.`,
-      `${mf('noncompliance_policy')}`,
-      `Questions? Contact ${mf('event_manager_name')} at ${mf('event_manager_email')}.`,
+    body: emailBody({
+      situation: `${mf('entity_name')} was previously meeting the Stay-to-Play requirement for ${mf('event_name')}, but recent changes have brought the booking count below it.`,
+      numbers: `The requirement is ${mf('compliance_goal')} ${mf('compliance_criteria')}. Currently booked: ${mf('compliance_progress_booked')}. Short by ${mf('compliance_progress_remaining')}.`,
+      action: `You can rebook here: ${mf('booking_link')}`,
+      cutoff: `The last date to book at event rates is ${mf('last_cutoff_date')}, ${mf('days_until_cutoff')} from today.`,
+    }),
+  },
+  {
+    /* The one email that is not chasing anything. It keeps the same eight slots
+     * so the format holds, but every slot is turned to confirming rather than
+     * pressing — including the cutoff, which here is reassurance that there is
+     * still room to change plans rather than a deadline. */
+    key: 'compliance-achieved',
+    type: 'notice',
+    title: 'Compliance Achieved',
+    purpose: 'Sent once, when a team first meets its requirement. Confirms the team is done and names the one thing that would undo it.',
+    subject: `${mf('entity_name')} is all set for ${mf('event_name')}`,
+    settings: [
+      { label: 'Compliance statuses', value: 'Compliant' },
+      { label: 'Recipients', value: 'Team Housing Contact, Group Block Creators' },
+      { label: 'Scheduling', value: 'One-time — sent when the team first becomes compliant' },
     ],
+    body: emailBody({
+      situation: `Good news — ${mf('entity_name')} has met the Stay-to-Play requirement for ${mf('event_name')}. Nothing further is needed from you.`,
+      numbers: `The requirement is ${mf('compliance_goal')} ${mf('compliance_criteria')}. Currently booked: ${mf('compliance_progress_booked')}, with none outstanding.`,
+      action: `You can review or adjust the booking here: ${mf('booking_link')}`,
+      cutoff: `Rooms stay available at event rates until ${mf('last_cutoff_date')}, ${mf('days_until_cutoff')} from today. Cancellations before then can take a team back below its requirement, and you would hear from us again if that happens.`,
+    }),
   },
 ]
 

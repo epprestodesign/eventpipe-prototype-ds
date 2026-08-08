@@ -83,7 +83,15 @@ const preview = {
                 'Event Registration Settings',
                 'Team Detail',
               ],
-              'Components',
+              // Components are grouped by the screen they belong to, in the same
+              // order as Screens above, so the two halves of the sidebar read
+              // against each other.
+              'Components', [
+                'Notification Preferences',
+                'Company Settings',
+                'Event Registration Settings',
+                'Team Detail',
+              ],
             ],
             'DES-207 Communications | Email Template Editor', [
               'V1 · Notifications Preferences',

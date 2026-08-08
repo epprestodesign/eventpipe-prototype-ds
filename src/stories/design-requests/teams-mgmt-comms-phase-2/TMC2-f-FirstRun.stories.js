@@ -7,11 +7,11 @@
  */
 import { ref, computed } from 'vue'
 import { tmc2Page } from './_tmc2shell'
-import { COMPANY, DEFAULT_EMAILS, FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED } from './_tmc2fixtures'
+import { COMPANY, DEFAULT_EMAILS, EVENT, FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED } from './_tmc2fixtures'
 import { addedTemplates, addTemplate } from './_tmc2store'
 import {
   companyHeader, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
-  addReminderRow, templateActions,
+  addReminderRow,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL,
 } from './_tmc2'
 import DsListItem from './components/DsListItem.vue'
@@ -19,6 +19,13 @@ import DsSectionHeader from './components/DsSectionHeader.vue'
 import DsSelect from './components/DsSelect.vue'
 import DsInput from './components/DsInput.vue'
 import DsConfirmDialog from './components/DsConfirmDialog.vue'
+import DsField from './components/DsField.vue'
+import DsRichTextEditor from './components/DsRichTextEditor.vue'
+import DsInfoGrid from './components/DsInfoGrid.vue'
+import {
+  rowActions, previewDialog, testSendDialog, addReminderDialog,
+  editorView, useTemplateEditor,
+} from './_tmc2np'
 
 export default {
   title: 'Design Requests/Teams Mgmt Comms Phase 2/First-Time Setup/Notification Preferences',
@@ -27,14 +34,24 @@ export default {
 **[DES-427 · P0-3](https://linear.app/eventpipe/issue/DES-427)** — what a first-time
 customer sees.
 
-Every customer is seeded with exactly three Teams Management templates. This is
-that state: no custom reminders added, nothing renamed, nothing disabled.
+Every customer is seeded with the same Teams Management templates. This is that
+state: no custom reminders added, nothing renamed, nothing disabled.
 
 | Template | Sends to | When |
 | --- | --- | --- |
 | **Welcome Email** | Team Housing Contact | Once, when a team first appears |
-| **Compliance Reminder** | Team Housing Contact + Group Block Creators | Weekly (Mon), 200 days out → event start |
 | **Previously Compliant Notice** | Team Housing Contact + Group Block Creators | Once, when a compliant team drops below |
+| **Compliance Achieved** | Team Housing Contact + Group Block Creators | Once, when a team first meets its requirement |
+| **Compliance Reminder** | Team Housing Contact + Group Block Creators | Weekly (Mon), 200 days out → event start |
+
+Standard emails first, then reminders — the same grouping as the configured
+screen, since the reminder group is the one that grows.
+
+> **The ticket says three, and this shows four.** DES-427 was written before
+> *Compliance Achieved* existed; it is in the company template list
+> (\`tmc2-content.json\`) and now has copy of its own, so a new customer would
+> find it here. Worth confirming with Scott whether it belongs in the seeded set
+> or whether the list should lose it.
 
 Two things a first-time user meets here:
 
@@ -69,6 +86,10 @@ const firstRunBanner = `
   </div>`
 
 
+/** Matches the group labels on the configured screen exactly. */
+const GROUP_LABEL = 'padding:14px 28px 2px; font-size:0.75rem; font-weight:600;'
+  + ' letter-spacing:0.04em; text-transform:uppercase; color:var(--ds-color-text-subtle);'
+
 const seededList = `
   <q-card flat bordered>
     <q-expansion-item default-opened label="Teams Management" header-class="text-primary text-weight-bold">
@@ -77,6 +98,8 @@ const seededList = `
       ${colHeaders}
       <template v-for="(it, i) in rows" :key="it.key">
         <q-separator v-if="i > 0" />
+        <div v-if="startsFixedGroup(i)" :style="groupLabelStyle">Standard Emails</div>
+        <div v-if="startsReminderGroup(i)" :style="groupLabelStyle">Compliance Reminders</div>
         <div style="padding:8px 28px;">
           <ds-list-item :subtitle="it.purpose" :bordered="false">
             <template #title>
@@ -92,7 +115,7 @@ const seededList = `
             <template #trailing>
               <div class="row items-center no-wrap">
                 <div style="${COL_SEND}"><q-checkbox :model-value="it.on" @update:model-value="onToggleSend(it, $event)" color="primary" /></div>
-                <div style="${COL_TMPL}">${templateActions({ onEdit: 'noop' })}</div>
+                <div style="${COL_TMPL}">${rowActions}</div>
               </div>
             </template>
           </ds-list-item>
@@ -105,7 +128,10 @@ const seededList = `
 
 export const FirstRun = tmc2Page({
   active: 'none',
-  components: { DsListItem, DsSectionHeader, DsSelect, DsInput, DsConfirmDialog },
+  components: {
+    DsListItem, DsSectionHeader, DsSelect, DsInput, DsConfirmDialog, DsField,
+    DsRichTextEditor, DsInfoGrid,
+  },
   setup: () => {
     const fromAddress = ref(null)
     const fromAddressCustom = ref('')
@@ -122,7 +148,7 @@ export const FirstRun = tmc2Page({
      * new template also shows up as an event-level toggle on Event
      * Registration Settings (DES-425 · P0-1). */
     const seeded = ref(DEFAULT_EMAILS.map((e) => ({
-      key: e.key, title: e.title, purpose: e.purpose, on: true,
+      key: e.key, title: e.title, purpose: e.purpose, type: e.type, on: true,
     })))
     const baseReminder = DEFAULT_EMAILS.find((e) => e.key === 'compliance-reminder')
 
@@ -134,13 +160,27 @@ export const FirstRun = tmc2Page({
     const sendEdits = ref({})
     let stagedSeq = 0
 
-    const rows = computed(() => [
-      ...seeded.value,
-      ...addedTemplates.value.map((t) => ({
-        key: t.key, title: t.title, purpose: t.desc, on: t.send, custom: true,
-      })),
-      ...pendingAdds.value,
-    ].map((r) => (sendEdits.value[r.key] === undefined ? r : { ...r, on: sendEdits.value[r.key] })))
+    /* DES-428 · P0-4 — same grouping as the configured screen: the closed set of
+     * standard emails first, then compliance reminders, which is the group that
+     * grows. DEFAULT_EMAILS ships the reminder in the middle, so this has to
+     * sort rather than just label. */
+    const isReminderRow = (r) => r.type === 'compliance-reminder'
+    const rows = computed(() => {
+      const all = [
+        ...seeded.value,
+        ...addedTemplates.value.map((t) => ({
+          key: t.key, title: t.title, purpose: t.desc, type: t.type, on: t.send, custom: true,
+        })),
+        ...pendingAdds.value,
+      ].map((r) => (sendEdits.value[r.key] === undefined ? r : { ...r, on: sendEdits.value[r.key] }))
+      return [...all.filter((r) => !isReminderRow(r)), ...all.filter(isReminderRow)]
+    })
+    // Derived from position so the label lands on the first row of each group
+    // however many reminders have been added.
+    const startsFixedGroup = (i) => !isReminderRow(rows.value[i])
+      && (i === 0 || isReminderRow(rows.value[i - 1]))
+    const startsReminderGroup = (i) => isReminderRow(rows.value[i])
+      && (i === 0 || !isReminderRow(rows.value[i - 1]))
 
     const savedFrom = ref(fromAddress.value)
     const savedFromCustom = ref(fromAddressCustom.value)
@@ -174,88 +214,78 @@ export const FirstRun = tmc2Page({
       fromAddressCustom.value = savedFromCustom.value
     }
 
-    const addOpen = ref(false)
-    const newName = ref('')
-    const newDesc = ref('')
-    const openAdd = () => { newName.value = ''; newDesc.value = ''; addOpen.value = true }
-    const confirmAdd = () => {
-      const name = newName.value.trim()
-      if (!name) return
-      stagedSeq += 1
-      pendingAdds.value = [...pendingAdds.value, {
-        key: 'tm-staged-' + stagedSeq,
-        title: name,
-        purpose: newDesc.value.trim() || (baseReminder ? baseReminder.purpose : ''),
-        baseTitle: baseReminder ? baseReminder.title : '',
-        on: true,
-        custom: true,
-      }]
-      addOpen.value = false
-    }
+    /* The editor and every dialog come from the shared module, so this screen
+     * behaves exactly like the configured one — Edit opens the same editor,
+     * Preview shows the same email, a test send works the same way. Only the
+     * staging differs, and that is what gets passed in. */
+    const editor = useTemplateEditor({
+      baseReminderTitle: () => (baseReminder ? baseReminder.title : 'the standard Compliance Reminder'),
+      onConfirmAdd: ({ name, desc, baseTitle }) => {
+        stagedSeq += 1
+        pendingAdds.value = [...pendingAdds.value, {
+          key: 'tm-staged-' + stagedSeq,
+          id: 'tm-staged-' + stagedSeq,
+          title: name,
+          purpose: desc || (baseReminder ? baseReminder.purpose : ''),
+          baseTitle,
+          type: 'compliance-reminder',
+          on: true,
+          custom: true,
+          userAdded: true,
+        }]
+      },
+      onConfirmDelete: (target) => {
+        pendingAdds.value = pendingAdds.value.filter((t) => t.key !== target.key)
+      },
+    })
 
     return {
+      ...editor,
       company: COMPANY,
       tab: ref('notifications'),
       fromAddress,
       fromAddressCustom,
       fromOptions: FROM_ADDRESS_OPTIONS,
       resolvedFrom,
-      // Editing a template is still out of scope here — first run shows the
-      // state, it does not duplicate the editor drill-in.
-      noop: () => {},
+      // emailPaper's contract, same as the configured screen: the From line
+      // reports the role rather than a mailbox it cannot know.
+      fromLine: computed(() => (fromAddress.value
+        ? fromAddress.value + ' — resolved per event when the email sends'
+        : 'Not set — no email can send yet')),
+      eventName: EVENT.name,
       seeded,
       rows,
-      addOpen,
-      newName,
-      newDesc,
-      openAdd,
-      confirmAdd,
       onToggleSend,
+      startsFixedGroup,
+      startsReminderGroup,
+      groupLabelStyle: GROUP_LABEL,
       dirty,
       saveChanges,
       discardChanges,
-      baseReminderTitle: baseReminder ? baseReminder.title : 'the standard Compliance Reminder',
     }
   },
   slot: `
     ${companyHeader}
     <div v-show="tab === 'notifications'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
-      ${firstRunBanner}
-      <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
-      <div style="margin-top:12px;">
-        ${seededList}
+      <div v-if="view === 'list'">
+        ${firstRunBanner}
+        <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
+        <div style="margin-top:12px;">
+          ${seededList}
+        </div>
       </div>
+      <div v-else>${editorView}</div>
     </div>
     <div v-show="tab === 'general'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
       <div class="text-grey-7">General company settings.</div>
     </div>
 
-    ${unsavedChangesBar}
+    <!-- The save bar belongs to the list only; the editor has its own header
+         Cancel / Save, same rule as the configured screen. -->
+    <div v-if="view === 'list'">${unsavedChangesBar}</div>
 
-    <!-- Same Add dialog as the configured screen, down to the confirm label. -->
-    <q-dialog v-model="addOpen">
-      <q-card flat bordered style="min-width:480px; border-radius:var(--ds-radius-lg);">
-        <q-card-section style="padding:28px 28px 4px;">
-          <div class="text-h6" style="font-weight:700;">Add Compliance Reminder</div>
-          <div class="text-grey-8" style="font-size:0.8125rem; line-height:1.5; margin-top:6px;">
-            The new template starts as a <b>copy of {{ baseReminderTitle }}</b> —
-            content, schedule, statuses and recipients included. Edit it once it is added.
-          </div>
-        </q-card-section>
-        <q-card-section style="padding:18px 28px 8px;">
-          <ds-input v-model="newName" label="Name" required placeholder="e.g. 30 Day Reminder" />
-          <div class="q-mt-md">
-            <ds-input v-model="newDesc" label="Description" placeholder="What this reminder is for"
-              hint="Optional — defaults to the copied description." />
-          </div>
-        </q-card-section>
-        <q-card-actions align="right" class="q-pa-md">
-          <q-btn flat no-caps color="primary" label="Cancel" @click="addOpen = false" />
-          <q-btn unelevated no-caps color="primary" label="Add Reminder" :disable="!newName.trim()"
-            @click="confirmAdd" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>`,
+    ${addReminderDialog}
+    ${previewDialog}
+    ${testSendDialog}`,
 })
-
 FirstRun.parameters = { layout: 'fullscreen' }
