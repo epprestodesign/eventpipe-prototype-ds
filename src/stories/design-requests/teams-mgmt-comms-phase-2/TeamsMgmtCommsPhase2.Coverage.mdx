@@ -85,15 +85,42 @@ just need checkbox with a label."* The label now carries the meaning on its own.
 
 ---
 
-## P0-3 · Default TM comms (3 seeded templates)
+## P0-3 · Default TM comms (seeded templates)
 
 **Requested** — Every customer starts with three templates — Welcome, Compliance
 Reminder, Previously Compliant Notice — each with default settings.
 
 **Designed** — A whole *First-Time Setup* section, because "what a brand-new
 customer lands on" is a distinct state worth reviewing on its own. The list shows
-the three seeded templates and nothing else; each email is also rendered as the
-team receives it, with its default configuration beside it.
+the seeded templates and nothing else; each email is also rendered as the team
+receives it, with its default configuration beside it.
+
+**The ticket says three; the design shows four.** *Compliance Achieved* has been
+in the company template list all along but had no copy, so previewing it fell
+through to the Compliance Reminder — a team that had just met its goal was shown
+an email chasing it for rooms. It now has its own. **Worth confirming with Scott**
+whether it belongs in the seeded set or whether the list should lose it.
+
+**Every email is the same eight paragraphs**, enforced by a shared skeleton
+rather than by convention:
+
+| # | Slot | Varies by type? |
+| --- | --- | --- |
+| 1 | Greeting | No |
+| 2 | Situation — why this email exists | **Yes** |
+| 3 | Requirement / booked / short by | No |
+| 4 | `{{team_group_block_info}}` | Merge field only |
+| 5 | Where to book | **Yes** |
+| 6 | Cutoff date | **Yes** |
+| 7 | `{{noncompliance_policy}}` | Merge field only |
+| 8 | Sign-off | No |
+
+Slots 4 and 7 drop out when they resolve to nothing, so a team with no group
+block at an event with no policy gets a clean six-paragraph email.
+
+**One source of truth.** The editor's Content field, the preview modal, Default
+Emails and First Run all derive from the same `body` array. Change a paragraph
+in the fixture and every surface moves together.
 
 **Edge cases covered**
 
@@ -445,6 +472,29 @@ Management emails.
 
 **Find it** — *Screens › Event Registration Settings* → **Configured** (populated)
 and **Default** (empty).
+
+---
+
+## How this folder is built
+
+Not a requirement, but it is what keeps the screens honest, and it is worth
+knowing before reviewing them.
+
+**Both Notification Preferences screens are one implementation.** The configured
+screen and First-Time Setup are the same product surface at two moments. The
+editor, its dialogs and all their state live in `_tmc2np.js` and are imported by
+both, so Edit opens the same editor, Preview shows the same email and a test send
+behaves the same way. What stays in each story file is only what genuinely
+differs: the list, the starting data, and what "unsaved" means there.
+
+**Components are grouped by the screen they belong to**, mirroring *Screens* in
+the sidebar. Each component's docs states what it replaced on the original screen
+and, where review changed it, what came out and why — the itemisation lives next
+to the component rather than in a list that goes stale.
+
+Components inherited from DES-207 were **deleted** rather than carried along;
+they are unchanged there and were never Phase 2 work. Two were kept because they
+are: *Personalization Menu* (P0-6's merge-field list) and *Text Formatter*.
 
 ---
 

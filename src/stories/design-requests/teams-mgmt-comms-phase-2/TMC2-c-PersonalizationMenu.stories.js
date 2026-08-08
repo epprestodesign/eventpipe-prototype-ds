@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import DsPersonalizationMenu from './components/DsPersonalizationMenu.vue'
 
 export default {
-  title: 'Design Requests/Teams Mgmt Comms Phase 2/Components/Personalization Menu',
+  title: 'Design Requests/Teams Mgmt Comms Phase 2/Components/Notification Preferences/Personalization Menu',
   component: DsPersonalizationMenu,
   tags: ['autodocs'],
   parameters: { layout: 'centered', docs: { description: { component: `
