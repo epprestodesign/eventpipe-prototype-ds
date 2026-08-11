@@ -101,6 +101,18 @@ const preview = {
                 'Team Detail',
               ],
             ],
+            'Multiple Secondary Fees', [
+              'Requirements Coverage',
+              // Screens first (the proposal), then the current-state baseline
+              // they're read against.
+              'Screens', [
+                '01 · Event Fees',
+                '02 · Hotel Sync Settings',
+                '03 · Housing Company Policies',
+                '04 · Reservation Summary',
+              ],
+              'References',
+            ],
             'DES-95 Customized Page Revamp', [
               'Customized Event Site Edits 072426',
               'References', [

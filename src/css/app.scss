@@ -427,6 +427,11 @@ body {
 /* DES-95 expandable-section (accordion) header — blue + bold, section-title size. */
 .des95-acc__hdr { color: var(--ds-color-text-brand); font-weight: 700; font-size: 1.0625rem; }
 
+/* Multiple Secondary Fees (DES-451/452) — the Edit Contracted Event section
+   accordion header. Same shape as the DES-95 one, kept separate so tuning one
+   design request can't move the other. */
+.msf-acc__hdr { color: var(--ds-color-text-brand); font-weight: 500; font-size: 1.125rem; padding: 16px 24px; }
+
 /* DES-95 delete toast — a white "card" notification with a red left accent + shadow
    so a deletion reads as its own event. Headline (message) + subheadline (caption). */
 .ds-delete-toast {
