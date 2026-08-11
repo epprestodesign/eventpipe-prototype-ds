@@ -5,6 +5,7 @@
  */
 import { ref } from 'vue'
 import { colHeaders, templateActions, LIST_TITLE_STYLE, COL_SEND, COL_TMPL } from './_tmc2'
+import { TM_DESC } from './_tmc2fixtures'
 import DsListItem from './components/DsListItem.vue'
 
 export default {
@@ -50,9 +51,9 @@ const GROUP_LABEL = 'padding:14px 28px 2px; font-size:0.75rem; font-weight:600; 
   + ' text-transform:uppercase; color:var(--ds-color-text-subtle);'
 
 const ROWS = [
-  { id: 'a', group: 'Standard Emails', title: 'STP - Welcome Email', desc: 'Introduces the team to their booking site and requirements.', send: true, forced: false, custom: false },
-  { id: 'b', title: 'STP - Previously Compliant Notice', desc: 'Notifies a team that has fallen out of compliance.', send: true, forced: false, custom: true },
-  { id: 'd', group: 'Compliance Reminders', title: 'STP - Compliance Reminder', desc: 'Reminds non-compliant teams about their Stay-to-Play requirement.', send: true, forced: true, custom: false },
+  { id: 'a', group: 'Standard Emails', title: 'STP - Welcome Email', desc: TM_DESC.welcome, send: true, forced: false, custom: false },
+  { id: 'b', title: 'STP - Previously Compliant Notice', desc: TM_DESC.previouslyCompliant, send: true, forced: false, custom: true },
+  { id: 'd', group: 'Compliance Reminders', title: 'STP - Compliance Reminder', desc: TM_DESC.complianceReminder, send: true, forced: true, custom: false },
 ]
 
 const list = (rows) => ({
@@ -99,7 +100,7 @@ export const Seeded = { render: () => list(ROWS) }
 export const WithAddedReminders = {
   render: () => list([
     ...ROWS,
-    { id: 'e', title: '30 Day Reminder', desc: 'Reminds non-compliant teams about their Stay-to-Play requirement.', send: true, forced: false, custom: true },
+    { id: 'e', title: '30 Day Reminder', desc: TM_DESC.addedTier, send: true, forced: false, custom: true },
     { id: 'f', title: '14 Day Reminder', desc: 'A firmer follow-up as the cutoff approaches.', send: true, forced: false, custom: true },
     { id: 'g', title: 'Final Notice', desc: 'Last call before the hotel cutoff date.', send: false, forced: false, custom: true },
   ]),

@@ -6,21 +6,21 @@
       "items": [
         {
           "title": "STP - Compliance Reminder",
-          "desc": "Reminds non-compliant teams about their Stay-to-Play requirement; the cadence and tone here are intentionally encouraging rather than punitive.",
+          "desc": "The recurring nudge for teams. Runs on a cadence and date range you set relative to the event start. Intended for non-compliant teams. Add tiers to shift your tone, frequency, or audience as the event draws closer.",
           "send": true,
           "forced": true,
           "custom": false
         },
         {
           "title": "STP - Welcome Email",
-          "desc": "Introduces the team to their booking site and requirements.",
+          "desc": "Sent once for per team per event. Establishes that the event is Stay-to-Play and points the team at the booking link. Intended for teams traveling to the event with a compliance requirement.",
           "send": true,
           "forced": false,
           "custom": false
         },
         {
           "title": "STP - Previously Compliant Notice",
-          "desc": "Notifies a team that was previously meeting its requirement but has since fallen out of compliance \u2014 it summarizes the current shortfall, the criteria that must be met, and the deadline before penalties apply.",
+          "desc": "Sent when a team that had met its goal drops back below it — usually after a cancellation. Sends once and if they remain non-compliant then compliance reminders emails take over.",
           "send": true,
           "forced": false,
           "custom": true

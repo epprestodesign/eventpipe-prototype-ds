@@ -8,7 +8,7 @@
  *  2026-08-07: P0-8 was never asked to be mocked. */
 import { ref, computed } from 'vue'
 import { tmc2Page, eventHeader } from './_tmc2shell'
-import { EVENT, TM_TEMPLATES } from './_tmc2fixtures'
+import { EVENT, TM_TEMPLATES, TM_DESC } from './_tmc2fixtures'
 import { addedTemplates } from './_tmc2store'
 import DsSelect from './components/DsSelect.vue'
 import DsInput from './components/DsInput.vue'
@@ -250,7 +250,7 @@ const seededTemplates = TM_TEMPLATES.map((t) => ({ ...t }))
  * changing as the cutoff approaches, and four rows all reading "recurring
  * nudge" would show the mechanism without showing the reason for it. */
 const TIER_DESCRIPTIONS = [
-  'The standard nudge. Encouraging in tone, running weekly from 200 days out.',
+  TM_DESC.complianceReminder,
   'A firmer follow-up for teams still below their requirement as the cutoff approaches.',
   'A direct reminder that rooms at event rates are running out, with the shortfall stated plainly.',
   'The final escalation before the hotel cutoff, naming what happens to teams that do not meet the requirement.',

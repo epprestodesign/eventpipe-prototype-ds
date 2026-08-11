@@ -71,7 +71,6 @@ export const EditorHeader = {
           <div class="row items-center justify-between">
             <div class="row items-center q-gutter-sm no-wrap">
               <h2 style="margin:0; font-size:1.375rem; font-weight:700; color:var(--ds-color-text);">{{ editing.title }}</h2>
-              <q-badge outline color="primary" class="q-px-sm q-py-xs">Recurring reminder</q-badge>
             </div>
             <div class="row items-center q-gutter-sm">
               <q-btn flat no-caps color="primary" icon="visibility" label="Preview email" />

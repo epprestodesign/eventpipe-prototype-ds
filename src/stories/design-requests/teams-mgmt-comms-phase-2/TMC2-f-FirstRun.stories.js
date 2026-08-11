@@ -54,8 +54,10 @@ Two things a first-time user meets here:
 
 1. **Every template defaults to Send Email OFF at the event level.** Company-level
    templates exist and are enabled, but per [DES-425 · P0-1](https://linear.app/eventpipe/issue/DES-425)
-   nothing actually sends until it is switched on for a given event. The banner
-   below says so, because "why is nothing sending?" is the obvious first question.
+   nothing actually sends until it is switched on for a given event. A banner used
+   to spell that out at the top of this screen; it was removed on 2026-08-11 as
+   *"unnecessary"*, since the section strip and Event Registration Settings both
+   show it without restating the screen back to the reader.
 2. **The From/Reply address already has a default.** [DES-429 · P0-5](https://linear.app/eventpipe/issue/DES-429)
    sets *Event Manager* on day one and there is no way to clear it, so this
    screen no longer has an unset state to show. Choosing *Other* is the only
@@ -70,19 +72,11 @@ The email bodies themselves are in *First-Time Setup › Default Emails*.
 }
 
 
-const firstRunBanner = `
-  <div style="display:flex; align-items:flex-start; gap:12px; padding:16px 20px; margin-bottom:24px;
-    background:var(--ds-color-background-info); border:1px solid var(--ds-color-background-info-bold); border-radius:var(--ds-radius-md);">
-    <q-icon name="flag" color="primary" size="22px" style="margin-top:1px; flex:none;" />
-    <div style="flex:1;">
-      <div class="text-weight-bold text-grey-9">Teams Management communications are ready to set up</div>
-      <div class="text-grey-8" style="margin-top:2px; line-height:1.5;">
-        These three templates come with every account. Before anything sends you need to
-        <b>set a From/Reply address</b> below, and <b>switch templates on per event</b> from that
-        event's Registration Settings tab. Nothing is sent until you do.
-      </div>
-    </div>
-  </div>`
+/* A "Teams Management communications are ready to set up" banner sat above the
+ * list until 2026-08-11: "please remove that, it's unnecessary." What it
+ * explained — that a From/Reply address is needed, and that templates switch on
+ * per event — is already visible in the section strip and on Event Registration
+ * Settings, so it was restating the screen back to the reader. */
 
 
 /** Matches the group labels on the configured screen exactly. */
@@ -272,7 +266,6 @@ export const FirstRun = tmc2Page({
     ${companyHeader}
     <div v-show="tab === 'notifications'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
       <div v-if="view === 'list'">
-        ${firstRunBanner}
         <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
         <div style="margin-top:12px;">
           ${seededList}

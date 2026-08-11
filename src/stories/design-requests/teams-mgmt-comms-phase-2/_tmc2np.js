@@ -209,22 +209,43 @@ export const deleteTemplateDialog = `
     </template>
   </ds-confirm-dialog>`
 
-/* ---- Email Settings, expanded from the editor (DES-431 · P0-7) ----
- * Audience (statuses + recipients) applies to every template; the Scheduling
+/* ---- Notification Settings, expanded from the editor (DES-431 · P0-7) ----
+ *
+ * Audience (recipients + statuses) applies to every template; the Scheduling
  * block only renders for `compliance-reminder` templates, so it hides cleanly
- * for the Welcome / Previously Compliant one-shot emails. */
+ * for the Welcome / Previously Compliant one-shot emails.
+ *
+ * 2026-08-11 review: Audience now sits ABOVE Scheduling, and within it Team
+ * Recipients sits above Compliance Statuses. Both were flipped on request. It
+ * also reads better for the one-shot emails, where Scheduling is absent and
+ * Audience was the only block anyway. */
 export const emailSettings = `
   <div class="q-mb-lg">
     <q-btn outline no-caps color="primary" :icon="showSettings ? 'expand_less' : 'add'"
-      label="Email Settings" @click="showSettings = !showSettings" />
+      label="Notification Settings" @click="showSettings = !showSettings" />
     <q-slide-transition>
       <div v-show="showSettings" class="q-mt-md">
         <q-card flat bordered style="background:var(--ds-color-surface-sunken);">
           <q-card-section style="padding:24px 28px;">
-            <div class="text-primary text-weight-bold">Email Settings</div>
+            <div class="text-primary text-weight-bold">Notification Settings</div>
             <div class="text-grey-8" style="font-size:0.8125rem; margin-top:2px;">
-              {{ isReminder ? 'Scheduling and audience for this recurring compliance reminder.' : 'Audience for this email. It is sent when its trigger fires, so there is nothing to schedule.' }}
+              {{ isReminder ? 'Audience and scheduling for this recurring compliance reminder.' : 'Audience for this email. It is sent when its trigger fires, so there is nothing to schedule.' }}
             </div>
+
+            <q-card flat bordered class="q-mt-md" style="background:var(--ds-color-surface);">
+              <q-card-section style="padding:18px 22px;">
+                <div class="text-weight-bold text-grey-9 q-mb-sm">Audience</div>
+                <ds-field label="Team Recipients" required>
+                  <q-option-group v-model="recipients" type="checkbox" color="primary" inline :options="[
+                    { label: 'Housing Contact', value: 'team-manager' },
+                    { label: 'Group Block Contact(s)', value: 'group-block-contacts' },
+                  ]" />
+                </ds-field>
+                <div class="row q-col-gutter-md q-mt-md">
+                  <div class="col-12 col-sm-6"><ds-select v-model="statuses" label="Compliance Statuses to Include" multiple :options="statusOptions" hint="Only teams in these statuses receive this email." /></div>
+                </div>
+              </q-card-section>
+            </q-card>
 
             <q-card v-if="isReminder" flat bordered class="q-mt-md" style="background:var(--ds-color-surface);">
               <q-card-section style="padding:18px 22px;">
@@ -236,22 +257,6 @@ export const emailSettings = `
                 <div class="row q-col-gutter-md q-mt-xs">
                   <div class="col-12 col-sm-6"><ds-select :model-value="rec" @update:model-value="onSelect" :options="options" label="Recurrence" /></div>
                 </div>
-              </q-card-section>
-            </q-card>
-
-
-            <q-card flat bordered class="q-mt-md" style="background:var(--ds-color-surface);">
-              <q-card-section style="padding:18px 22px;">
-                <div class="text-weight-bold text-grey-9 q-mb-sm">Audience</div>
-                <div class="row q-col-gutter-md">
-                  <div class="col-12 col-sm-6"><ds-select v-model="statuses" label="Compliance Statuses to Include" multiple :options="statusOptions" hint="Only teams in these statuses receive this email." /></div>
-                </div>
-                <ds-field label="Recipients" required class="q-mt-md">
-                  <q-option-group v-model="recipients" type="checkbox" color="primary" inline :options="[
-                    { label: 'Team Manager', value: 'team-manager' },
-                    { label: 'Group Block Contacts', value: 'group-block-contacts' },
-                  ]" />
-                </ds-field>
               </q-card-section>
             </q-card>
           </q-card-section>
@@ -266,7 +271,9 @@ export const emailSettings = `
               <div class="row items-center q-gutter-md">
                 <span class="text-grey-8">Repeat every</span>
                 <q-input v-model.number="every" type="number" outlined dense min="1" style="width:80px" hide-bottom-space />
-                <q-select v-model="unit" :options="['day','week','month','year']" outlined dense style="width:140px" hide-bottom-space />
+                <!-- No 'year': a reminder cadence measured in years is
+                     meaningless against an event a few hundred days out. -->
+                <q-select v-model="unit" :options="['day','week','month']" outlined dense style="width:140px" hide-bottom-space />
               </div>
             </q-card-section>
             <q-card-section v-if="unit === 'week'" style="padding:12px 28px;">
@@ -277,21 +284,13 @@ export const emailSettings = `
                   :label="lbl" size="sm" @click="toggleDay(d)" />
               </div>
             </q-card-section>
-            <q-card-section style="padding:12px 28px 20px;">
-              <div class="text-grey-8 q-mb-sm">Ends</div>
-              <q-radio v-model="ends" val="never" label="Never" color="primary" class="block q-mb-sm" />
-              <div class="row items-center q-gutter-md q-mb-sm">
-                <q-radio v-model="ends" val="on" label="On" color="primary" />
-                <q-input v-model="endsOn" outlined dense :disable="ends !== 'on'" style="width:170px" hide-bottom-space>
-                  <template #append><q-icon name="event" /></template>
-                </q-input>
-              </div>
-              <div class="row items-center q-gutter-md">
-                <q-radio v-model="ends" val="after" label="After" color="primary" />
-                <q-input v-model.number="endsAfter" type="number" outlined dense :disable="ends !== 'after'" suffix="occurrences" style="width:200px" hide-bottom-space />
-              </div>
-            </q-card-section>
-            <q-card-actions align="right" class="q-pa-md">
+            <!-- An "Ends" block (Never / On / After) stood here until
+                 2026-08-11: "take out the Ends and Never sections, there is no
+                 end to these." The run is already bounded by the Days until
+                 Event Start to Begin/End Reminders fields above, so asking for
+                 an end date here was a second, contradictable answer to a
+                 question the schedule had already settled. -->
+            <q-card-actions align="right" class="q-pa-md" style="padding-top:20px;">
               <q-btn flat no-caps color="primary" label="Cancel" @click="showCustom = false" />
               <q-btn unelevated no-caps color="primary" label="Done" @click="done" />
             </q-card-actions>
@@ -311,11 +310,11 @@ export const editorView = `
         <div class="row items-center justify-between">
           <div class="row items-center q-gutter-sm no-wrap">
             <h2 style="margin:0; font-size:1.375rem; font-weight:700; color:var(--ds-color-text);">{{ editing?.title || 'Compliance Reminder' }}</h2>
-            <!-- Only reminders are badged. "Triggered email" labelled the normal
-                 case on every other template and told you nothing — the same
-                 reason the Default badge came off the list. What is worth
-                 saying here is that this one recurs. -->
-            <q-badge v-if="isReminder" outline color="primary" class="q-px-sm q-py-xs">Recurring reminder</q-badge>
+            <!-- No badge beside the title (2026-08-11): "anywhere there is a tag
+                 next to the name of the template on the edit page like this
+                 'Recurring reminder' please remove it." The same fate as
+                 "Triggered email" before it — the Scheduling block below already
+                 says the template recurs, and says it with the actual cadence. -->
           </div>
           <div class="row items-center q-gutter-sm">
             <!-- Preview stays broken out. It is the one action here you take
@@ -577,16 +576,13 @@ export function useTemplateEditor({
   const every = ref(1)
   const unit = ref('week')
   const days = ref([1])
-  const ends = ref('never')
-  const endsOn = ref('2026-08-06')
-  const endsAfter = ref(13)
+  /* No end state. The Ends block came out on 2026-08-11 — "there is no end to
+   * these" — so the summary no longer has an "until …" or "N times" tail to
+   * append, and the state behind them went with the UI. */
   const summary = computed(() => {
     const picked = days.value.slice().sort().map((d) => DAY_NAMES[d]).join(', ')
-    let s = (unit.value === 'week' ? 'Weekly' : 'Every ' + every.value + ' ' + unit.value)
+    return (unit.value === 'week' ? 'Weekly' : 'Every ' + every.value + ' ' + unit.value)
       + (picked ? ' on ' + picked : '')
-    if (ends.value === 'on') s += ', until Aug 6, 2026'
-    if (ends.value === 'after') s += ', ' + endsAfter.value + ' times'
-    return s
   })
   const options = computed(() => ['Does not repeat', 'Daily', 'Every weekday (Mon–Fri)', summary.value, 'Custom…'])
   const rec = ref(summary.value)
@@ -619,7 +615,7 @@ export function useTemplateEditor({
     revertOpen, revertTarget, openRevert, confirmRevert,
     bcc, showSettings, begin, end, statuses, recipients,
     statusOptions: COMPLIANCE_STATUSES,
-    showCustom, every, unit, days, ends, endsOn, endsAfter, options, rec,
+    showCustom, every, unit, days, options, rec,
     onSelect, toggleDay, done, DAY_LABELS,
   }
 }

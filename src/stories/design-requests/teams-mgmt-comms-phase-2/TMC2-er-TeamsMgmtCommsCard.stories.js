@@ -5,7 +5,7 @@
  *  sent for one event.
  */
 import { ref } from 'vue'
-import { TM_TEMPLATES } from './_tmc2fixtures'
+import { TM_TEMPLATES, TM_DESC } from './_tmc2fixtures'
 
 export default {
   title: 'Design Requests/Teams Mgmt Comms Phase 2/Components/Event Registration Settings/Teams Management Communications Card',
@@ -101,7 +101,7 @@ export const WithNewTemplate = {
     {
       key: 'tm-added-1',
       title: '30 Day Reminder',
-      desc: 'Reminds non-compliant teams about their Stay-to-Play requirement.',
+      desc: TM_DESC.addedTier,
       eventOn: false,
       userAdded: true,
     },
