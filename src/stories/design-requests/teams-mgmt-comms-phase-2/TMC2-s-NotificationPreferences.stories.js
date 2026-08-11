@@ -15,7 +15,7 @@ import {
 } from './_tmc2fixtures'
 import {
   companyHeader, goBackLink, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
-  addReminderRow, templateActions,
+  addReminderRow, templateActions, customFromAddressError,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL, COL_HEAD,
 } from './_tmc2'
 import {
@@ -91,8 +91,46 @@ Registration Settings as an event-level toggle until you press Save.
   team's Communications Log**; that log is the record of automated sends
   (DES-433).
 - **DES-435 · P0-11 — Locked upsell** (\`Locked Upsell\` story): grayed-out Teams
-  Management section, account-manager pitch, and a *concept* treatment for the
-  locked **Compliance** nav entry that routes to an in-app value-prop page.
+  Management section and an account-manager pitch. The day-one notice and a
+  *concept* treatment for a locked **Compliance** nav entry were both removed in
+  the 2026-08-10 review.
+
+### Two stories, two models of the same requirement
+
+| Story | DES-428 · P0-4 as |
+| --- | --- |
+| **Notification Preferences** | Unlimited compliance reminders, each named in a dialog |
+| **Compliance Reminder Tiers** | Up to **4 numbered tiers**, added with one click |
+
+The tiers story is the newer direction, from review on 2026-08-10:
+
+> *"Getting to use it and comparing it with the other mocks has helped me really
+> think through user behavior. I want to pivot this logic to be Compliance
+> Reminder Tiers, whereby a customer can add up to 4 tiers ... the modal honestly
+> goes away, instead the page should just add another Compliance Reminder and
+> call it Compliance Reminder - Tier 2."*
+
+**What changes**
+
+- The button reads **Add Compliance Reminder Tier**.
+- **The dialog is gone.** One click appends the next tier. There is nothing to
+  name — the number is the whole identity, and asking for a name would be asking
+  the user to invent something the system already knows.
+- The seeded reminder becomes **Tier 1**, because in this model it *is* the first
+  tier. Left unnumbered, Tier 2 would read as the first one.
+- **Four is the ceiling.** At four the button greys out with a tooltip rather
+  than disappearing, so the limit is discoverable instead of mysterious.
+- Delete is unchanged — row menu or editor header, user-added tiers only.
+
+**Deleting leaves a gap, on purpose.** Remove Tier 2 from 1–4 and the list reads
+1, 3, 4; nothing renames itself under a user who has already configured it. The
+next add then **fills the lowest free number** rather than continuing past the
+highest, so every tier stays inside 1–4 and you never get a "Tier 5" in a
+four-tier system.
+
+**Still open:** the info copy says *"up to 3 Additional"* while the ceiling is 4
+including the seeded tier. That is consistent — 1 seeded + 3 added — but only if
+Tier 1 is understood as already there. Worth a look at whether the wording lands.
 
 ### DES-429 · P0-5 — where the From/Reply config lives
 
@@ -155,8 +193,25 @@ const sectionConfigStrip = `
     ${fromAddressSectionStrip}
   </template>`
 
+/* DES-428 · P0-4 — the tiers pivot (2026-08-10 review).
+ *
+ * "I want to pivot this logic to be Compliance Reminder Tiers, whereby a
+ * customer can add up to 4 tiers ... the modal honestly goes away, instead the
+ * page should just add another Compliance Reminder and call it Compliance
+ * Reminder - Tier 2 and subsequent additions should just keep numbering."
+ *
+ * So the tiers variant differs in four ways: the button names a tier, the info
+ * copy is about escalation rather than unlimited templates, there is no naming
+ * dialog at all, and there is a hard ceiling of four. */
+// Not exported: Storybook indexes every export in a stories file as a story.
+const MAX_TIERS = 4
+
+const TIER_TOOLTIP = 'Add up to 3 Additional Compliance Reminder Tiers in order to escalate your'
+  + ' tone or cadence as events draw closer. Be sure to set the'
+  + ' <b>Days until Event Start to Begin/End Reminders</b> to avoid overlapping with other tiers.'
+
 /* ---- View 1: the preferences list ---- */
-const listView = `
+const makeListView = (variant) => `
   <div style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
     ${notice}
     <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
@@ -206,13 +261,21 @@ const listView = `
           </template>
           <template v-if="s.name === 'Teams Management'">
             <q-separator />
-            ${addReminderRow('openAdd')}
+            ${variant === 'tiers'
+              ? addReminderRow({
+                handler: 'addTier',
+                label: 'Add Compliance Reminder Tier',
+                tooltip: TIER_TOOLTIP,
+                disableWhen: 'tierCount >= ' + MAX_TIERS,
+                disabledTooltip: 'Maximum of ' + MAX_TIERS + ' tiers reached. Delete a tier to add another.',
+              })
+              : addReminderRow()}
           </template>
         </q-expansion-item>
       </q-card>
     </div>
 
-    ${addReminderDialog}
+    ${variant === 'tiers' ? '' : addReminderDialog}
     ${unsavedChangesBar}
 
     <ds-confirm-dialog v-model="revertOpen" title="Revert to default template?" destructive
@@ -233,10 +296,10 @@ const generalTab = `
     </div>
   </div>`
 
-const body = `
+const makeBody = (variant) => `
   ${companyHeader}
   <div v-show="tab === 'notifications'">
-    <div v-if="view === 'list'">${listView}</div>
+    <div v-if="view === 'list'">${makeListView(variant)}</div>
     <div v-else>${editorView}</div>
     <!-- Both dialogs live outside the view switch so a test send is reachable
          from the list, the preview modal and the editor (DES-436 · P1-1). -->
@@ -275,7 +338,9 @@ const SEED_TYPES = SECTIONS.map((s) =>
 
 const isReminder = (it) => it.type === 'compliance-reminder'
 
-function sectionsFromArgs(args = {}, added = [], sendEdits = {}) {
+const TIER_BASE_TITLE = 'STP - Compliance Reminder - Tier 1'
+
+function sectionsFromArgs(args = {}, added = [], sendEdits = {}, variant = 'default') {
   const withEdit = (it) => (sendEdits[it.id] === undefined ? it : { ...it, send: sendEdits[it.id] })
   return SECTIONS.map((s, si) => {
     const seeded = s.items.map((it, ii) => withEdit({
@@ -286,6 +351,15 @@ function sectionsFromArgs(args = {}, added = [], sendEdits = {}) {
       desc: args[`tmc2s${si}i${ii}_desc`] ?? it.desc,
     }))
     if (s.name !== TM_SECTION) return { ...s, items: seeded }
+    /* In the tiers model the seeded reminder IS the first tier, so it is named
+     * that way. Leaving it unnumbered would make Tier 2 read as the first tier.
+     * Renamed here rather than in tmc2-content.json because the other story
+     * still shows the unlimited-templates model, where "Tier 1" means nothing. */
+    if (variant === 'tiers') {
+      seeded.forEach((it) => {
+        if (isReminder(it) && !it.userAdded) it.title = TIER_BASE_TITLE
+      })
+    }
     /* DES-428 · P0-4 — fixed-type templates first, reminders after.
      * Welcome, Previously Compliant and Compliance Achieved are a closed set:
      * exactly one of each, forever. Compliance Reminders are open-ended and
@@ -307,7 +381,7 @@ function sectionsFromArgs(args = {}, added = [], sendEdits = {}) {
 const COMPONENTS = { DsListItem, DsSectionHeader, DsInfoGrid, DsConfirmDialog, DsField, DsInput, DsSelect, DsRichTextEditor }
 const SETTINGS_SECTIONS = [...COMPANY_SECTIONS_TOP, { title: 'Reconciliation & Invoice Settings', items: COMPANY_RECON }, ...COMPANY_SECTIONS_BOTTOM]
 
-export const NotificationPreferences = tmc2Page({
+const makeStory = (variant) => tmc2Page({
   active: 'none',
   components: COMPONENTS,
   setup: (args) => {
@@ -318,6 +392,21 @@ export const NotificationPreferences = tmc2Page({
     const fromAddressCustom = ref('')
     const savedFrom = ref(fromAddress.value)
     const savedFromCustom = ref(fromAddressCustom.value)
+    // DES-429 · P0-5 — only "Other" needs checking; the other two resolve to people.
+    const customFromError = computed(() => customFromAddressError(fromAddress.value, fromAddressCustom.value))
+
+    /** The literal address, where one is knowable. Only "Other" ever is. */
+    const resolvedFrom = computed(() => (fromAddress.value === 'Other'
+      ? (fromAddressCustom.value || 'Custom address not set yet')
+      : (FROM_ADDRESS_RESOLVED[fromAddress.value] || fromAddress.value)))
+
+    /** What the email preview shows as the From line. Event Manager and Customer
+     *  Support Contact are per-event roles, so naming one mailbox would be a
+     *  guess; the role and when it resolves is the truthful answer. */
+    const fromDisplay = computed(() => {
+      if (fromAddress.value === 'Other') return resolvedFrom.value
+      return fromAddress.value + ' — resolved per event when the email sends'
+    })
 
     /* SAVE MODEL — nothing here takes effect until Save.
      *
@@ -345,7 +434,7 @@ export const NotificationPreferences = tmc2Page({
     // args is reactive in Storybook's Vue renderer — rebuild when a control changes.
     const sections = ref([])
     watchEffect(() => {
-      sections.value = sectionsFromArgs(args, visibleAdded.value, sendEdits.value)
+      sections.value = sectionsFromArgs(args, visibleAdded.value, sendEdits.value, variant)
     })
 
     const dirty = computed(() => pendingAdds.value.length > 0
@@ -394,6 +483,44 @@ export const NotificationPreferences = tmc2Page({
      * module, so this screen and First-Time Setup cannot behave differently.
      * What is passed in is the part that IS different: here, add and delete
      * stage into the local pending lists rather than touching the store. */
+    /* DES-428 · P0-4 (tiers) — how many reminder tiers exist right now, staged
+     * ones included, so the Add button disables the moment the fourth appears
+     * rather than after a save. */
+    const tierCount = computed(() => {
+      const tm = sections.value.find((sec) => sec.name === TM_SECTION)
+      return tm ? tm.items.filter(isReminder).length : 0
+    })
+
+    /* Adding a tier takes no input at all — no dialog, no name, no description.
+     * The number is the whole identity, so asking for one would be asking the
+     * user to invent something the system already knows.
+     *
+     * Numbering fills the LOWEST free slot rather than continuing past the
+     * highest. Deleting a tier deliberately leaves a gap (1, 3, 4), and with a
+     * ceiling of four, continuing from the highest would produce a "Tier 5" in a
+     * four-tier system. Filling the gap keeps every number inside 1-4 always. */
+    const addTier = () => {
+      if (tierCount.value >= MAX_TIERS) return
+      const tm = sections.value.find((sec) => sec.name === TM_SECTION)
+      const taken = new Set((tm ? tm.items.filter(isReminder) : [])
+        .map((it) => Number((it.title.match(/Tier (\d+)$/) || [])[1]))
+        .filter(Boolean))
+      let n = 1
+      while (taken.has(n)) n += 1
+      stagedSeq += 1
+      pendingAdds.value = [...pendingAdds.value, {
+        id: 'tm-staged-' + stagedSeq,
+        key: 'tm-staged-' + stagedSeq,
+        title: 'STP - Compliance Reminder - Tier ' + n,
+        desc: 'Reminds non-compliant teams about their Stay-to-Play requirement.',
+        type: 'compliance-reminder',
+        send: true,
+        forced: false,
+        custom: true,
+        userAdded: true,
+      }]
+    }
+
     const editor = useTemplateEditor({
       baseReminderTitle: () => {
         const tm = sections.value.find((sec) => sec.name === TM_SECTION)
@@ -454,13 +581,15 @@ export const NotificationPreferences = tmc2Page({
       company: COMPANY, settingsSections: SETTINGS_SECTIONS,
       sections, tab: ref('notifications'), noticeShown: ref(true),
       fromAddress, fromAddressCustom, resolvedFrom, fromDisplay, fromOptions: FROM_ADDRESS_OPTIONS,
+      customFromError,
       // emailPaper's contract: the From line reports the role, not a mailbox.
       fromLine: fromDisplay, eventName: EVENT.name,
       dirty, saveChanges, discardChanges, onToggleSend,
       startsReminderGroup, startsFixedGroup,
+      tierCount, addTier,
     }
   },
-  slot: body,
+  slot: makeBody(variant),
 })
 
 
@@ -478,9 +607,19 @@ const IMPLEMENTATION = {
   ],
 }
 
+/** The current model: unlimited compliance reminders, each named in a dialog. */
+export const NotificationPreferences = makeStory('default')
 NotificationPreferences.parameters = { layout: 'fullscreen', implementation: IMPLEMENTATION }
 NotificationPreferences.argTypes = TEMPLATE_ARG_TYPES
 NotificationPreferences.args = TEMPLATE_ARGS
+
+/** DES-428 · P0-4 — the tiers pivot (review, 2026-08-10). Kept beside the
+ *  original so the two models can be compared rather than described. */
+export const ComplianceReminderTiers = makeStory('tiers')
+ComplianceReminderTiers.storyName = 'Compliance Reminder Tiers'
+ComplianceReminderTiers.parameters = { layout: 'fullscreen', implementation: IMPLEMENTATION }
+ComplianceReminderTiers.argTypes = TEMPLATE_ARG_TYPES
+ComplianceReminderTiers.args = TEMPLATE_ARGS
 
 /* ---- Locked / upsell: company without Teams Management (DES-435 · P0-11) ---- */
 const upsellBanner = `
@@ -524,32 +663,6 @@ const lockedSection = `
 /* Concept, low priority and being developed async: companies without Teams
  * Management still see a Compliance nav link, but it lands on an in-app
  * marketing / value-prop page instead of the compliance workspace. */
-const lockedComplianceConcept = `
-  <q-card flat bordered style="border-style:dashed;">
-    <q-card-section style="padding:20px 28px;">
-      <div class="row items-center no-wrap q-gutter-sm q-mb-xs">
-        <q-icon name="fact_check" color="grey-7" size="20px" style="flex:none;" />
-        <div class="text-weight-bold text-grey-9">Locked "Compliance" nav entry</div>
-        <q-badge color="warning" text-color="dark" class="q-px-sm q-py-xs" style="flex:none;">Concept · in development</q-badge>
-      </div>
-      <div class="text-grey-8" style="font-size:0.875rem; line-height:1.5; max-width:840px;">
-        Companies without Teams Management still see <b>Compliance</b> in the left nav. Rather
-        than the compliance workspace it routes to an in-app marketing page explaining
-        Stay-to-Play tracking and automated team comms, carrying the same
-        <b>Contact Account Manager</b> call to action as the banner above. The treatment below is
-        a placeholder — the value-prop page itself is being designed separately.
-      </div>
-      <div style="margin-top:16px; display:inline-flex; align-items:center; gap:10px; padding:9px 14px;
-        border:1px dashed var(--ds-color-border); border-radius:var(--ds-radius-md); background:var(--ds-color-surface-sunken);">
-        <q-icon name="fact_check" size="18px" color="grey-7" />
-        <span style="font-size:0.9375rem; color:var(--ds-color-text-subtle);">Compliance</span>
-        <q-icon name="lock" size="14px" color="grey-6" />
-        <q-icon name="arrow_forward" size="14px" color="grey-6" />
-        <span style="font-size:0.8125rem; color:var(--ds-color-text-subtle);">Teams Management value-prop page</span>
-      </div>
-    </q-card-section>
-  </q-card>`
-
 export const LockedUpsell = tmc2Page({
   active: 'none',
   components: COMPONENTS,
@@ -558,17 +671,18 @@ export const LockedUpsell = tmc2Page({
     settingsSections: SETTINGS_SECTIONS,
     locked: contentData.sections[0].items,
     tab: ref('notifications'),
-    noticeShown: ref(true),
   }),
   slot: `
     ${companyHeader}
+    <!-- No day-one "New notification section" banner here: on a page where
+         Teams Management is locked, announcing that the section only supports
+         Teams Management says nothing useful. Removed with the locked-nav
+         concept in the 2026-08-10 review. -->
     <div v-show="tab === 'notifications'" style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
-      ${notice}
       <ds-section-header title="Notifications Preferences" subtitle="Manage all of the notifications sent to your users." variant="accent" />
       <div style="display:flex; flex-direction:column; gap:16px; margin-top:12px;">
         ${upsellBanner}
         ${lockedSection}
-        ${lockedComplianceConcept}
       </div>
     </div>
     <div v-show="tab === 'general'">${generalTab}</div>`,

@@ -63,7 +63,7 @@ export const Row = {
           …the section's templates would sit above this.
         </div>
         <q-separator />
-        ${addReminderRow('openAdd')}
+        ${addReminderRow()}
       </div>`,
   }),
 }
