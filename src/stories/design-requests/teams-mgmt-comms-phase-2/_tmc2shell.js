@@ -30,18 +30,49 @@ export const TMC2_NAV = [
   { key: 'webhooks', label: 'Webhooks', icon: 'link' },
 ]
 
+/* Every screen in this folder is a runtime-compiled template string. When one
+ * of those fails — a malformed tag, a binding the setup never returned — Vue
+ * renders nothing and writes to the browser console. In Storybook that reads as
+ * a blank story with no clue what went wrong, which is a bad way to lose an
+ * afternoon.
+ *
+ * So the shell checks the template up front and catches anything the setup
+ * throws, and renders the message in the story instead of leaving it empty. */
+const fatalTemplate = `
+  <div style="padding:32px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace;">
+    <div style="max-width:900px; border:2px solid var(--ds-color-border-danger, #c62828);
+                border-radius:var(--ds-radius-lg); overflow:hidden;">
+      <div style="background:#c62828; color:#fff; padding:12px 18px; font-weight:700;">
+        This screen failed to render
+      </div>
+      <pre style="margin:0; padding:18px; white-space:pre-wrap; word-break:break-word;
+                  font-size:0.8125rem; line-height:1.6; color:var(--ds-color-text);">{{ fatal }}</pre>
+    </div>
+  </div>`
+
 /** Wrap `slot` in the App Shell, same contract as pages/_shell's page(). */
 export function tmc2Page({ active, org = COMPANY.name, user = USER, components = {}, setup = () => ({}), slot = '' }) {
-  return {
-    render: (args) => ({
-      components: { AppShell, ...components },
-      setup: () => ({ nav: TMC2_NAV, ...setup(args) }),
-      template: `
+  const pageTemplate = `
         <div style="height:100vh">
           <app-shell :items="nav" active="${active}" org="${org}" user="${user}" bleed>
             ${slot}
           </app-shell>
-        </div>`,
+        </div>`
+  return {
+    render: (args) => ({
+      components: { AppShell, ...components },
+      setup: () => {
+        try {
+          return { fatal: '', nav: TMC2_NAV, ...setup(args) }
+        } catch (err) {
+          // Returned rather than rethrown: the v-if below swaps the whole page
+          // for the message, so no binding the real markup expects is touched.
+          return { fatal: 'setup() threw:\n\n' + (err && err.stack ? err.stack : String(err)) }
+        }
+      },
+      template: `
+        <template v-if="fatal">${fatalTemplate}</template>
+        <template v-else>${pageTemplate}</template>`,
     }),
   }
 }

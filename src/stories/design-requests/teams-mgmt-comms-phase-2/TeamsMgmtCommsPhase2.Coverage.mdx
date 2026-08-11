@@ -37,20 +37,30 @@ team **Southern United 05B**.
 event. Toggling off stops future sends for that type on that event. Toggle state
 is visible to everyone with event access.
 
-**Designed** — A *Teams Management Communications* card on the event's
-Registration Settings tab, between Compliance and Restrictions. One toggle per
-company-level template. It is deliberately **toggle-only** — no edit buttons, no
-per-template config — with a line pointing to Company Settings › Notifications
-as the place content is authored, and a note that new events inherit the
-company-level state.
+**Designed** — A **Communications** card on the event's Registration Settings
+tab, between Compliance and Restrictions. One toggle per company-level template.
+It is deliberately **toggle-only** — no edit buttons, no per-template config —
+with a line pointing to Company Settings › Notifications as the place content is
+authored.
+
+**Trimmed after review (2026-08-10)**
+
+- Header shortened from *Teams Management Communications* to **Communications**.
+- The line *"New events inherit the company-level on/off state"* removed.
+- *Compliance Achieved* dropped from the list and replaced with **Compliance
+  Reminder - Tier 2**. What an event needs to switch on and off is each reminder
+  tier, not the congratulations notice.
+- Order is now Welcome → Previously Compliant → Compliance Reminder →
+  Compliance Reminder - Tier 2.
 
 **Edge cases covered**
 
 - The card only appears when Compliance Tracking is on, since it is an STP concept.
 - A template that is on at company level but off for this event.
+- A reminder created on Notification Preferences arrives here as its own row,
+  badged **New** and switched off, once it has been saved.
 
-**Find it** — *Screens › Event Registration Settings* → **Configured** (normal)
-and **Sending Blocked** (gates failing).
+**Find it** — *Screens › Event Registration Settings* → **Configured**.
 
 ---
 
@@ -124,7 +134,7 @@ in the fixture and every surface moves together.
 
 **Edge cases covered**
 
-- Nothing configured yet: the From/Reply address shows unset and Required.
+- Nothing configured yet, but the From/Reply address already defaults to Event Manager.
 - A paragraph whose only content is an empty variable is **dropped entirely** —
   a blank non-compliance policy leaves no gap in the email.
 - *Show merge fields* flips between the sent email and the template source.
@@ -143,11 +153,25 @@ structure — which variables, in what order — is what is up for review.
 **Requested** — Users can add more TM Comms templates from the company
 notifications page, naming and describing each, and can delete one.
 
-**Designed** — An *Add Compliance Reminder* action in the Teams Management
-section opens a minimal Name + Description dialog, confirmed with **Add
-Reminder**. The new template starts as a **copy of the standard Compliance
-Reminder** and is marked Custom. Unlimited — the fixed early/mid/late model is
-gone.
+**Designed — two models, side by side.** Review on 2026-08-10 pivoted this from
+unlimited named reminders to a fixed set of numbered tiers, and both stories are
+kept so the two can be compared rather than described.
+
+| Story | Model |
+| --- | --- |
+| **Notification Preferences** | Unlimited reminders, each named in a dialog |
+| **Compliance Reminder Tiers** | Up to **4 numbered tiers**, one click each, no dialog |
+
+In the tiers model the button reads *Add Compliance Reminder Tier*, the dialog is
+gone entirely, the seeded reminder becomes **Tier 1**, and the button disables at
+four rather than disappearing. Deleting leaves a gap on purpose — nothing renames
+itself under a user — and the next add fills the lowest free number, so a
+four-tier system never produces a "Tier 5".
+
+The original model: an *Add Compliance Reminder* action opens a minimal Name +
+Description dialog, confirmed with **Add Reminder**. The new template starts as a
+**copy of the standard Compliance Reminder** and is marked Custom. Unlimited —
+the fixed early/mid/late model is gone.
 
 **Two ways to delete**, both limited to user-added reminders:
 
@@ -271,9 +295,11 @@ now the design:
 - Custom address selected but not yet typed.
 - *Other* still shows the literal address in the editor, because there it is knowable.
 
-**Dropped with the old design** — the Required chip and the "nothing can send
-until this is set" warning went with the trim. Worth a look: on first run the
-address is genuinely unset, and nothing now says so.
+**Resolved 2026-08-10** — the unset state no longer exists. *Event Manager* is
+the default and the field cannot be cleared, so there is nothing to warn about
+and the asterisk came off with the warning. The one option that still needs
+checking is *Other*, whose address is typed rather than resolved from a person;
+it is validated for a plausible email.
 
 **Diverges from the written AC** — the ticket says the support-contact option
 should respect an event-level override. The newer direction is **no event-level

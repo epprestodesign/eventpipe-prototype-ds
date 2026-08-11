@@ -60,15 +60,12 @@ const card = (rows) => ({
   template: `
     <q-card flat bordered style="max-width:900px;">
       <q-card-section style="${CARD_BODY}">
-        <div style="${SECTION_TITLE}">Teams Management Communications</div>
+        <div style="${SECTION_TITLE}">Communications</div>
 
         <div style="color:var(--ds-color-text); line-height:1.5; max-width:760px; margin:-10px 0 4px;">
           These are your company's Teams Management templates. Switching one off here only stops it
           sending <strong>for this event</strong> — the content itself is edited once, in
           <strong>Company Settings &rsaquo; Notifications</strong>.
-        </div>
-        <div style="font-size:0.8125rem; color:var(--ds-color-text-subtle); margin-bottom:18px;">
-          New events inherit the company-level on/off state.
         </div>
 
         <div style="max-width:760px;">

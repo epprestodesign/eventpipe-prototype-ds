@@ -147,15 +147,6 @@ export const TM_TEMPLATES = [
     recurring: false,
   },
   {
-    key: 'reminder-standard',
-    type: 'compliance-reminder',
-    title: 'Compliance Reminder',
-    desc: 'Recurring nudge to teams that have not yet met their Stay-to-Play requirement.',
-    companyOn: true,
-    eventOn: true,
-    recurring: true,
-  },
-  {
     key: 'previously-compliant',
     type: 'previously-compliant',
     title: 'Previously Compliant Notice',
@@ -165,18 +156,28 @@ export const TM_TEMPLATES = [
     recurring: false,
   },
   {
-    key: 'compliance-achieved',
-    type: 'notice',
-    title: 'Compliance Achieved',
-    desc: 'Congratulates a team once it meets its requirement.',
+    key: 'reminder-standard',
+    type: 'compliance-reminder',
+    title: 'Compliance Reminder',
+    desc: 'Recurring nudge to teams that have not yet met their Stay-to-Play requirement.',
     companyOn: true,
     eventOn: true,
-    recurring: false,
+    recurring: true,
+  },
+  {
+    /* The second tier, per the DES-428 pivot. Review replaced Compliance
+     * Achieved here with this: what an event actually needs to switch on and off
+     * is each reminder tier, not the congratulations notice. */
+    key: 'reminder-tier-2',
+    type: 'compliance-reminder',
+    title: 'Compliance Reminder - Tier 2',
+    desc: 'A firmer follow-up for teams still below their requirement as the cutoff approaches.',
+    companyOn: true,
+    eventOn: true,
+    recurring: true,
   },
 ]
 
-/** From/Reply address options — set once for ALL Teams Management emails
- *  (DES-429 · P0-5). Group-level only; no event-level override. */
 export const FROM_ADDRESS_OPTIONS = [
   'Event Manager',
   'Event Customer Support Contact',

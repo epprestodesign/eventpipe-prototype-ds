@@ -40,6 +40,15 @@ template editor and the email preview report the role and when it resolves:
 
 An earlier version put this in its own card above every section, with a heading,
 a Required chip, a badge, a four-line explainer and a resolved-address footer.
+
+### Trimmed again on 2026-08-10
+
+- **Event Manager is the default** and the field **cannot be cleared**, so the
+  asterisk is gone — marking it required would label a state the user cannot
+  reach.
+- The help line beneath it is gone too.
+- **Other now validates.** It is the one option whose value is typed rather than
+  resolved from a person, so an empty or malformed address is flagged.
 Review on 2026-08-07 called it bloated, called the resolved address wrong, and
 asked for it to be tied to its section.
 ` } } },

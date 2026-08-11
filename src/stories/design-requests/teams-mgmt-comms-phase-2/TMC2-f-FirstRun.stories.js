@@ -11,7 +11,7 @@ import { COMPANY, DEFAULT_EMAILS, EVENT, FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESO
 import { addedTemplates, addTemplate } from './_tmc2store'
 import {
   companyHeader, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
-  addReminderRow,
+  addReminderRow, customFromAddressError,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL,
 } from './_tmc2'
 import DsListItem from './components/DsListItem.vue'
@@ -59,8 +59,10 @@ Two things a first-time user meets here:
    templates exist and are enabled, but per [DES-425 · P0-1](https://linear.app/eventpipe/issue/DES-425)
    nothing actually sends until it is switched on for a given event. The banner
    below says so, because "why is nothing sending?" is the obvious first question.
-2. **The From/Reply address is unset.** [DES-429 · P0-5](https://linear.app/eventpipe/issue/DES-429)
-   requires one before anything can send, so it shows as a required, empty field.
+2. **The From/Reply address already has a default.** [DES-429 · P0-5](https://linear.app/eventpipe/issue/DES-429)
+   sets *Event Manager* on day one and there is no way to clear it, so this
+   screen no longer has an unset state to show. Choosing *Other* is the only
+   path that asks for input, and it validates the address.
 
 The email bodies themselves are in *First-Time Setup › Default Emails*.
 
@@ -122,7 +124,7 @@ const seededList = `
         </div>
       </template>
       <q-separator />
-      ${addReminderRow('openAdd')}
+      ${addReminderRow()}
     </q-expansion-item>
   </q-card>`
 
@@ -133,7 +135,10 @@ export const FirstRun = tmc2Page({
     DsRichTextEditor, DsInfoGrid,
   },
   setup: () => {
-    const fromAddress = ref(null)
+    /* DES-429 · P0-5 — Event Manager is the default everywhere, including day
+     * one. Review removed the ability to clear the field, so there is no unset
+     * state left for first-run to show. */
+    const fromAddress = ref('Event Manager')
     const fromAddressCustom = ref('')
     // Same resolution the configured screen uses, so the two agree once a value
     // is picked. Nothing is set on first run, so the card shows its unset state.
@@ -182,6 +187,7 @@ export const FirstRun = tmc2Page({
     const startsReminderGroup = (i) => isReminderRow(rows.value[i])
       && (i === 0 || !isReminderRow(rows.value[i - 1]))
 
+    const customFromError = computed(() => customFromAddressError(fromAddress.value, fromAddressCustom.value))
     const savedFrom = ref(fromAddress.value)
     const savedFromCustom = ref(fromAddressCustom.value)
 
@@ -247,6 +253,7 @@ export const FirstRun = tmc2Page({
       fromAddressCustom,
       fromOptions: FROM_ADDRESS_OPTIONS,
       resolvedFrom,
+      customFromError,
       // emailPaper's contract, same as the configured screen: the From line
       // reports the role rather than a mailbox it cannot know.
       fromLine: computed(() => (fromAddress.value

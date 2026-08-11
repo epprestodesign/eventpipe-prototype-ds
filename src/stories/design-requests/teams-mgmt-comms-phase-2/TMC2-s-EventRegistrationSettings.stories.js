@@ -30,12 +30,19 @@ Both are Teams-Management/STP dependent, so — like *Compliance* itself — the
 only appear once **Compliance Tracking** is ticked. Everything else on the
 screen still matches production.
 
-**Two states:**
+**Three states:**
 
 | Story | Shows |
 | --- | --- |
-| **Default** | Empty event — compliance tracking off, so the conditional fields and the Compliance / Teams Management Communications / Restrictions cards are hidden. Non-compliance policy is empty. |
-| **Configured** | Fully set up — every conditional revealed, matching the populated capture, plus a written non-compliance policy and one template switched off for this event. |
+| **Default** | Empty event — compliance tracking off, so the conditional fields and the Compliance / Communications / Restrictions cards are hidden. Non-compliance policy is empty. |
+| **Configured** | Fully set up — every conditional revealed, matching the populated capture, plus a written non-compliance policy. Two reminders: *Compliance Reminder* and *Compliance Reminder - Tier 2*. |
+| **Configured with Tiers** | The same event, but the company has built out all four reminder tiers. The seeded reminder is named *Tier 1* here, matching *Screens › Notification Preferences › Compliance Reminder Tiers*. |
+
+**Why both configured states.** They are two real situations, not a before and
+after: a company running two reminders and one running the full ladder. The
+event screen has to read well in both, and the four-tier case is where the list
+gets long enough to be worth looking at. Every tier is switched on in that story
+— opting one out per event is exactly what the toggles are for.
 
 ### Removed 2026-08-07 — DES-432 · P0-8
 
@@ -145,15 +152,12 @@ const compliance = `
 const eventComms = `
   <q-card v-if="complianceTracking" flat bordered style="${CARD}">
     <q-card-section style="${CARD_BODY}">
-      <div style="${SECTION_TITLE}">Teams Management Communications</div>
+      <div style="${SECTION_TITLE}">Communications</div>
 
       <div style="color:var(--ds-color-text); line-height:1.5; max-width:760px; margin:-10px 0 4px;">
         These are your company's Teams Management templates. Switching one off here only stops it
         sending <strong>for this event</strong> — the content itself is edited once, in
         <strong>Company Settings &rsaquo; Notifications</strong>.
-      </div>
-      <div style="font-size:0.8125rem; color:var(--ds-color-text-subtle); margin-bottom:18px;">
-        New events inherit the company-level on/off state.
       </div>
 
       <div style="max-width:760px;">
@@ -237,6 +241,34 @@ const MERGE_HINT = 'Optional. When filled, this text is inserted into Teams Mana
  * expects to find it as they left it. Never mutates the imported fixture. */
 const seededTemplates = TM_TEMPLATES.map((t) => ({ ...t }))
 
+/* The same event once the company has built out all four reminder tiers
+ * (DES-428 · P0-4). Non-reminder rows are taken from TM_TEMPLATES rather than
+ * retyped, so Welcome and Previously Compliant can never drift between the two
+ * stories; only the reminder ladder differs.
+ *
+ * Descriptions escalate deliberately — the point of tiers is tone and cadence
+ * changing as the cutoff approaches, and four rows all reading "recurring
+ * nudge" would show the mechanism without showing the reason for it. */
+const TIER_DESCRIPTIONS = [
+  'The standard nudge. Encouraging in tone, running weekly from 200 days out.',
+  'A firmer follow-up for teams still below their requirement as the cutoff approaches.',
+  'A direct reminder that rooms at event rates are running out, with the shortfall stated plainly.',
+  'The final escalation before the hotel cutoff, naming what happens to teams that do not meet the requirement.',
+]
+
+const tierTemplates = [
+  ...TM_TEMPLATES.filter((t) => t.type !== 'compliance-reminder').map((t) => ({ ...t })),
+  ...TIER_DESCRIPTIONS.map((desc, i) => ({
+    key: 'reminder-tier-' + (i + 1),
+    type: 'compliance-reminder',
+    title: 'Compliance Reminder - Tier ' + (i + 1),
+    desc,
+    companyOn: true,
+    eventOn: true,
+    recurring: true,
+  })),
+]
+
 const state = (over = {}) => () => {
   return {
     tab: ref('registration'),
@@ -270,7 +302,7 @@ const state = (over = {}) => () => {
      * static list could never show that. Their `eventOn` lives in the store
      * object itself, so toggling it here and coming back finds it as you left
      * it — the same as the seeded rows. */
-    tmTemplates: computed(() => [...seededTemplates, ...addedTemplates.value]),
+    tmTemplates: computed(() => [...(over.templates || seededTemplates), ...addedTemplates.value]),
     evt: EVENT,
   }
 }
@@ -302,3 +334,18 @@ export const Configured = tmc2Page({
   slot: body,
 })
 Configured.parameters = { layout: 'fullscreen' }
+
+/** The same configured event, but the company has built out all four reminder
+ *  tiers (DES-428 · P0-4). Kept as its own story rather than replacing
+ *  Configured: the two are different real situations — a company running two
+ *  reminders and one running the full ladder — and the event screen has to read
+ *  well in both. Every tier is on here; per-event opt-out of a single tier is
+ *  what the toggles are for. */
+export const ConfiguredWithTiers = tmc2Page({
+  active: 'events',
+  components: { DsSelect, DsInput, DsField },
+  setup: state({ ...CONFIGURED, templates: tierTemplates }),
+  slot: body,
+})
+ConfiguredWithTiers.storyName = 'Configured with Tiers'
+ConfiguredWithTiers.parameters = { layout: 'fullscreen' }
