@@ -112,6 +112,29 @@ template. We will not be building that in this phase of the project."* Its copy,
 its story and its seed entry are all gone, which closes the discrepancy flagged
 here previously.
 
+### The subtext under each template
+
+Rewritten 2026-08-11 and now **defined once**, as `TM_DESC` in `_tmc2fixtures.js`.
+It had been restated in three fixtures and four component stories — seven copies
+that had already drifted apart, which is why *"update this subtext everywhere you
+find it… so the prototypes are consistent"* was a real ask rather than a tidy-up.
+Every screen showing one of the three now reads from the same constant.
+
+| Template | Subtext |
+| --- | --- |
+| **Welcome Email** | Sent once for per team per event. Establishes that the event is Stay-to-Play and points the team at the booking link. Intended for teams traveling to the event with a compliance requirement. |
+| **Previously Compliant Notice** | Sent when a team that had met its goal drops back below it — usually after a cancellation. Sends once and if they remain non-compliant then compliance reminders emails take over. |
+| **Compliance Reminder** | The recurring nudge for teams. Runs on a cadence and date range you set relative to the event start. Intended for non-compliant teams. Add tiers to shift your tone, frequency, or audience as the event draws closer. |
+
+**Tiers 2–4 keep their own escalating copy.** They are not one of the three named
+templates, and reusing the Compliance Reminder text would have every added tier
+telling you to add tiers. A tier created in the prototype gets a neutral line —
+`TM_DESC.addedTier` — in the same vocabulary of cadence, tone and audience.
+
+**A day-one banner was removed** from First-Time Setup in the same pass:
+*"Teams Management communications are ready to set up…"* — *"please remove that,
+it's unnecessary."*
+
 **Every email is the same eight paragraphs**, enforced by a shared skeleton
 rather than by convention:
 
@@ -366,9 +389,25 @@ Formatter*; in use throughout the template editor.
 Compliance reminders additionally get scheduling. The config must be able to hide
 scheduling per email type.
 
-**Designed** — An *Email Settings* panel split into **Audience** (always shown —
-statuses, recipients) and **Scheduling** (begin/end days, recurrence), shown only
-for `compliance-reminder` templates.
+**Designed** — A *Notification Settings* panel split into **Audience** (always
+shown — Team Recipients, then Compliance Statuses) and **Scheduling** (begin/end
+days, recurrence), shown only for `compliance-reminder` templates.
+
+**Revised 2026-08-11.** Everything below came from one review pass:
+
+| Change | Why it was asked for |
+| --- | --- |
+| *Email Settings* → **Notification Settings** | Matches the section it configures |
+| **Audience** now sits above **Scheduling** | Requested. Also reads better for the one-shot emails, where Scheduling is absent and Audience was the only block |
+| **Team Recipients** now sits above *Compliance Statuses to Include* | Requested |
+| *Recipients* → **Team Recipients** | Names whose recipients these are |
+| *Team Manager* → **Housing Contact**; *Group Block Contacts* → **Group Block Contact(s)** | Matches the real roles |
+| **Ends** block removed from the custom-recurrence modal | *"There is no end to these."* The begin/end day range already bounds the run, so an end date here was a second, contradictable answer to a settled question |
+| **year** removed from the repeat interval | A cadence in years is meaningless against an event a few hundred days out |
+| The **Recurring reminder** badge beside the editor title removed | *"Anywhere there is a tag next to the name of the template on the edit page… please remove it."* The Scheduling block already says it recurs, with the actual cadence |
+
+The badge that came off is the second one to go from that spot — *Triggered
+email* was removed earlier for labelling the normal case.
 
 **Edge cases covered**
 
@@ -395,7 +434,7 @@ been removed** (2026-08-07), at Scott's request:
 | Surface that existed | Where | Removed |
 | --- | --- | --- |
 | Event-level eligibility block (two gates) + the whole **SendingBlocked** story | Event Registration Settings | 2026-08-07 |
-| *One email per team per day* note and priority order | Notification Preferences › Email Settings | 2026-08-07 |
+| *One email per team per day* note and priority order | Notification Preferences › Notification Settings | 2026-08-07 |
 | Read-only *Communications status* block, incl. one-time send flags | Team Detail › Goals & Restrictions | 2026-08-07, with the P0-2 trim |
 | Send-eligibility banner above the log | Team Detail › Communications Log | 2026-08-07, with the P0-9 trim |
 

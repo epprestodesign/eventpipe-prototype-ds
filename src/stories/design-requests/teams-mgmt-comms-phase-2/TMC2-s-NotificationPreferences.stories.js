@@ -11,7 +11,7 @@ import { ref, computed, watchEffect } from 'vue'
 import { tmc2Page } from './_tmc2shell'
 import {
   COMPANY, COMPANY_SECTIONS_TOP, COMPANY_RECON, COMPANY_SECTIONS_BOTTOM,
-  FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED, EVENT,
+  FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED, EVENT, TM_DESC,
 } from './_tmc2fixtures'
 import {
   companyHeader, goBackLink, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
@@ -57,7 +57,7 @@ editor comes back. **Click Edit on any template** to move between them.
 | View | What it is |
 | --- | --- |
 | **Preferences list** | Every notification, grouped by section, with a Send-Email toggle and an Edit action — plus the section's From/Reply config and the *Add Compliance Reminder* affordance |
-| **Template editor** | The drill-in: content with merge fields, BCC, *Preview email* in the header, and **Email Settings** (audience for every template, scheduling only for reminders) |
+| **Template editor** | The drill-in: content with merge fields, BCC, *Preview email* in the header, and **Notification Settings** (audience for every template, scheduling only for reminders) |
 
 **Nothing on the list takes effect until Save.** An unsaved-changes bar appears
 whenever anything differs from the last save — a checkbox, the From/Reply
@@ -79,9 +79,10 @@ Registration Settings as an event-level toggle until you press Save.
   row menu or from the editor's **Save ▾** menu; seeded ones can only be reverted. Fixed
   templates sort above reminders under quiet group labels, since the reminder
   group is the one that grows.
-- **DES-431 · P0-7 — Conditional configuration.** Every template gets Compliance
-  Statuses + Recipients; **only** \`compliance-reminder\` templates get the
-  Scheduling block (begin/end days, recurrence). Driven off the row's \`type\`.
+- **DES-431 · P0-7 — Conditional configuration.** Every template gets an
+  **Audience** block (Team Recipients + Compliance Statuses); **only**
+  \`compliance-reminder\` templates get the **Scheduling** block below it
+  (begin/end days, recurrence). Driven off the row's \`type\`.
 - **DES-436 · P1-1 — Preview + test send.** *Preview* on any row opens the email
   in a modal, rendered from the **same fragment as First-Time Setup › Default
   Emails**, with **Show merge fields** to flip between the sent email and the
@@ -170,7 +171,7 @@ Template copy is editable in the **Controls** panel and lives in
 
 ### Removed 2026-08-07 — DES-432 · P0-8
 
-**Email Settings** previously carried a *One email per team per day* note with
+**Notification Settings** previously carried a *One email per team per day* note with
 the priority order. P0-8 was never requested as a mock, so it is gone.
 
 > The **Publish content** toolbar addon is intentionally not wired to this fork —
@@ -525,7 +526,7 @@ const makeStory = (variant) => tmc2Page({
         id: 'tm-staged-' + stagedSeq,
         key: 'tm-staged-' + stagedSeq,
         title: 'STP - Compliance Reminder - Tier ' + (tierCount.value + 1),
-        desc: 'Reminds non-compliant teams about their Stay-to-Play requirement.',
+        desc: TM_DESC.addedTier,
         type: 'compliance-reminder',
         send: true,
         forced: false,
@@ -561,7 +562,7 @@ const makeStory = (variant) => tmc2Page({
           id: 'tm-staged-' + stagedSeq,
           key: 'tm-staged-' + stagedSeq,
           title: name,
-          desc: desc || 'Reminds non-compliant teams about their Stay-to-Play requirement.',
+          desc: desc || TM_DESC.addedTier,
           baseTitle,
           type: 'compliance-reminder',
           send: true,

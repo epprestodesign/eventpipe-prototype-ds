@@ -132,6 +132,35 @@ export const COMPANY_SECTIONS_BOTTOM = [
  * Phase 2 additions — fixtures for the requirements being designed.
  * =========================================================================== */
 
+/** The subtext under each seeded template, written by Scott on 2026-08-11:
+ *  "feel free to update this subtext everywhere you find it for these email
+ *  templates so the prototypes are consistent."
+ *
+ *  Defined once and exported, because it had been duplicated across three
+ *  fixtures and four component stories — which is exactly how the seven copies
+ *  drifted apart in the first place. Anything showing one of these three
+ *  templates should read from here rather than restate it.
+ *
+ *  Verbatim as supplied, including "for per team per event" and "compliance
+ *  reminders emails" — those are copy decisions, not ours to quietly correct. */
+export const TM_DESC = {
+  welcome: 'Sent once for per team per event. Establishes that the event is'
+    + ' Stay-to-Play and points the team at the booking link. Intended for teams'
+    + ' traveling to the event with a compliance requirement.',
+  previouslyCompliant: 'Sent when a team that had met its goal drops back below'
+    + ' it — usually after a cancellation. Sends once and if they remain'
+    + ' non-compliant then compliance reminders emails take over.',
+  complianceReminder: 'The recurring nudge for teams. Runs on a cadence and date'
+    + ' range you set relative to the event start. Intended for non-compliant'
+    + ' teams. Add tiers to shift your tone, frequency, or audience as the event'
+    + ' draws closer.',
+  /* Not one of the three above, so not Scott's copy. A tier someone just added
+   * must not tell them to add tiers, which is what reusing complianceReminder
+   * would do. Echoes his vocabulary — cadence, tone, audience. */
+  addedTier: 'An additional reminder tier. Set its own cadence, date range, tone'
+    + ' and audience for this stage of the run-up.',
+}
+
 /** Company-level Teams Management templates. The event screen toggles these
  *  per event (DES-425 · P0-1); the company screen edits them (DES-428 · P0-4).
  *  `type` drives which config sections show (DES-431 · P0-7): only
@@ -141,7 +170,7 @@ export const TM_TEMPLATES = [
     key: 'welcome',
     type: 'welcome',
     title: 'Welcome Email',
-    desc: 'Sent once when a team is first registered, introducing the Stay-to-Play requirement and how to book.',
+    desc: TM_DESC.welcome,
     companyOn: true,
     eventOn: true,
     recurring: false,
@@ -150,7 +179,7 @@ export const TM_TEMPLATES = [
     key: 'previously-compliant',
     type: 'previously-compliant',
     title: 'Previously Compliant Notice',
-    desc: 'Alerts a team that was compliant but has fallen back below its requirement.',
+    desc: TM_DESC.previouslyCompliant,
     companyOn: true,
     eventOn: true,
     recurring: false,
@@ -159,7 +188,7 @@ export const TM_TEMPLATES = [
     key: 'reminder-standard',
     type: 'compliance-reminder',
     title: 'Compliance Reminder',
-    desc: 'Recurring nudge to teams that have not yet met their Stay-to-Play requirement.',
+    desc: TM_DESC.complianceReminder,
     companyOn: true,
     eventOn: true,
     recurring: true,
@@ -255,11 +284,11 @@ export const DEFAULT_EMAILS = [
     key: 'welcome',
     type: 'welcome',
     title: 'Welcome Email',
-    purpose: 'Sent once, the first time a team appears on the event. Establishes that the event is Stay-to-Play and points the team at the booking link.',
+    purpose: TM_DESC.welcome,
     subject: `Book your rooms for ${mf('event_name')}`,
     settings: [
       { label: 'Compliance statuses', value: 'Not Started, In Progress, Previously Compliant' },
-      { label: 'Recipients', value: 'Team Housing Contact' },
+      { label: 'Team Recipients', value: 'Team Housing Contact' },
       { label: 'Scheduling', value: 'One-time — sent once per team' },
     ],
     body: emailBody({
@@ -273,14 +302,14 @@ export const DEFAULT_EMAILS = [
     key: 'compliance-reminder',
     type: 'compliance-reminder',
     title: 'Compliance Reminder',
-    purpose: 'The recurring nudge. Runs weekly from 200 days out until the event starts, to any team not yet meeting its requirement.',
+    purpose: TM_DESC.complianceReminder,
     subject: `${mf('entity_name')}: ${mf('compliance_progress_remaining')} ${mf('compliance_criteria')} still to book`,
     settings: [
       { label: 'Days before event start to begin', value: '200' },
       { label: 'Days before event start to end', value: '0' },
       { label: 'Cadence', value: 'Days of week — Monday, every 1 week' },
       { label: 'Compliance statuses', value: 'Not Started, In Progress, Previously Compliant' },
-      { label: 'Recipients', value: 'Team Housing Contact, Group Block Creators' },
+      { label: 'Team Recipients', value: 'Team Housing Contact, Group Block Creators' },
     ],
     body: emailBody({
       situation: `A reminder about the Stay-to-Play requirement for ${mf('event_name')}, which starts in ${mf('days_until_event')}.`,
@@ -293,11 +322,11 @@ export const DEFAULT_EMAILS = [
     key: 'previously-compliant',
     type: 'previously-compliant',
     title: 'Previously Compliant Notice',
-    purpose: 'Sent when a team that had met its requirement drops back below it — usually after a cancellation. Sends once, and resets when the team becomes compliant again.',
+    purpose: TM_DESC.previouslyCompliant,
     subject: `${mf('entity_name')} is no longer meeting its ${mf('event_name')} requirement`,
     settings: [
       { label: 'Compliance statuses', value: 'Previously Compliant' },
-      { label: 'Recipients', value: 'Team Housing Contact, Group Block Creators' },
+      { label: 'Team Recipients', value: 'Team Housing Contact, Group Block Creators' },
       { label: 'Scheduling', value: 'One-time — resets if the team becomes compliant again' },
     ],
     body: emailBody({
