@@ -59,8 +59,8 @@ The sidebar is ordered the way product & design think (set in `.storybook/previe
   Pickup Reports, Reports, Hotels, Hotel Brands, Amenities, Room Types, Venues,
   Event Companies, Companies, Requests, Admin Tools, Pipe Tools, Webhooks,
   Company Settings.
-- **Design Requests** — ticket-scoped design work (currently DES-207,
-  Communications | Email Template Editor).
+- **Design Requests** — ticket-scoped design work: Teams Mgmt Comms (Phase 1 &
+  2), DES-95 Customized Page Revamp, and Multiple Secondary Fees (DES-451/452/456).
 
 > A story's sidebar placement comes from its `title` (e.g. `Components/Forms/Input`),
 > not its source folder.

@@ -1,0 +1,116 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Design Requests/Multiple Secondary Fees/Requirements Coverage" />
+
+# Requirements Coverage
+
+Design for [Multiple Secondary Fees](https://linear.app/eventpipe/project/multiple-secondary-fees-5799af4cfadb/overview) —
+extending secondary custom fees from one to **up to three**.
+
+**Scope of this folder: the EventPipe admin screens only.** The booking-site
+surfaces in the request (price-details pop-up, old checkout, old confirmation)
+are a separate batch and are not designed here.
+
+Every screen below is a working prototype, not a static comp — toggle a fee on,
+change an amount, hit Save, and the other screens' math follows.
+
+| Ticket | Requirement | Where |
+| --- | --- | --- |
+| **DES-451** | Event level: up to three secondary custom fees | Screens › 01 · Event Fees |
+| **DES-451** | (companion) Pushing those fees down to existing hotels | Screens › 02 · Hotel Sync Settings |
+| **DES-452** | Event hotel level: up to three, edit + view | Screens › 03 · Housing Company Policies |
+| **DES-456** | Reservation summary shows every configured fee | Screens › 04 · Reservation Summary |
+| DES-453 | Booking site price-details pop-up | **Out of scope here** — booking-site batch |
+| DES-454 | Old-style checkout page | **Out of scope here** — booking-site batch |
+| DES-455 | Old-style confirmation page | **Out of scope here** — booking-site batch |
+
+Everything renders against one record so the screens read as one product:
+**Team Travel Source (TTS)** / event **Reservation Status Testing** / hotel
+**Quality Suites Hotel** / a **four-night** reservation for **Emily Johnson** —
+the same four nights in the loom, so a $5 per-room-night fee reads as $20.
+
+---
+
+## The editing pattern: three independent toggles
+
+**Requested** — "Allow the user to add up to three secondary custom fees… for
+now, call them Secondary Custom Fee 1, 2 and 3."
+
+**Designed** — Three separate toggle rows, each revealing the same four fields
+the single fee has today: charge type, dollar amount, display label,
+description. Nothing about an individual fee changes; there are simply three,
+and each is switched on by itself.
+
+An "+ Add fee" repeater was the alternative. Three fixed toggles won because
+the slots are addressable — Fee 2 is Fee 2 on the event, on the hotel, and on
+the sync screen — and because a repeater's remove/re-add makes it ambiguous
+which stored fee a hotel-level override belongs to.
+
+Two details keep three fee blocks from running together, neither of which adds
+a new control:
+
+- **Fields are indented under their toggle** behind a hairline rule, so a fee's
+  four fields visibly belong to the switch above them.
+- **The required `*` appears only when a slot is on.** An off slot has nothing
+  to fill in, so it shouldn't read as an unmet requirement — today's single fee
+  works the same way.
+
+Cost when unused: three toggle rows and no fields. See *None configured*.
+
+## View mode (DES-452)
+
+Each configured fee repeats the shape the single fee has today — name on the
+left, rate on the right, display label and description beneath — separated by a
+hairline. Three of them read as a list; no table, no new pattern.
+
+Added: an explicit **"No secondary custom fees configured"** empty state. Today
+the row simply vanishes, which is indistinguishable from a page that failed to
+load a fee.
+
+## Hotel Sync Settings (DES-451 companion)
+
+Not in a ticket, but the request breaks this screen: it lists one *Secondary
+Custom Fee* group today, and the whole purpose of the screen is choosing what
+overwrites hotel-level values.
+
+**Designed** — one selectable group per slot. Lumping all three under a single
+checkbox would force a housing manager to overwrite fees 2 and 3 in order to
+push fee 1.
+
+A slot the event has **turned off** still appears, in red, saying *"Syncing
+removes this fee from existing hotels."* Syncing an empty slot is a deletion
+across every hotel in the event, and that is not something to find out
+afterwards.
+
+## Reservation summary (DES-456)
+
+The single fee line becomes one line per fee, grouped under a **Secondary Fees**
+heading with a subtotal when there's more than one, so the room rate → taxes →
+fees → total spine of the summary keeps its shape at any fee count.
+
+Each fee shows **how its total was reached** — "$5.00 per room night × 4
+nights" — because with three fees on one reservation, *"Custom Name 2 · $15.00"*
+alone can't be answered by whoever is on the phone with the guest.
+
+> The surrounding record chrome on this screen is built from the app's
+> reservation pattern rather than a capture of the live page; the summary card
+> is the part under review.
+
+---
+
+## Open questions for Josh
+
+1. **Slot identity vs. renumbering.** If a user turns off Fee 2 and leaves Fee 3
+   on, does Fee 3 stay "Fee 3"? These screens say yes — the slot is the
+   identity, which is what makes hotel-level override and sync coherent. Worth
+   confirming against how it'll be stored.
+2. **Naming.** "Secondary Custom Fee 1/2/3" is used as the *field* label
+   throughout; the guest-facing name is always the user's Display Label. If
+   these get real product names later, only the label constant changes.
+3. **Hotel fees the event doesn't have.** A hotel can carry three fees while the
+   event carries one. Nothing here blocks that; it's what the sync screen is
+   for. Flagging it because the event-level cap of three doesn't by itself cap
+   what a hotel can hold.
+4. **Duplicate display labels.** Nothing stops a user naming two fees the same,
+   which would produce two identical lines on the guest's price details. Is that
+   worth a validation rule?
