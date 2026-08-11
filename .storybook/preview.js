@@ -71,6 +71,14 @@ const preview = {
             '17 Company Settings', 'Drafts',
           ],
           'Design Requests', [
+            // Phase 1 (formerly "DES-207 Communications | Email Template
+            // Editor") sits above Phase 2 so the two read in the order the work
+            // happened.
+            'Teams Mgmt Comms Phase 1', [
+              'V1 · Notifications Preferences',
+              'V2 · Configured Template',
+              'Components',
+            ],
             'Teams Mgmt Comms Phase 2', [
               'Requirements Coverage',
               'First-Time Setup', [
@@ -92,11 +100,6 @@ const preview = {
                 'Event Registration Settings',
                 'Team Detail',
               ],
-            ],
-            'DES-207 Communications | Email Template Editor', [
-              'V1 · Notifications Preferences',
-              'V2 · Configured Template',
-              'Components',
             ],
             'DES-95 Customized Page Revamp', [
               'Customized Event Site Edits 072426',

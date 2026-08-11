@@ -55,7 +55,16 @@ export const colHeaders = `
  *  both screens. `onEdit` / `onRevert` / `onDelete` are handler names in the
  *  consuming setup; omit revert or delete to leave that item out — first-run has
  *  nothing custom to revert and nothing user-added to delete. */
-export const templateActions = ({ onEdit = 'openEditor', onRevert = '', onDelete = '' } = {}) => `
+/* `deleteEnabledWhen` is a Vue expression, not a boolean — the tiers model only
+ * lets you delete the furthest tier, and which row that is changes as tiers are
+ * added and removed. Empty means every user-added template is deletable, which
+ * is the named-template model the default screen and First-Time Setup still use.
+ * The blocked item stays visible and disabled rather than disappearing: an
+ * option that vanishes teaches nothing about why. */
+export const templateActions = ({
+  onEdit = 'openEditor', onRevert = '', onDelete = '',
+  deleteEnabledWhen = '', deleteBlockedTooltip = '',
+} = {}) => `
   <q-btn-dropdown split unelevated no-caps color="primary" label="Edit" @click="${onEdit}(it)">
     <q-list style="min-width:190px">
       <q-item clickable v-close-popup @click="${onEdit}(it)">
@@ -76,10 +85,20 @@ export const templateActions = ({ onEdit = 'openEditor', onRevert = '', onDelete
       </template>` : ''}
       ${onDelete ? `
       <template v-if="it.userAdded">
-        <q-item clickable v-close-popup @click="${onDelete}(it)">
-          <q-item-section avatar><q-icon name="delete" color="negative" /></q-item-section>
-          <q-item-section class="text-negative">Delete template</q-item-section>
-        </q-item>
+        <!-- The tooltip hangs on the wrapper, not the item: a disabled QItem is
+             an unreliable hover target, and the wrapper is never disabled. -->
+        <div>
+          <q-item clickable v-close-popup @click="${onDelete}(it)"
+            ${deleteEnabledWhen ? `:disable="!(${deleteEnabledWhen})"` : ''}>
+            <q-item-section avatar><q-icon name="delete" color="negative" /></q-item-section>
+            <q-item-section class="text-negative">Delete template</q-item-section>
+          </q-item>
+          ${deleteEnabledWhen && deleteBlockedTooltip ? `
+          <q-tooltip v-if="!(${deleteEnabledWhen})" max-width="260px" anchor="center left"
+            self="center right" class="text-body2" style="line-height:1.5; padding:8px 10px;">
+            ${deleteBlockedTooltip}
+          </q-tooltip>` : ''}
+        </div>
       </template>` : ''}
     </q-list>
   </q-btn-dropdown>`

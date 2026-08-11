@@ -307,28 +307,10 @@ export const DEFAULT_EMAILS = [
       cutoff: `The last date to book at event rates is ${mf('last_cutoff_date')}, ${mf('days_until_cutoff')} from today.`,
     }),
   },
-  {
-    /* The one email that is not chasing anything. It keeps the same eight slots
-     * so the format holds, but every slot is turned to confirming rather than
-     * pressing — including the cutoff, which here is reassurance that there is
-     * still room to change plans rather than a deadline. */
-    key: 'compliance-achieved',
-    type: 'notice',
-    title: 'Compliance Achieved',
-    purpose: 'Sent once, when a team first meets its requirement. Confirms the team is done and names the one thing that would undo it.',
-    subject: `${mf('entity_name')} is all set for ${mf('event_name')}`,
-    settings: [
-      { label: 'Compliance statuses', value: 'Compliant' },
-      { label: 'Recipients', value: 'Team Housing Contact, Group Block Creators' },
-      { label: 'Scheduling', value: 'One-time — sent when the team first becomes compliant' },
-    ],
-    body: emailBody({
-      situation: `Good news — ${mf('entity_name')} has met the Stay-to-Play requirement for ${mf('event_name')}. Nothing further is needed from you.`,
-      numbers: `The requirement is ${mf('compliance_goal')} ${mf('compliance_criteria')}. Currently booked: ${mf('compliance_progress_booked')}, with none outstanding.`,
-      action: `You can review or adjust the booking here: ${mf('booking_link')}`,
-      cutoff: `Rooms stay available at event rates until ${mf('last_cutoff_date')}, ${mf('days_until_cutoff')} from today. Cancellations before then can take a team back below its requirement, and you would hear from us again if that happens.`,
-    }),
-  },
+  /* A "Compliance Achieved" confirmation email lived here until 2026-08-11:
+   * "please remove the Compliance Achieved template. We will not be building
+   * that in this phase of the project." Removing it also settles the DES-427
+   * discrepancy — that ticket seeded three templates and this list showed four. */
 ]
 
 /** Merge-field → demo value, for rendering an email "as the team receives it". */
