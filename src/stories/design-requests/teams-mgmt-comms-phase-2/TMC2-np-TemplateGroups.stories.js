@@ -17,7 +17,7 @@ Two quiet labels splitting the Teams Management section in two.
 
 | Group | Why it is its own group |
 | --- | --- |
-| **Standard Emails** | A closed set — exactly one Welcome, one Previously Compliant Notice, one Compliance Achieved, forever |
+| **Standard Emails** | A closed set — exactly one Welcome and one Previously Compliant Notice, forever |
 | **Compliance Reminders** | Open-ended. Ships with one and grows as a Hoco adds more |
 
 **Reminders sort last.** Without that, every reminder someone adds lands in among
@@ -52,7 +52,6 @@ const GROUP_LABEL = 'padding:14px 28px 2px; font-size:0.75rem; font-weight:600; 
 const ROWS = [
   { id: 'a', group: 'Standard Emails', title: 'STP - Welcome Email', desc: 'Introduces the team to their booking site and requirements.', send: true, forced: false, custom: false },
   { id: 'b', title: 'STP - Previously Compliant Notice', desc: 'Notifies a team that has fallen out of compliance.', send: true, forced: false, custom: true },
-  { id: 'c', title: 'STP - Compliance Achieved', desc: 'Congratulates a team once it meets its requirement.', send: true, forced: false, custom: false },
   { id: 'd', group: 'Compliance Reminders', title: 'STP - Compliance Reminder', desc: 'Reminds non-compliant teams about their Stay-to-Play requirement.', send: true, forced: true, custom: false },
 ]
 

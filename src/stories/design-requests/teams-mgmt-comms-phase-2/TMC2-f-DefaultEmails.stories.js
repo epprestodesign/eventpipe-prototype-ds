@@ -107,9 +107,5 @@ export const ComplianceReminder = emailStory('compliance-reminder')
 /** Sent when a team that had met its requirement falls back below it. */
 export const PreviouslyCompliantNotice = emailStory('previously-compliant')
 
-/** Sent once, when a team first meets its requirement. The only one of the four
- *  that is not chasing anything — it confirms the team is done and names the one
- *  thing that would undo it. Added 2026-08-08: this template was in the company
- *  list from the start but had no copy, so previewing it fell through to the
- *  Compliance Reminder. */
-export const ComplianceAchieved = emailStory('compliance-achieved')
+/* A ComplianceAchieved story stood here until 2026-08-11. That template is out
+ * of scope for this phase, so the copy and the story went with it. */

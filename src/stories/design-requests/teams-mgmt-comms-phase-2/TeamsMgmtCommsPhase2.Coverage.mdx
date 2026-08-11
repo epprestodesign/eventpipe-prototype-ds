@@ -49,7 +49,8 @@ authored.
 - The line *"New events inherit the company-level on/off state"* removed.
 - *Compliance Achieved* dropped from the list and replaced with **Compliance
   Reminder - Tier 2**. What an event needs to switch on and off is each reminder
-  tier, not the congratulations notice.
+  tier, not the congratulations notice. (That template was cut from the project
+  entirely on 2026-08-11.)
 - Order is now Welcome → Previously Compliant → Compliance Reminder →
   Compliance Reminder - Tier 2.
 
@@ -105,11 +106,11 @@ customer lands on" is a distinct state worth reviewing on its own. The list show
 the seeded templates and nothing else; each email is also rendered as the team
 receives it, with its default configuration beside it.
 
-**The ticket says three; the design shows four.** *Compliance Achieved* has been
-in the company template list all along but had no copy, so previewing it fell
-through to the Compliance Reminder — a team that had just met its goal was shown
-an email chasing it for rooms. It now has its own. **Worth confirming with Scott**
-whether it belongs in the seeded set or whether the list should lose it.
+**Three templates, matching the ticket.** The list showed a fourth,
+*Compliance Achieved*, until 2026-08-11: *"please remove the Compliance Achieved
+template. We will not be building that in this phase of the project."* Its copy,
+its story and its seed entry are all gone, which closes the discrepancy flagged
+here previously.
 
 **Every email is the same eight paragraphs**, enforced by a shared skeleton
 rather than by convention:
@@ -163,10 +164,19 @@ kept so the two can be compared rather than described.
 | **Compliance Reminder Tiers** | Up to **4 numbered tiers**, one click each, no dialog |
 
 In the tiers model the button reads *Add Compliance Reminder Tier*, the dialog is
-gone entirely, the seeded reminder becomes **Tier 1**, and the button disables at
-four rather than disappearing. Deleting leaves a gap on purpose — nothing renames
-itself under a user — and the next add fills the lowest free number, so a
-four-tier system never produces a "Tier 5".
+gone entirely, and the button disables at four rather than disappearing.
+
+**The first tier carries no number** (2026-08-11). The seeded template stays
+*STP - Compliance Reminder* in every state and additions start at **Tier 2**, so
+a company that only ever wants one reminder never meets the word "tier" — and the
+ceiling reads as one reminder plus three escalations. That is also how the Event
+Registration Settings card lists them (DES-425), so the two screens agree.
+
+**Tiers unwind from the end.** Delete is disabled on every tier but the last,
+with a tooltip explaining why. Deleting from the middle would either strand a gap
+or renumber the tiers below it under the user. With gaps impossible, adding a
+tier is just count-plus-one — the lowest-free-number scan that used to cope with
+gaps is gone.
 
 The original model: an *Add Compliance Reminder* action opens a minimal Name +
 Description dialog, confirmed with **Add Reminder**. The new template starts as a
@@ -178,13 +188,27 @@ the fixed early/mid/late model is gone.
 | Where | Why both |
 | --- | --- |
 | Row menu → *Delete template* | Deleting from the list, where you can see the whole set |
-| Template editor header → *Delete* | You often only decide a reminder is redundant once you are reading it. Making you back out to the list to act on that is a needless round trip |
+| Template editor → **Save ▾** → *Delete template* | You often only decide a reminder is redundant once you are reading it. Making you back out to the list to act on that is a needless round trip |
 
 Both open the same confirmation. Deleting from the editor returns you to the
 list, since the template you were editing no longer exists.
 
-**Fixed templates sort before reminders.** Welcome, Previously Compliant and
-Compliance Achieved are a closed set — exactly one of each, forever. Compliance
+**The editor's Save is a split button** (2026-08-11), the same shape as *Edit* on
+the list rows: *Save*, *Restore to Default* and *Delete template* under the arrow,
+with **Preview email** kept out as its own button. **Restore now warns first** —
+it throws away everything the company has written for that email and cannot be
+undone, and it is reached from one item down a menu, which is where a mis-click
+happens. The dialog names the template, says what is lost, and says what is not
+(scheduling, recipients and statuses are untouched). See *Components ›
+Notification Preferences › Restore to Default*.
+
+Restoring also does something now: the rich-text field's `default-content` had
+been bound to the live content, so *Restore to Default* reset the content to
+whatever had just been typed into it. There is a proper snapshot taken when the
+template opens.
+
+**Fixed templates sort before reminders.** Welcome and Previously Compliant are a
+closed set — exactly one of each, forever. Compliance
 Reminders are open-ended. Sorting reminders last, under a quiet
 `COMPLIANCE REMINDERS` label, keeps added reminders from landing in among the
 fixed templates and making the order look arbitrary. The distinction is

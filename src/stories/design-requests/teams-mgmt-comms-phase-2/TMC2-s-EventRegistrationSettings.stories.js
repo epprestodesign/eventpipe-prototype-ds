@@ -36,7 +36,7 @@ screen still matches production.
 | --- | --- |
 | **Default** | Empty event — compliance tracking off, so the conditional fields and the Compliance / Communications / Restrictions cards are hidden. Non-compliance policy is empty. |
 | **Configured** | Fully set up — every conditional revealed, matching the populated capture, plus a written non-compliance policy. Two reminders: *Compliance Reminder* and *Compliance Reminder - Tier 2*. |
-| **Configured with Tiers** | The same event, but the company has built out all four reminder tiers. The seeded reminder is named *Tier 1* here, matching *Screens › Notification Preferences › Compliance Reminder Tiers*. |
+| **Configured with Tiers** | The same event, but the company has built out all four reminder tiers. The seeded reminder stays unnumbered — *Compliance Reminder*, then *Tier 2*, *Tier 3*, *Tier 4* — matching *Screens › Notification Preferences › Compliance Reminder Tiers*. |
 
 **Why both configured states.** They are two real situations, not a before and
 after: a company running two reminders and one running the full ladder. The
@@ -256,12 +256,25 @@ const TIER_DESCRIPTIONS = [
   'The final escalation before the hotel cutoff, naming what happens to teams that do not meet the requirement.',
 ]
 
+/* The first tier carries no number (2026-08-11 review) — it is simply
+ * "Compliance Reminder", and the tiers a company adds start at 2. So the first
+ * description belongs to the unnumbered seeded reminder and the rest number from
+ * two, which is why the suffix is `i + 2` rather than `i + 1`. */
 const tierTemplates = [
   ...TM_TEMPLATES.filter((t) => t.type !== 'compliance-reminder').map((t) => ({ ...t })),
-  ...TIER_DESCRIPTIONS.map((desc, i) => ({
-    key: 'reminder-tier-' + (i + 1),
+  {
+    key: 'reminder-tier-1',
     type: 'compliance-reminder',
-    title: 'Compliance Reminder - Tier ' + (i + 1),
+    title: 'Compliance Reminder',
+    desc: TIER_DESCRIPTIONS[0],
+    companyOn: true,
+    eventOn: true,
+    recurring: true,
+  },
+  ...TIER_DESCRIPTIONS.slice(1).map((desc, i) => ({
+    key: 'reminder-tier-' + (i + 2),
+    type: 'compliance-reminder',
+    title: 'Compliance Reminder - Tier ' + (i + 2),
     desc,
     companyOn: true,
     eventOn: true,

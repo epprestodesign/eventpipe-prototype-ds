@@ -24,13 +24,6 @@
           "send": true,
           "forced": false,
           "custom": true
-        },
-        {
-          "title": "STP - Compliance Achieved",
-          "desc": "Congratulates a team once it meets its requirement.",
-          "send": true,
-          "forced": false,
-          "custom": false
         }
       ]
     },

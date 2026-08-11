@@ -24,7 +24,7 @@ import DsRichTextEditor from './components/DsRichTextEditor.vue'
 import DsInfoGrid from './components/DsInfoGrid.vue'
 import {
   rowActions, previewDialog, testSendDialog, addReminderDialog,
-  editorView, useTemplateEditor,
+  deleteTemplateDialog, restoreContentDialog, editorView, useTemplateEditor,
 } from './_tmc2np'
 
 export default {
@@ -41,17 +41,14 @@ state: no custom reminders added, nothing renamed, nothing disabled.
 | --- | --- | --- |
 | **Welcome Email** | Team Housing Contact | Once, when a team first appears |
 | **Previously Compliant Notice** | Team Housing Contact + Group Block Creators | Once, when a compliant team drops below |
-| **Compliance Achieved** | Team Housing Contact + Group Block Creators | Once, when a team first meets its requirement |
 | **Compliance Reminder** | Team Housing Contact + Group Block Creators | Weekly (Mon), 200 days out → event start |
 
 Standard emails first, then reminders — the same grouping as the configured
 screen, since the reminder group is the one that grows.
 
-> **The ticket says three, and this shows four.** DES-427 was written before
-> *Compliance Achieved* existed; it is in the company template list
-> (\`tmc2-content.json\`) and now has copy of its own, so a new customer would
-> find it here. Worth confirming with Scott whether it belongs in the seeded set
-> or whether the list should lose it.
+> **Three seeded templates, matching DES-427.** This screen showed a fourth,
+> *Compliance Achieved*, which was cut on 2026-08-11 as out of scope for this
+> phase. That also closes the discrepancy flagged here previously.
 
 Two things a first-time user meets here:
 
@@ -293,6 +290,8 @@ export const FirstRun = tmc2Page({
 
     ${addReminderDialog}
     ${previewDialog}
-    ${testSendDialog}`,
+    ${testSendDialog}
+    ${deleteTemplateDialog}
+    ${restoreContentDialog}`,
 })
 FirstRun.parameters = { layout: 'fullscreen' }

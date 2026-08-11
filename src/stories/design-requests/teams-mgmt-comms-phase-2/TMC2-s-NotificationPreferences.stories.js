@@ -15,11 +15,12 @@ import {
 } from './_tmc2fixtures'
 import {
   companyHeader, goBackLink, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
-  addReminderRow, templateActions, customFromAddressError,
+  addReminderRow, customFromAddressError,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL, COL_HEAD,
 } from './_tmc2'
 import {
-  rowActions, testSendNote, previewDialog, testSendDialog, addReminderDialog,
+  rowActions, tieredRowActions, testSendNote, previewDialog, testSendDialog,
+  addReminderDialog, deleteTemplateDialog, restoreContentDialog,
   emailSettings, editorView, useTemplateEditor,
 } from './_tmc2np'
 import { addedTemplates, addTemplate, removeTemplate } from './_tmc2store'
@@ -75,7 +76,7 @@ Registration Settings as an event-level toggle until you press Save.
   minimal Name/Description dialog and appends a template that starts as a **copy
   of the standard Compliance Reminder**, marked Custom. Unlimited — the fixed
   early/mid/late model is gone. User-added templates can be **deleted** from the
-  row menu or from the editor header; seeded ones can only be reverted. Fixed
+  row menu or from the editor's **Save ▾** menu; seeded ones can only be reverted. Fixed
   templates sort above reminders under quiet group labels, since the reminder
   group is the one that grows.
 - **DES-431 · P0-7 — Conditional configuration.** Every template gets Compliance
@@ -116,21 +117,38 @@ The tiers story is the newer direction, from review on 2026-08-10:
 - **The dialog is gone.** One click appends the next tier. There is nothing to
   name — the number is the whole identity, and asking for a name would be asking
   the user to invent something the system already knows.
-- The seeded reminder becomes **Tier 1**, because in this model it *is* the first
-  tier. Left unnumbered, Tier 2 would read as the first one.
 - **Four is the ceiling.** At four the button greys out with a tooltip rather
   than disappearing, so the limit is discoverable instead of mysterious.
-- Delete is unchanged — row menu or editor header, user-added tiers only.
 
-**Deleting leaves a gap, on purpose.** Remove Tier 2 from 1–4 and the list reads
-1, 3, 4; nothing renames itself under a user who has already configured it. The
-next add then **fills the lowest free number** rather than continuing past the
-highest, so every tier stays inside 1–4 and you never get a "Tier 5" in a
-four-tier system.
+#### The first tier carries no number
 
-**Still open:** the info copy says *"up to 3 Additional"* while the ceiling is 4
-including the seeded tier. That is consistent — 1 seeded + 3 added — but only if
-Tier 1 is understood as already there. Worth a look at whether the wording lands.
+*2026-08-11: "hide the '- Tier 1' suffix on the first template until someone
+actually adds a second tier. I think many users will just work from 1 tier so it
+might be confusing to them."*
+
+It is never numbered. The seeded template stays **STP - Compliance Reminder** in
+every state, and additions start at **Tier 2** — so a company that only ever
+wants one reminder never meets the word "tier" at all, and the ceiling of four
+reads as one reminder plus three escalations. That also matches the Event
+Registration Settings card, which lists *Compliance Reminder* beside
+*Compliance Reminder - Tier 2* (DES-425), so the two screens agree without a
+renaming rule that fires on a count.
+
+It settles the wording question flagged here previously: the info copy's *"up to
+3 Additional"* is now literally true rather than true-only-if-you-count-Tier-1.
+
+#### Tiers unwind from the end
+
+*"Only allow the user to delete the furthest tier in the list."*
+
+Delete stays visible on every user-added tier but is **disabled on all but the
+last**, with a tooltip saying so. Deleting from the middle would either strand a
+gap in the numbering or renumber the tiers below it while the user was not
+looking, and both are worse than asking them to unwind from the end.
+
+This deleted a rule that existed only to cope with gaps — adding a tier used to
+scan for the lowest unused number. Gaps are now impossible, so the next tier is
+just the count plus one.
 
 ### DES-429 · P0-5 — where the From/Reply config lives
 
@@ -252,7 +270,7 @@ const makeListView = (variant) => `
                       <q-checkbox :model-value="it.send" @update:model-value="onToggleSend(it, $event)" :disable="it.forced" color="primary"><q-tooltip v-if="it.forced">Required — always sent</q-tooltip></q-checkbox>
                     </div>
                     <div style="${COL_TMPL}">
-                      ${rowActions}
+                      ${variant === 'tiers' ? tieredRowActions : rowActions}
                     </div>
                   </div>
                 </template>
@@ -267,7 +285,7 @@ const makeListView = (variant) => `
                 label: 'Add Compliance Reminder Tier',
                 tooltip: TIER_TOOLTIP,
                 disableWhen: 'tierCount >= ' + MAX_TIERS,
-                disabledTooltip: 'Maximum of ' + MAX_TIERS + ' tiers reached. Delete a tier to add another.',
+                disabledTooltip: 'Maximum of ' + MAX_TIERS + ' tiers reached. Delete the last tier to add another.',
               })
               : addReminderRow()}
           </template>
@@ -301,10 +319,15 @@ const makeBody = (variant) => `
   <div v-show="tab === 'notifications'">
     <div v-if="view === 'list'">${makeListView(variant)}</div>
     <div v-else>${editorView}</div>
-    <!-- Both dialogs live outside the view switch so a test send is reachable
-         from the list, the preview modal and the editor (DES-436 · P1-1). -->
+    <!-- These live outside the view switch so a test send is reachable from the
+         list, the preview modal and the editor (DES-436 · P1-1) — and so Delete
+         works from both the row menu and the editor header, in both variants.
+         The delete dialog used to ride inside addReminderDialog, which the tiers
+         variant does not render at all; that is why Delete did nothing. -->
     ${previewDialog}
     ${testSendDialog}
+    ${deleteTemplateDialog}
+    ${restoreContentDialog}
   </div>
   <div v-show="tab === 'general'">${generalTab}</div>`
 
@@ -331,16 +354,13 @@ const TM_SECTION = 'Teams Management'
 const SEED_TYPE_BY_TITLE = {
   'STP - Welcome Email': 'welcome',
   'STP - Previously Compliant Notice': 'previously-compliant',
-  'STP - Compliance Achieved': 'notice',
 }
 const SEED_TYPES = SECTIONS.map((s) =>
   s.items.map((it) => (s.name === TM_SECTION ? (SEED_TYPE_BY_TITLE[it.title] || 'compliance-reminder') : 'other')))
 
 const isReminder = (it) => it.type === 'compliance-reminder'
 
-const TIER_BASE_TITLE = 'STP - Compliance Reminder - Tier 1'
-
-function sectionsFromArgs(args = {}, added = [], sendEdits = {}, variant = 'default') {
+function sectionsFromArgs(args = {}, added = [], sendEdits = {}) {
   const withEdit = (it) => (sendEdits[it.id] === undefined ? it : { ...it, send: sendEdits[it.id] })
   return SECTIONS.map((s, si) => {
     const seeded = s.items.map((it, ii) => withEdit({
@@ -351,20 +371,17 @@ function sectionsFromArgs(args = {}, added = [], sendEdits = {}, variant = 'defa
       desc: args[`tmc2s${si}i${ii}_desc`] ?? it.desc,
     }))
     if (s.name !== TM_SECTION) return { ...s, items: seeded }
-    /* In the tiers model the seeded reminder IS the first tier, so it is named
-     * that way. Leaving it unnumbered would make Tier 2 read as the first tier.
-     * Renamed here rather than in tmc2-content.json because the other story
-     * still shows the unlimited-templates model, where "Tier 1" means nothing. */
-    if (variant === 'tiers') {
-      seeded.forEach((it) => {
-        if (isReminder(it) && !it.userAdded) it.title = TIER_BASE_TITLE
-      })
-    }
+    /* The seeded reminder is never numbered (2026-08-11 review): "hide the
+     * '- Tier 1' suffix on the first template ... many users will just work from
+     * 1 tier so it might be confusing to them." It stays "STP - Compliance
+     * Reminder" in every state, and additions start at Tier 2 — which is also
+     * what the Event Registration Settings card shows (DES-425), so the two
+     * screens agree without a rename rule that fires on a count. */
     /* DES-428 · P0-4 — fixed-type templates first, reminders after.
-     * Welcome, Previously Compliant and Compliance Achieved are a closed set:
-     * exactly one of each, forever. Compliance Reminders are open-ended and
-     * grow, so they sort last — otherwise every reminder a Hoco adds lands in
-     * among the fixed templates and the order reads as arbitrary.
+     * Welcome and Previously Compliant are a closed set: exactly one of each,
+     * forever. Compliance Reminders are open-ended and grow, so they sort last —
+     * otherwise every reminder a Hoco adds lands in among the fixed templates
+     * and the order reads as arbitrary.
      * `added` is spread by reference, not copied, so a Send-Email toggle on a
      * user-added row survives a Controls edit rebuilding the list. */
     return {
@@ -434,7 +451,7 @@ const makeStory = (variant) => tmc2Page({
     // args is reactive in Storybook's Vue renderer — rebuild when a control changes.
     const sections = ref([])
     watchEffect(() => {
-      sections.value = sectionsFromArgs(args, visibleAdded.value, sendEdits.value, variant)
+      sections.value = sectionsFromArgs(args, visibleAdded.value, sendEdits.value)
     })
 
     const dirty = computed(() => pendingAdds.value.length > 0
@@ -495,23 +512,19 @@ const makeStory = (variant) => tmc2Page({
      * The number is the whole identity, so asking for one would be asking the
      * user to invent something the system already knows.
      *
-     * Numbering fills the LOWEST free slot rather than continuing past the
-     * highest. Deleting a tier deliberately leaves a gap (1, 3, 4), and with a
-     * ceiling of four, continuing from the highest would produce a "Tier 5" in a
-     * four-tier system. Filling the gap keeps every number inside 1-4 always. */
+     * The next number is simply the count plus one, and the seeded reminder
+     * counts as the unnumbered first tier — so the first addition is Tier 2 and
+     * the ceiling of four lands on Tier 4. This used to scan for the lowest free
+     * number, because deleting a middle tier left a gap. Delete is now restricted
+     * to the furthest tier (2026-08-11 review), so gaps cannot form and the scan
+     * had nothing left to solve. */
     const addTier = () => {
       if (tierCount.value >= MAX_TIERS) return
-      const tm = sections.value.find((sec) => sec.name === TM_SECTION)
-      const taken = new Set((tm ? tm.items.filter(isReminder) : [])
-        .map((it) => Number((it.title.match(/Tier (\d+)$/) || [])[1]))
-        .filter(Boolean))
-      let n = 1
-      while (taken.has(n)) n += 1
       stagedSeq += 1
       pendingAdds.value = [...pendingAdds.value, {
         id: 'tm-staged-' + stagedSeq,
         key: 'tm-staged-' + stagedSeq,
-        title: 'STP - Compliance Reminder - Tier ' + n,
+        title: 'STP - Compliance Reminder - Tier ' + (tierCount.value + 1),
         desc: 'Reminds non-compliant teams about their Stay-to-Play requirement.',
         type: 'compliance-reminder',
         send: true,
@@ -519,6 +532,21 @@ const makeStory = (variant) => tmc2Page({
         custom: true,
         userAdded: true,
       }]
+    }
+
+    /* Only the furthest tier can go (2026-08-11 review). Compared by id against
+     * the last reminder in the section — the list is already sorted with
+     * reminders last and additions appended, so "furthest" is "last", and that
+     * holds whether the tier is saved or still staged.
+     *
+     * On the named-template screen there are no tiers to unwind, so any
+     * user-added template stays deletable. */
+    const canDeleteTier = (it) => {
+      if (!it || !it.userAdded) return false
+      if (variant !== 'tiers') return true
+      const tm = sections.value.find((sec) => sec.name === TM_SECTION)
+      const reminders = tm ? tm.items.filter(isReminder) : []
+      return reminders.length > 0 && reminders[reminders.length - 1].id === it.id
     }
 
     const editor = useTemplateEditor({
@@ -586,7 +614,8 @@ const makeStory = (variant) => tmc2Page({
       fromLine: fromDisplay, eventName: EVENT.name,
       dirty, saveChanges, discardChanges, onToggleSend,
       startsReminderGroup, startsFixedGroup,
-      tierCount, addTier,
+      // After ...editor, so this replaces the permissive default it ships with.
+      tierCount, addTier, canDeleteTier,
     }
   },
   slot: makeBody(variant),

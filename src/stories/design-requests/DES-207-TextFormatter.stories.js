@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsRichTextEditor from '../../components/DsRichTextEditor.vue'
 
 export default {
-  title: 'Design Requests/DES-207 Communications | Email Template Editor/Components/Text Formatter',
+  title: 'Design Requests/Teams Mgmt Comms Phase 1/Components/Text Formatter',
   component: DsRichTextEditor,
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen', docs: { description: { component: `

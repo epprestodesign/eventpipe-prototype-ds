@@ -35,8 +35,7 @@ export const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'
  * fragment it is handed: Preview gets its click handler, and a "Send test email"
  * item is appended to the same list. Local to this story — _tmc2.js is untouched.
  */
-export const rowActions = (() => {
-  const base = templateActions({ onEdit: 'openEditor', onRevert: 'openRevert', onDelete: 'openDelete' })
+const withPreviewAndTestSend = (base) => {
   const testItem = `
       <q-item clickable v-close-popup @click="openTestSend(it)">
         <q-item-section avatar><q-icon name="outgoing_mail" /></q-item-section>
@@ -45,7 +44,24 @@ export const rowActions = (() => {
   return base
     .replace('<q-item clickable v-close-popup>', '<q-item clickable v-close-popup @click="openPreview(it)">')
     .replace('</q-list>', testItem + '\n    </q-list>')
-})()
+}
+
+export const rowActions = withPreviewAndTestSend(
+  templateActions({ onEdit: 'openEditor', onRevert: 'openRevert', onDelete: 'openDelete' }))
+
+/* The tiers model (DES-428) — same menu, except Delete is only live on the
+ * furthest tier. Deleting from the middle would either strand a gap in the
+ * numbering or force everything below it to renumber under the user, and both
+ * are worse than asking them to unwind from the end. `canDeleteTier` is supplied
+ * by the consuming screen because only it knows the current tier order. */
+export const tieredRowActions = withPreviewAndTestSend(templateActions({
+  onEdit: 'openEditor',
+  onRevert: 'openRevert',
+  onDelete: 'openDelete',
+  deleteEnabledWhen: 'canDeleteTier(it)',
+  deleteBlockedTooltip: 'Tiers are removed from the last one back. Delete the'
+    + ' highest-numbered tier first.',
+}))
 
 /** Repeated wherever a test send is offered — the one thing about it that is
  *  easy to get wrong (DES-433 keeps the log to automated sends only). */
@@ -153,8 +169,37 @@ export const addReminderDialog = `
         <q-btn unelevated no-caps color="primary" label="Add Reminder" :disable="!newName.trim()" @click="confirmAdd" />
       </q-card-actions>
     </q-card>
-  </q-dialog>
+  </q-dialog>`
 
+/* Deliberately its own export, NOT part of addReminderDialog above.
+ *
+ * It used to be appended to that string, and the tiers variant renders no add
+ * modal at all — so `deleteOpen` flipped true with nothing mounted to observe
+ * it and Delete silently did nothing. Same trap in the editor, which replaces
+ * the list view and unmounted the dialog along with it.
+ *
+ * Mount this next to previewDialog / testSendDialog, outside any v-if that
+ * swaps views, so every surface that can open it can also show it. */
+/* Restore-to-default warning, opened from the editor's Save ▾ menu.
+ *
+ * Mount it beside the other dialogs, outside the view switch — same reason as
+ * deleteTemplateDialog below. It names the template and says plainly what is
+ * lost, because "restore" on its own sounds recoverable and this is not. */
+export const restoreContentDialog = `
+  <ds-confirm-dialog v-model="restoreOpen" title="Restore the default template?" destructive
+    confirm-label="Restore default" cancel-label="Keep my content" @confirm="confirmRestoreContent">
+    <template #body>
+      This replaces the content of <strong>{{ editing?.title }}</strong> with the EventPipe
+      default template. Everything your company has written here — edits to the default,
+      or content written from scratch for a reminder you created — is
+      <strong>permanently discarded</strong> and cannot be recovered.
+      <div style="margin-top:12px;">Scheduling, recipients and compliance statuses are not affected.</div>
+    </template>
+  </ds-confirm-dialog>`
+
+export const deleteTemplateDialog = `
+  <!-- Wording stays template-neutral: this same dialog serves First-Time Setup,
+       where reminders are named rather than numbered and "tier" would be wrong. -->
   <ds-confirm-dialog v-model="deleteOpen" title="Delete this template?" destructive
     confirm-label="Delete template" cancel-label="Cancel" @confirm="confirmDelete">
     <template #body>
@@ -273,18 +318,48 @@ export const editorView = `
             <q-badge v-if="isReminder" outline color="primary" class="q-px-sm q-py-xs">Recurring reminder</q-badge>
           </div>
           <div class="row items-center q-gutter-sm">
-            <!-- DES-428 · P0-4 — delete the template you are looking at.
-                 Only user-added reminders: the seeded three are a fixed set and
-                 can only be reverted. Kept visually quiet and separated from the
-                 primary actions so it is never the accidental click. -->
-            <q-btn v-if="editing && editing.userAdded" flat no-caps color="negative"
-              icon="delete" label="Delete" @click="deleteEditing" />
-            <!-- Preview from the editor header, beside Cancel: deciding a
-                 template looks wrong is something you do while reading it. -->
+            <!-- Preview stays broken out. It is the one action here you take
+                 while still deciding, so it should not cost a menu. -->
             <q-btn flat no-caps color="primary" icon="visibility" label="Preview email"
               @click="previewEditorContent" />
             <q-btn outline no-caps color="primary" label="Cancel" @click="goBack" />
-            <q-btn unelevated no-caps color="primary" label="Save" @click="goBack" />
+            <!-- Save is a split button, the same shape as Edit on the list rows:
+                 the common action stays one click, and the two destructive ones
+                 sit behind the arrow instead of competing with it. Restore moved
+                 here from the rich-text toolbar, where it sat among formatting
+                 controls and read as a formatting action. -->
+            <q-btn-dropdown split unelevated no-caps color="primary" label="Save" @click="goBack">
+              <q-list style="min-width:230px">
+                <!-- Save is repeated inside the menu, the same way the Edit split
+                     button repeats "Edit template": once the arrow is open, the
+                     primary action should still be reachable without closing it. -->
+                <q-item clickable v-close-popup @click="goBack">
+                  <q-item-section avatar><q-icon name="check" /></q-item-section>
+                  <q-item-section>Save</q-item-section>
+                </q-item>
+                <q-separator />
+                <q-item clickable v-close-popup @click="openRestoreContent">
+                  <q-item-section avatar><q-icon name="undo" color="negative" /></q-item-section>
+                  <q-item-section class="text-negative">Restore to Default</q-item-section>
+                </q-item>
+                <template v-if="editing && editing.userAdded">
+                  <q-separator />
+                  <!-- Tooltip on the wrapper: a disabled QItem is an unreliable
+                       hover target. Same gating as the row menu. -->
+                  <div>
+                    <q-item clickable v-close-popup :disable="!canDeleteTier(editing)"
+                      @click="deleteEditing">
+                      <q-item-section avatar><q-icon name="delete" color="negative" /></q-item-section>
+                      <q-item-section class="text-negative">Delete template</q-item-section>
+                    </q-item>
+                    <q-tooltip v-if="!canDeleteTier(editing)" max-width="260px" class="text-body2"
+                      style="line-height:1.5; padding:8px 10px;">
+                      Tiers are removed from the last one back. Delete the highest-numbered tier first.
+                    </q-tooltip>
+                  </div>
+                </template>
+              </q-list>
+            </q-btn-dropdown>
           </div>
         </div>
       </q-card-section>
@@ -292,7 +367,10 @@ export const editorView = `
       <q-card-section style="padding:24px 32px;">
 
         <div class="q-mb-lg">
-          <ds-rich-text-editor v-model="content" label="Content" required :default-content="content" />
+          <!-- show-restore is off: Restore to Default now lives under Save, so
+               the toolbar keeps only what acts on the text you are writing. -->
+          <ds-rich-text-editor v-model="content" label="Content" required
+            :default-content="defaultContent" :show-restore="false" />
         </div>
 
         <div class="q-mb-lg" style="max-width:520px;">
@@ -346,12 +424,35 @@ export function useTemplateEditor({
   const view = ref('list')
   const editing = ref(null)
   const content = ref(DEFAULT_CONTENT)
+  /* What "Restore to Default" restores to — snapshotted when the template opens
+   * and never written to again. The editor used to bind the rich-text field's
+   * `default-content` to `content` itself, so restoring reset the content to
+   * whatever had just been typed into it. */
+  const defaultContent = ref(DEFAULT_CONTENT)
   const openEditor = (it) => {
     editing.value = it
     // This template's own copy, with merge tokens raw because you are editing
     // them. Every template used to open on one shared default.
-    content.value = bodyToHtml(emailFor(it).body, true)
+    defaultContent.value = bodyToHtml(emailFor(it).body, true)
+    content.value = defaultContent.value
     view.value = 'editor'
+  }
+  /* Restore is destructive and irreversible — it throws away whatever the
+   * company wrote and puts the EventPipe default back — so it asks first. It is
+   * also one item down a menu, which is exactly where a mis-click happens. */
+  const restoreOpen = ref(false)
+  const openRestoreContent = () => { restoreOpen.value = true }
+  const restoreContent = () => { content.value = defaultContent.value }
+  const confirmRestoreContent = () => {
+    restoreContent()
+    $q.notify({
+      message: 'Content restored to default',
+      caption: 'Your custom content for this email has been replaced',
+      icon: 'undo',
+      color: 'positive',
+      position: 'bottom-right',
+      timeout: 2400,
+    })
   }
   const goBack = () => { view.value = 'list' }
   // Drives the conditional config sections in the editor (DES-431 · P0-7).
@@ -502,7 +603,8 @@ export function useTemplateEditor({
   return {
     $q,
     emailFor,
-    view, editing, content, openEditor, goBack, isReminder,
+    view, editing, content, defaultContent, openEditor, goBack, isReminder,
+    restoreContent, restoreOpen, openRestoreContent, confirmRestoreContent,
     previewOpen, previewTarget, previewLive, showRaw, previewEmail, previewTitle,
     bodyLines, bodyHtml, subjectLine, toLine,
     openPreview, previewEditorContent, closePreview,
@@ -510,6 +612,10 @@ export function useTemplateEditor({
     testFromPreview, preview, sendEditorTest, notifyTestSent,
     addOpen, newName, newDesc, baseReminder, openAdd, confirmAdd,
     deleteOpen, deleteTarget, openDelete, confirmDelete, deleteEditing,
+    /* Default for the named-template screens, where any user-added template can
+     * go. The tiers screen overrides this by returning its own after spreading
+     * the editor, so the shared editorView can reference it unconditionally. */
+    canDeleteTier: () => true,
     revertOpen, revertTarget, openRevert, confirmRevert,
     bcc, showSettings, begin, end, statuses, recipients,
     statusOptions: COMPLIANCE_STATUSES,
