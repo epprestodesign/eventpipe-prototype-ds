@@ -5,7 +5,7 @@
  *  sent for one event.
  */
 import { ref } from 'vue'
-import { TM_TEMPLATES, TM_DESC } from './_tmc2fixtures'
+import { TM_TEMPLATES } from './_tmc2fixtures'
 
 export default {
   title: 'Design Requests/Teams Mgmt Comms Phase 2/Components/Event Registration Settings/Teams Management Communications Card',
@@ -24,10 +24,26 @@ No edit buttons, no per-template configuration. Content is authored **once**, in
 because "where do I change the wording" is the obvious next question. New events
 inherit the company-level on/off state.
 
-### Templates a Hoco creates arrive here
+### Tiers are not listed here
 
-This is where [DES-428 · P0-4](https://linear.app/eventpipe/issue/DES-428) meets
-P0-1. A compliance reminder created on Notification Preferences shows up as its
+Planning on 2026-08-12: *"at the Event-Level you would not see the different
+Compliance Reminder tiers, there would just be one row that represents all tiers
+and toggles on/off."*
+
+So **Compliance Reminder (All)** is a single row covering every reminder the
+company has built, and the card is **always these three rows** — its shape does
+not change with the company's tier count. Compare *Seeded* with *Company running
+four tiers*: identical, apart from the count.
+
+That count is deliberate. Reminders created on Notification Preferences used to
+arrive here as their own rows, which is how the two screens visibly connected;
+folding them in would have severed that. The row reports how many reminders it
+covers instead, so a company-level change still shows up here.
+
+### Superseded — templates a Hoco creates used to arrive as rows
+
+This is where [DES-428 · P0-4](https://linear.app/eventpipe/issue/DES-428) met
+P0-1. A compliance reminder created on Notification Preferences showed up as its
 own row, badged **New**, so it is obvious which rows came from this session
 rather than shipping with the account.
 
@@ -55,8 +71,8 @@ as a mock.
 const CARD_BODY = 'padding:28px 32px;'
 const SECTION_TITLE = 'color:var(--ds-color-background-brand-bold); font-size:1.125rem; font-weight:500; margin-bottom:20px;'
 
-const card = (rows) => ({
-  setup: () => ({ tmTemplates: ref(rows.map((t) => ({ ...t }))) }),
+const card = (rows, reminderCount = 1) => ({
+  setup: () => ({ tmTemplates: ref(rows.map((t) => ({ ...t }))), reminderCount }),
   template: `
     <q-card flat bordered style="max-width:900px;">
       <q-card-section style="${CARD_BODY}">
@@ -75,10 +91,17 @@ const card = (rows) => ({
               <div style="flex:1; min-width:0;">
                 <div class="row items-center no-wrap q-gutter-sm">
                   <div style="font-weight:700; color:var(--ds-color-text);">{{ t.title }}</div>
-                  <q-badge v-if="t.userAdded" color="primary" class="q-px-sm q-py-xs" style="flex:none;">New</q-badge>
+                  <q-badge v-if="t.type === 'compliance-reminder' && reminderCount > 1"
+                    outline color="primary" class="q-px-sm q-py-xs" style="flex:none;">
+                    {{ reminderCount }} reminders
+                  </q-badge>
                 </div>
                 <div style="font-size:0.875rem; color:var(--ds-color-text-subtle); line-height:1.45; margin-top:2px;">
-                  {{ t.desc }}
+                  <template v-if="t.type === 'compliance-reminder'">
+                    Every compliance reminder for this event, tiers included. Switching this off
+                    stops all of them for this event only.
+                  </template>
+                  <template v-else>{{ t.desc }}</template>
                 </div>
               </div>
               <q-toggle v-model="t.eventOn" color="primary" style="flex:none;"
@@ -90,23 +113,20 @@ const card = (rows) => ({
     </q-card>`,
 })
 
-/** The four company templates every account ships with. */
+/** The three company templates every account ships with. Reminder tiers are
+ *  not listed individually here — one row toggles them all (2026-08-12). */
 export const Seeded = { render: () => card(TM_TEMPLATES) }
 
-/** After a reminder was created on Notification Preferences and saved. It lands
- *  here badged New and switched off, waiting to be opted in for this event. */
-export const WithNewTemplate = {
-  render: () => card([
-    ...TM_TEMPLATES,
-    {
-      key: 'tm-added-1',
-      title: '30 Day Reminder',
-      desc: TM_DESC.addedTier,
-      eventOn: false,
-      userAdded: true,
-    },
-  ]),
-}
+/** The same card for a company running the full ladder — Compliance Reminder
+ *  plus tiers 2, 3 and 4. **Still three rows.** This is the story to compare
+ *  against Seeded: the card's shape does not change with the company's tier
+ *  count, which is the whole point of the 2026-08-12 decision.
+ *
+ *  The count is how a company-level change stays visible here at all. Adding a
+ *  tier on Notification Preferences used to grow this card by a row; now it
+ *  moves this number instead. */
+export const WithFourTiers = { render: () => card(TM_TEMPLATES, 4) }
+WithFourTiers.storyName = 'Company running four tiers — still one row'
 
 /** A template that is on at company level but switched off for this event —
  *  the state the whole card exists to make possible. */

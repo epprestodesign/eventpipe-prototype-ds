@@ -47,19 +47,45 @@ authored.
 
 - Header shortened from *Teams Management Communications* to **Communications**.
 - The line *"New events inherit the company-level on/off state"* removed.
-- *Compliance Achieved* dropped from the list and replaced with **Compliance
-  Reminder - Tier 2**. What an event needs to switch on and off is each reminder
-  tier, not the congratulations notice. (That template was cut from the project
-  entirely on 2026-08-11.)
-- Order is now Welcome → Previously Compliant → Compliance Reminder →
-  Compliance Reminder - Tier 2.
+- *Compliance Achieved* dropped from the list and replaced with a second
+  reminder tier. What an event needs to switch on and off is reminders, not the
+  congratulations notice. (That template was cut from the project entirely on
+  2026-08-11.)
+
+**Tiers collapsed to one row (2026-08-12 planning)**
+
+*"At the Event-Level you would not see the different Compliance Reminder tiers,
+there would just be one row that represents all tiers and toggles on/off."*
+
+- The *Compliance Reminder - Tier 2* row is gone.
+- The remaining row is **Compliance Reminder (All)**. The *(All)* is
+  load-bearing: without it the row reads as the base reminder only, and a
+  company running four tiers would wonder where the other three went.
+- Order is now Welcome → Previously Compliant → Compliance Reminder (All).
+- The *Configured with Tiers* story was **deleted** — *"it will just cause
+  confusion."* Tiers are still designed and reviewed on *Screens › Notification
+  Preferences › Compliance Reminder Tiers*, which is where they are configured.
+- **Reminders created at company level no longer arrive as their own rows.**
+  Removing the seeded Tier 2 alone would have been half the rule: add a tier on
+  Notification Preferences and this card would have grown a *Tier 3* row, which
+  is the confusion the decision exists to remove. The card is now **always these
+  three rows**, whatever the company built.
+
+This also retires a justification used elsewhere in this document: the decision
+to leave the seeded reminder unnumbered was partly argued from the event card
+listing *Compliance Reminder* beside *Compliance Reminder - Tier 2*. That pairing
+no longer exists. The decision stands on its own — a company running one reminder
+should never meet the word "tier" — but it no longer has that corroboration.
 
 **Edge cases covered**
 
 - The card only appears when Compliance Tracking is on, since it is an STP concept.
 - A template that is on at company level but off for this event.
-- A reminder created on Notification Preferences arrives here as its own row,
-  badged **New** and switched off, once it has been saved.
+- A reminder created on Notification Preferences is folded into the *(All)*
+  row rather than appearing separately, and the row's count goes up once it has
+  been saved. That count is deliberate: the two screens used to connect visibly
+  through a new row appearing here, and folding tiers in would have severed the
+  link entirely.
 
 **Find it** — *Screens › Event Registration Settings* → **Configured**.
 

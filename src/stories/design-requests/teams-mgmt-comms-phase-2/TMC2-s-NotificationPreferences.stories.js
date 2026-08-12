@@ -130,10 +130,14 @@ might be confusing to them."*
 It is never numbered. The seeded template stays **STP - Compliance Reminder** in
 every state, and additions start at **Tier 2** — so a company that only ever
 wants one reminder never meets the word "tier" at all, and the ceiling of four
-reads as one reminder plus three escalations. That also matches the Event
-Registration Settings card, which lists *Compliance Reminder* beside
-*Compliance Reminder - Tier 2* (DES-425), so the two screens agree without a
-renaming rule that fires on a count.
+reads as one reminder plus three escalations.
+
+This originally had corroboration from the Event Registration Settings card,
+which listed *Compliance Reminder* beside *Compliance Reminder - Tier 2*. That
+pairing is gone — planning on 2026-08-12 collapsed the event level to a single
+**Compliance Reminder (All)** row (DES-425) — so tiers are now a company-level
+concept only. The decision stands on its own reasoning rather than on matching
+the other screen.
 
 It settles the wording question flagged here previously: the info copy's *"up to
 3 Additional"* is now literally true rather than true-only-if-you-count-Tier-1.
@@ -391,9 +395,10 @@ function sectionsFromArgs(args = {}, added = [], sendEdits = {}, metaEdits = {})
     /* The seeded reminder is never numbered (2026-08-11 review): "hide the
      * '- Tier 1' suffix on the first template ... many users will just work from
      * 1 tier so it might be confusing to them." It stays "STP - Compliance
-     * Reminder" in every state, and additions start at Tier 2 — which is also
-     * what the Event Registration Settings card shows (DES-425), so the two
-     * screens agree without a rename rule that fires on a count. */
+     * Reminder" in every state, and additions start at Tier 2. The event card
+     * no longer lists tiers at all — one "Compliance Reminder (All)" row toggles
+     * them together (DES-425, 2026-08-12) — so tiers are a company-level
+     * concept and this screen is the only place they are named. */
     /* DES-428 · P0-4 — fixed-type templates first, reminders after.
      * Welcome and Previously Compliant are a closed set: exactly one of each,
      * forever. Compliance Reminders are open-ended and grow, so they sort last —
