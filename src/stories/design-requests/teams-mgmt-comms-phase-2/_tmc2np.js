@@ -47,7 +47,8 @@ const withPreviewAndTestSend = (base) => {
 }
 
 export const rowActions = withPreviewAndTestSend(
-  templateActions({ onEdit: 'openEditor', onRevert: 'openRevert', onDelete: 'openDelete' }))
+  templateActions({ onEdit: 'openEditor', onRevert: 'openRevert', onDelete: 'openDelete',
+    onChangeMeta: 'openChangeMeta' }))
 
 /* The tiers model (DES-428) — same menu, except Delete is only live on the
  * furthest tier. Deleting from the middle would either strand a gap in the
@@ -58,6 +59,7 @@ export const tieredRowActions = withPreviewAndTestSend(templateActions({
   onEdit: 'openEditor',
   onRevert: 'openRevert',
   onDelete: 'openDelete',
+  onChangeMeta: 'openChangeMeta',
   deleteEnabledWhen: 'canDeleteTier(it)',
   deleteBlockedTooltip: 'Tiers are removed from the last one back. Delete the'
     + ' highest-numbered tier first.',
@@ -147,12 +149,20 @@ export const testSendDialog = `
 
 /* ---- Add / delete compliance reminder templates (DES-428 · P0-4) ---- */
 
+/* Serves both "Add Compliance Reminder" and "Change description" — the two ask
+ * for the same pair of fields, so a second dialog would be this one with a
+ * different heading. `metaTarget` decides which job it is doing. */
 export const addReminderDialog = `
   <q-dialog v-model="addOpen">
     <q-card flat bordered style="min-width:480px; border-radius:var(--ds-radius-lg);">
       <q-card-section style="padding:28px 28px 4px;">
-        <div class="text-h6" style="font-weight:700;">Add Compliance Reminder</div>
-        <div class="text-grey-8" style="font-size:0.8125rem; line-height:1.5; margin-top:6px;">
+        <div class="text-h6" style="font-weight:700;">{{ metaTarget ? 'Change description' : 'Add Compliance Reminder' }}</div>
+        <div v-if="metaTarget" class="text-grey-8" style="font-size:0.8125rem; line-height:1.5; margin-top:6px;">
+          Rename this template, or reword the line shown beneath it in the list.
+          Its content, schedule, statuses and recipients are unaffected.
+          <b>Takes effect when you save.</b>
+        </div>
+        <div v-else class="text-grey-8" style="font-size:0.8125rem; line-height:1.5; margin-top:6px;">
           The new template starts as a <b>copy of {{ baseReminder ? baseReminder.title : 'the standard Compliance Reminder' }}</b> —
           content, schedule, statuses and recipients included. Edit it once it is added.
         </div>
@@ -161,12 +171,13 @@ export const addReminderDialog = `
         <ds-input v-model="newName" label="Name" required placeholder="e.g. 30 Day Reminder" />
         <div class="q-mt-md">
           <ds-input v-model="newDesc" label="Description" placeholder="What this reminder is for"
-            hint="Optional — defaults to the copied description." />
+            :hint="metaTarget ? 'Shown beneath the template name in the list.' : 'Optional — defaults to the copied description.'" />
         </div>
       </q-card-section>
       <q-card-actions align="right" class="q-pa-md">
         <q-btn flat no-caps color="primary" label="Cancel" @click="addOpen = false" />
-        <q-btn unelevated no-caps color="primary" label="Add Reminder" :disable="!newName.trim()" @click="confirmAdd" />
+        <q-btn unelevated no-caps color="primary" :label="metaTarget ? 'Update' : 'Add Reminder'"
+          :disable="!newName.trim()" @click="confirmAdd" />
       </q-card-actions>
     </q-card>
   </q-dialog>`
@@ -402,12 +413,16 @@ export const DEFAULT_CONTENT = `
  *                                             the delete path is simply absent,
  *                                             which is right for a screen with
  *                                             nothing user-added to remove.
+ *    onConfirmMeta({target, name, desc})      "Change description" — the row's
+ *                                             name and subtext. Omit it and the
+ *                                             menu item is simply absent.
  *    baseReminderTitle                        what a new reminder copies, named
  *                                             in the add dialog.
  */
 export function useTemplateEditor({
   onConfirmAdd = () => {},
   onConfirmDelete = null,
+  onConfirmMeta = null,
   baseReminderTitle = () => 'the standard Compliance Reminder',
 } = {}) {
   const $q = useQuasar()
@@ -527,24 +542,40 @@ export function useTemplateEditor({
 
   // Add a reminder (DES-428 · P0-4). The dialog lives here; what happens on
   // confirm is the screen's business.
+  /* One dialog, two jobs. `metaTarget` is null when adding and holds the row
+   * when changing an existing template's name and subtext — the fields are the
+   * same two either way, so a second dialog would only be the first one with a
+   * different heading. */
   const addOpen = ref(false)
   const newName = ref('')
   const newDesc = ref('')
+  const metaTarget = ref(null)
   const baseReminder = computed(() => ({ title: baseReminderTitle() }))
-  const openAdd = () => { newName.value = ''; newDesc.value = ''; addOpen.value = true }
+  const openAdd = () => {
+    metaTarget.value = null
+    newName.value = ''
+    newDesc.value = ''
+    addOpen.value = true
+  }
+  const openChangeMeta = (it) => {
+    metaTarget.value = it
+    newName.value = it.title || ''
+    newDesc.value = it.desc || ''
+    addOpen.value = true
+  }
   const confirmAdd = () => {
     const name = newName.value.trim()
     if (!name) return
-    onConfirmAdd({ name, desc: newDesc.value.trim(), baseTitle: baseReminderTitle() })
+    if (metaTarget.value) {
+      if (onConfirmMeta) onConfirmMeta({ target: metaTarget.value, name, desc: newDesc.value.trim() })
+    } else {
+      onConfirmAdd({ name, desc: newDesc.value.trim(), baseTitle: baseReminderTitle() })
+    }
     addOpen.value = false
-    $q.notify({
-      message: name,
-      caption: 'Added as a copy of ' + baseReminderTitle() + ' — save to apply',
-      icon: 'add_circle',
-      color: 'positive',
-      position: 'bottom-right',
-      timeout: 2600,
-    })
+    metaTarget.value = null
+    /* No toast. Adding a reminder stages it like every other change on this
+     * screen, and the unsaved-changes bar already says so — a success toast on
+     * top of it claimed something had happened when nothing had yet. */
   }
 
   // Delete (DES-428 · P0-4). Only ever a user-added reminder.
@@ -607,6 +638,7 @@ export function useTemplateEditor({
     testOpen, testTarget, testEmail, testTitle, openTestSend, confirmTestSend,
     testFromPreview, preview, sendEditorTest, notifyTestSent,
     addOpen, newName, newDesc, baseReminder, openAdd, confirmAdd,
+    metaTarget, openChangeMeta,
     deleteOpen, deleteTarget, openDelete, confirmDelete, deleteEditing,
     /* Default for the named-template screens, where any user-added template can
      * go. The tiers screen overrides this by returning its own after spreading

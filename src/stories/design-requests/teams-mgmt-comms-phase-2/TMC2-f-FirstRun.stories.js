@@ -154,6 +154,10 @@ export const FirstRun = tmc2Page({
      * rather than mutating the row, so Discard is one assignment. */
     const pendingAdds = ref([])
     const sendEdits = ref({})
+    /* "Change description" — { [rowKey]: { title, desc } }. Staged like the
+     * Send-Email edits beside it, so a rename does not reach the shared store
+     * or Event Registration Settings until Save. */
+    const metaEdits = ref({})
     let stagedSeq = 0
 
     /* DES-428 · P0-4 — same grouping as the configured screen: the closed set of
@@ -168,7 +172,18 @@ export const FirstRun = tmc2Page({
           key: t.key, title: t.title, purpose: t.desc, type: t.type, on: t.send, custom: true,
         })),
         ...pendingAdds.value,
-      ].map((r) => (sendEdits.value[r.key] === undefined ? r : { ...r, on: sendEdits.value[r.key] }))
+      ].map((r) => {
+        const meta = metaEdits.value[r.key]
+        const on = sendEdits.value[r.key]
+        // `desc` is an alias of `purpose`: the shared row menu and dialog speak
+        // in desc, while this screen's list renders purpose as the subtitle.
+        return {
+          ...r,
+          ...(on === undefined ? {} : { on }),
+          ...(meta === undefined ? {} : { title: meta.title, purpose: meta.desc }),
+          desc: meta === undefined ? r.purpose : meta.desc,
+        }
+      })
       return [...all.filter((r) => !isReminderRow(r)), ...all.filter(isReminderRow)]
     })
     // Derived from position so the label lands on the first row of each group
@@ -184,6 +199,7 @@ export const FirstRun = tmc2Page({
 
     const dirty = computed(() => pendingAdds.value.length > 0
       || Object.keys(sendEdits.value).length > 0
+      || Object.keys(metaEdits.value).length > 0
       || fromAddress.value !== savedFrom.value
       || fromAddressCustom.value !== savedFromCustom.value)
 
@@ -192,14 +208,26 @@ export const FirstRun = tmc2Page({
     }
 
     const saveChanges = () => {
-      pendingAdds.value.forEach((t) => addTemplate({
-        title: t.title, desc: t.purpose, baseTitle: t.baseTitle,
-      }))
+      pendingAdds.value.forEach((t) => {
+        const meta = metaEdits.value[t.key]
+        addTemplate({
+          title: meta ? meta.title : t.title,
+          desc: meta ? meta.desc : t.purpose,
+          baseTitle: t.baseTitle,
+        })
+      })
       seeded.value.forEach((r) => {
         if (sendEdits.value[r.key] !== undefined) r.on = sendEdits.value[r.key]
+        const meta = metaEdits.value[r.key]
+        if (meta) { r.title = meta.title; r.purpose = meta.desc }
+      })
+      addedTemplates.value.forEach((t) => {
+        const meta = metaEdits.value[t.key]
+        if (meta) { t.title = meta.title; t.desc = meta.desc }
       })
       pendingAdds.value = []
       sendEdits.value = {}
+      metaEdits.value = {}
       savedFrom.value = fromAddress.value
       savedFromCustom.value = fromAddressCustom.value
     }
@@ -207,6 +235,7 @@ export const FirstRun = tmc2Page({
     const discardChanges = () => {
       pendingAdds.value = []
       sendEdits.value = {}
+      metaEdits.value = {}
       fromAddress.value = savedFrom.value
       fromAddressCustom.value = savedFromCustom.value
     }
@@ -233,6 +262,11 @@ export const FirstRun = tmc2Page({
       },
       onConfirmDelete: (target) => {
         pendingAdds.value = pendingAdds.value.filter((t) => t.key !== target.key)
+      },
+      // Keyed by `key` here rather than `id` — this screen's rows predate the
+      // configured screen's id scheme and are still keyed that way.
+      onConfirmMeta: ({ target, name, desc }) => {
+        metaEdits.value = { ...metaEdits.value, [target.key]: { title: name, desc } }
       },
     })
 
