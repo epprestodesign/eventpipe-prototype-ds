@@ -45,6 +45,29 @@ added, so naming the thing is more useful than naming the type.
 Confirm is disabled until a name is entered. The reminder is **staged**, not
 applied — it does not reach Event Registration Settings until Save.
 
+**No toast on add** (2026-08-12). Adding used to fire a success notification;
+since the add is staged and the unsaved-changes bar already says so, the toast
+was claiming something had happened when nothing had yet.
+
+### The same dialog is reused to rename
+
+**Change description** in any row's menu reopens this dialog against an existing
+template, prefilled with its name and subtext. The two jobs ask for exactly the
+same pair of fields, so a second dialog would have been this one with a
+different heading.
+
+| | Adding | Changing |
+| --- | --- | --- |
+| Heading | *Add Compliance Reminder* | *Change description* |
+| Intro | What the copy inherits | What is **not** touched — content, schedule, statuses, recipients |
+| Confirm | *Add Reminder* | *Update* |
+
+Also staged: a rename does not reach the list, the shared store or Event
+Registration Settings until Save, and Discard drops it. It works on seeded
+templates as well as user-added ones — nothing on this screen treats a name as
+immutable, and template *type* is resolved from the original title, so renaming
+cannot change how a template behaves.
+
 ### Diverges from the written AC
 
 The ticket says the dialog offers a *type* choice (Compliance Reminder or

@@ -62,7 +62,7 @@ export const colHeaders = `
  * The blocked item stays visible and disabled rather than disappearing: an
  * option that vanishes teaches nothing about why. */
 export const templateActions = ({
-  onEdit = 'openEditor', onRevert = '', onDelete = '',
+  onEdit = 'openEditor', onRevert = '', onDelete = '', onChangeMeta = '',
   deleteEnabledWhen = '', deleteBlockedTooltip = '',
 } = {}) => `
   <q-btn-dropdown split unelevated no-caps color="primary" label="Edit" @click="${onEdit}(it)">
@@ -71,6 +71,13 @@ export const templateActions = ({
         <q-item-section avatar><q-icon name="edit" /></q-item-section>
         <q-item-section>Edit template</q-item-section>
       </q-item>
+      ${onChangeMeta ? `
+      <!-- Sits directly under Edit template: both edit this row, one the email
+           body and one the name and the line beneath it in the list. -->
+      <q-item clickable v-close-popup @click="${onChangeMeta}(it)">
+        <q-item-section avatar><q-icon name="edit_note" /></q-item-section>
+        <q-item-section>Change description</q-item-section>
+      </q-item>` : ''}
       <q-item clickable v-close-popup>
         <q-item-section avatar><q-icon name="visibility" /></q-item-section>
         <q-item-section>Preview</q-item-section>

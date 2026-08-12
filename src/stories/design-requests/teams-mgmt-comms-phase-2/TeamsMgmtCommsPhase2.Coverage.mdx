@@ -177,6 +177,29 @@ structure — which variables, in what order — is what is up for review.
 **Requested** — Users can add more TM Comms templates from the company
 notifications page, naming and describing each, and can delete one.
 
+### Renaming, and no toast on add (2026-08-12)
+
+**Change description** is in every row's menu, directly under *Edit template*.
+It reopens the add dialog against an existing template, prefilled — the two jobs
+ask for the same pair of fields, so a second dialog would have been the first
+with a different heading. Confirm reads *Update* rather than *Add Reminder*, and
+the intro says what is **not** touched: content, schedule, statuses, recipients.
+
+It applies to **seeded templates too**. Nothing here treats a name as immutable,
+and a template's `type` is resolved from its *original* title — so renaming can
+never change how a template behaves. On the tiers screen it can rename a tier;
+that is safe because `canDeleteTier` compares row **ids** and the next tier
+number comes from a **count**, neither of which reads a number out of a title.
+
+Like everything else on these screens it is **staged** — a rename reaches the
+list immediately, the shared store and Event Registration Settings only on Save,
+and Discard drops it.
+
+**The add toast is gone.** Adding a reminder used to fire a success
+notification. The add is staged and the unsaved-changes bar already says so, so
+the toast was asserting something had happened when nothing had yet — the same
+reason the Send-Email toggle lost its toast earlier.
+
 **Designed — two models, side by side.** Review on 2026-08-10 pivoted this from
 unlimited named reminders to a fixed set of numbered tiers, and both stories are
 kept so the two can be compared rather than described.

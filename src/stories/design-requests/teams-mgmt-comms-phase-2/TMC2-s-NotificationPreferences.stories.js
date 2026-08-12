@@ -294,7 +294,6 @@ const makeListView = (variant) => `
       </q-card>
     </div>
 
-    ${variant === 'tiers' ? '' : addReminderDialog}
     ${unsavedChangesBar}
 
     <ds-confirm-dialog v-model="revertOpen" title="Revert to default template?" destructive
@@ -320,13 +319,16 @@ const makeBody = (variant) => `
   <div v-show="tab === 'notifications'">
     <div v-if="view === 'list'">${makeListView(variant)}</div>
     <div v-else>${editorView}</div>
-    <!-- These live outside the view switch so a test send is reachable from the
-         list, the preview modal and the editor (DES-436 · P1-1) — and so Delete
-         works from both the row menu and the editor header, in both variants.
-         The delete dialog used to ride inside addReminderDialog, which the tiers
-         variant does not render at all; that is why Delete did nothing. -->
+    <!-- Every dialog lives outside the view switch, so each is reachable from
+         the list, the preview modal and the editor alike (DES-436 · P1-1), and
+         Delete works from both the row menu and the editor header.
+         addReminderDialog is mounted unconditionally even though the tiers
+         variant has no Add button: it also serves "Change description", which
+         every variant has. Gating it on the variant is what made Delete a no-op
+         on the tiers screen before, and it briefly did the same to renaming. -->
     ${previewDialog}
     ${testSendDialog}
+    ${addReminderDialog}
     ${deleteTemplateDialog}
     ${restoreContentDialog}
   </div>
@@ -361,8 +363,22 @@ const SEED_TYPES = SECTIONS.map((s) =>
 
 const isReminder = (it) => it.type === 'compliance-reminder'
 
-function sectionsFromArgs(args = {}, added = [], sendEdits = {}) {
-  const withEdit = (it) => (sendEdits[it.id] === undefined ? it : { ...it, send: sendEdits[it.id] })
+function sectionsFromArgs(args = {}, added = [], sendEdits = {}, metaEdits = {}) {
+  /* Both edit layers are keyed by row id and applied on rebuild rather than
+   * written into the row, so a Controls change cannot lose them and Discard is a
+   * single assignment. `metaEdits` is "Change description" — the row's name and
+   * the line beneath it; it wins over both the seed and the Controls value,
+   * because it is the more recent thing the user did. */
+  const withEdit = (it) => {
+    const meta = metaEdits[it.id]
+    const send = sendEdits[it.id]
+    if (meta === undefined && send === undefined) return it
+    return {
+      ...it,
+      ...(send === undefined ? {} : { send }),
+      ...(meta === undefined ? {} : { title: meta.title, desc: meta.desc }),
+    }
+  }
   return SECTIONS.map((s, si) => {
     const seeded = s.items.map((it, ii) => withEdit({
       ...it,
@@ -440,6 +456,10 @@ const makeStory = (variant) => tmc2Page({
     const pendingAdds = ref([])
     const pendingDeletes = ref([])
     const sendEdits = ref({})
+    /* "Change description" — { [rowId]: { title, desc } }. Staged like every
+     * other change on this screen, so a rename does not reach the list, the
+     * store or Event Registration Settings until Save. */
+    const metaEdits = ref({})
     let stagedSeq = 0
 
     // Saved templates minus anything staged for deletion, plus anything staged
@@ -452,19 +472,27 @@ const makeStory = (variant) => tmc2Page({
     // args is reactive in Storybook's Vue renderer — rebuild when a control changes.
     const sections = ref([])
     watchEffect(() => {
-      sections.value = sectionsFromArgs(args, visibleAdded.value, sendEdits.value)
+      sections.value = sectionsFromArgs(args, visibleAdded.value, sendEdits.value, metaEdits.value)
     })
 
     const dirty = computed(() => pendingAdds.value.length > 0
       || pendingDeletes.value.length > 0
       || Object.keys(sendEdits.value).length > 0
+      || Object.keys(metaEdits.value).length > 0
       || fromAddress.value !== savedFrom.value
       || fromAddressCustom.value !== savedFromCustom.value)
 
     const saveChanges = () => {
-      pendingAdds.value.forEach((t) => addTemplate({
-        title: t.title, desc: t.desc, baseTitle: t.baseTitle,
-      }))
+      // A staged rename of a staged add is applied before the add reaches the
+      // store, so the template is created under the name the user last chose.
+      pendingAdds.value.forEach((t) => {
+        const meta = metaEdits.value[t.id]
+        addTemplate({
+          title: meta ? meta.title : t.title,
+          desc: meta ? meta.desc : t.desc,
+          baseTitle: t.baseTitle,
+        })
+      })
       pendingDeletes.value.forEach((id) => {
         const target = addedTemplates.value.find((t) => t.id === id)
         if (target) removeTemplate(target)
@@ -473,10 +501,13 @@ const makeStory = (variant) => tmc2Page({
       // into the store objects that survive, so they read back the same way.
       addedTemplates.value.forEach((t) => {
         if (sendEdits.value[t.id] !== undefined) t.send = sendEdits.value[t.id]
+        const meta = metaEdits.value[t.id]
+        if (meta) { t.title = meta.title; t.desc = meta.desc }
       })
       pendingAdds.value = []
       pendingDeletes.value = []
       sendEdits.value = {}
+      metaEdits.value = {}
       savedFrom.value = fromAddress.value
       savedFromCustom.value = fromAddressCustom.value
       $q.notify({
@@ -493,6 +524,7 @@ const makeStory = (variant) => tmc2Page({
       pendingAdds.value = []
       pendingDeletes.value = []
       sendEdits.value = {}
+      metaEdits.value = {}
       fromAddress.value = savedFrom.value
       fromAddressCustom.value = savedFromCustom.value
     }
@@ -577,6 +609,13 @@ const makeStory = (variant) => tmc2Page({
         } else {
           pendingDeletes.value = [...pendingDeletes.value, target.id]
         }
+      },
+      /* Staged by row id, not written into the row — so it survives a Controls
+       * edit rebuilding the list, and Discard drops it in one assignment. Works
+       * on seeded and user-added templates alike; nothing about this screen
+       * treats a name as immutable. */
+      onConfirmMeta: ({ target, name, desc }) => {
+        metaEdits.value = { ...metaEdits.value, [target.id]: { title: name, desc } }
       },
     })
     const $q = editor.$q
