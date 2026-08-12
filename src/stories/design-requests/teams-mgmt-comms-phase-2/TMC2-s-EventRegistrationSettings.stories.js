@@ -8,7 +8,7 @@
  *  2026-08-07: P0-8 was never asked to be mocked. */
 import { ref, computed } from 'vue'
 import { tmc2Page, eventHeader } from './_tmc2shell'
-import { EVENT, TM_TEMPLATES, TM_DESC } from './_tmc2fixtures'
+import { EVENT, TM_TEMPLATES } from './_tmc2fixtures'
 import { addedTemplates } from './_tmc2store'
 import DsSelect from './components/DsSelect.vue'
 import DsInput from './components/DsInput.vue'
@@ -35,14 +35,22 @@ screen still matches production.
 | Story | Shows |
 | --- | --- |
 | **Default** | Empty event — compliance tracking off, so the conditional fields and the Compliance / Communications / Restrictions cards are hidden. Non-compliance policy is empty. |
-| **Configured** | Fully set up — every conditional revealed, matching the populated capture, plus a written non-compliance policy. Two reminders: *Compliance Reminder* and *Compliance Reminder - Tier 2*. |
-| **Configured with Tiers** | The same event, but the company has built out all four reminder tiers. The seeded reminder stays unnumbered — *Compliance Reminder*, then *Tier 2*, *Tier 3*, *Tier 4* — matching *Screens › Notification Preferences › Compliance Reminder Tiers*. |
+| **Configured** | Fully set up — every conditional revealed, matching the populated capture, plus a written non-compliance policy. |
 
-**Why both configured states.** They are two real situations, not a before and
-after: a company running two reminders and one running the full ladder. The
-event screen has to read well in both, and the four-tier case is where the list
-gets long enough to be worth looking at. Every tier is switched on in that story
-— opting one out per event is exactly what the toggles are for.
+### One row for every tier
+
+Planning on 2026-08-12 settled that **the event level does not expose tiers at
+all**: *"you would not see the different Compliance Reminder tiers, there would
+just be one row that represents all tiers and toggles on/off."*
+
+So the card lists **Compliance Reminder (All)** — the *(All)* is load-bearing.
+Without it the row reads as the base reminder only, and a company running four
+tiers would reasonably wonder where the other three went.
+
+A *Configured with Tiers* story showed the full ladder as four event rows until
+the same meeting: *"let's remove this version of it entirely, as it will just
+cause confusion."* Tiers are still built and reviewed on *Screens › Notification
+Preferences › Compliance Reminder Tiers*, which is where they are configured.
 
 ### Removed 2026-08-07 — DES-432 · P0-8
 
@@ -167,14 +175,26 @@ const eventComms = `
             <div style="flex:1; min-width:0;">
               <div class="row items-center no-wrap q-gutter-sm">
                 <div style="font-weight:700; color:var(--ds-color-text);">{{ t.title }}</div>
-                <!-- DES-428 · P0-4 → DES-425 · P0-1. A reminder created at
-                     company level arrives here as its own row, off by default.
-                     Badged so it is obvious which rows came from this session
-                     rather than shipping with the account. -->
-                <q-badge v-if="t.userAdded" color="primary" class="q-px-sm q-py-xs" style="flex:none;">New</q-badge>
+                <!-- DES-425 · P0-1 (2026-08-12). Tiers are not listed here, so
+                     the count is how a company-level change stays visible: add a
+                     tier on Notification Preferences, save, and this row says it
+                     covers one more. Only shown once there is more than one,
+                     since "covers 1 reminder" tells you nothing. -->
+                <q-badge v-if="t.type === 'compliance-reminder' && reminderCount > 1"
+                  outline color="primary" class="q-px-sm q-py-xs" style="flex:none;">
+                  {{ reminderCount }} reminders
+                </q-badge>
               </div>
               <div style="font-size:0.875rem; color:var(--ds-color-text-subtle); line-height:1.45; margin-top:2px;">
-                {{ t.desc }}
+                <!-- The company-level subtext ends "Add tiers to shift your tone
+                     …", which is a call to action on a screen that cannot act.
+                     Reminders get event-level wording instead; everything else
+                     keeps the shared copy. -->
+                <template v-if="t.type === 'compliance-reminder'">
+                  Every compliance reminder for this event, tiers included. Switching this off
+                  stops all of them for this event only.
+                </template>
+                <template v-else>{{ t.desc }}</template>
               </div>
             </div>
             <q-toggle v-model="t.eventOn" color="primary" style="flex:none;"
@@ -241,46 +261,13 @@ const MERGE_HINT = 'Optional. When filled, this text is inserted into Teams Mana
  * expects to find it as they left it. Never mutates the imported fixture. */
 const seededTemplates = TM_TEMPLATES.map((t) => ({ ...t }))
 
-/* The same event once the company has built out all four reminder tiers
- * (DES-428 · P0-4). Non-reminder rows are taken from TM_TEMPLATES rather than
- * retyped, so Welcome and Previously Compliant can never drift between the two
- * stories; only the reminder ladder differs.
- *
- * Descriptions escalate deliberately — the point of tiers is tone and cadence
- * changing as the cutoff approaches, and four rows all reading "recurring
- * nudge" would show the mechanism without showing the reason for it. */
-const TIER_DESCRIPTIONS = [
-  TM_DESC.complianceReminder,
-  'A firmer follow-up for teams still below their requirement as the cutoff approaches.',
-  'A direct reminder that rooms at event rates are running out, with the shortfall stated plainly.',
-  'The final escalation before the hotel cutoff, naming what happens to teams that do not meet the requirement.',
-]
-
-/* The first tier carries no number (2026-08-11 review) — it is simply
- * "Compliance Reminder", and the tiers a company adds start at 2. So the first
- * description belongs to the unnumbered seeded reminder and the rest number from
- * two, which is why the suffix is `i + 2` rather than `i + 1`. */
-const tierTemplates = [
-  ...TM_TEMPLATES.filter((t) => t.type !== 'compliance-reminder').map((t) => ({ ...t })),
-  {
-    key: 'reminder-tier-1',
-    type: 'compliance-reminder',
-    title: 'Compliance Reminder',
-    desc: TIER_DESCRIPTIONS[0],
-    companyOn: true,
-    eventOn: true,
-    recurring: true,
-  },
-  ...TIER_DESCRIPTIONS.slice(1).map((desc, i) => ({
-    key: 'reminder-tier-' + (i + 2),
-    type: 'compliance-reminder',
-    title: 'Compliance Reminder - Tier ' + (i + 2),
-    desc,
-    companyOn: true,
-    eventOn: true,
-    recurring: true,
-  })),
-]
+/* A "Configured with Tiers" story stood here until 2026-08-12, showing the full
+ * ladder as four event-level rows. Planning settled that the event level does
+ * not expose tiers at all — one row toggles them together — so the story and the
+ * tier fixtures behind it were removed rather than left to contradict the
+ * design: "let's remove this version of it entirely, as it will just cause
+ * confusion." The tiers themselves still live on Screens › Notification
+ * Preferences › Compliance Reminder Tiers, which is where they are configured. */
 
 const state = (over = {}) => () => {
   return {
@@ -306,16 +293,30 @@ const state = (over = {}) => () => {
     // DES-438 / P1-3
     noncompliancePolicy: ref(over.noncompliancePolicy ?? ''),
     mergeHint: MERGE_HINT,
-    /* DES-425 / P0-1 — one row per company-level template.
+    /* DES-425 / P0-1 — one row per company-level template, EXCEPT compliance
+     * reminders, which are all represented by a single "Compliance Reminder
+     * (All)" row (2026-08-12 planning).
+     *
+     * Reminders created on the company screen are therefore NOT appended as
+     * their own rows. Removing the seeded Tier 2 alone would have been half the
+     * rule: add a tier at company level and the event card would have grown a
+     * "Tier 3" row, which is exactly the confusion the decision removes. The
+     * card's shape no longer depends on how many tiers a company built — always
+     * these three rows.
      *
      * Seeded templates are copied so toggling in one story never mutates the
-     * fixture. Reminders created this session are appended live from the shared
-     * store, which is the whole point: a template made on the company
-     * Notification Preferences screen has to be switchable per event, and a
-     * static list could never show that. Their `eventOn` lives in the store
-     * object itself, so toggling it here and coming back finds it as you left
-     * it — the same as the seeded rows. */
-    tmTemplates: computed(() => [...(over.templates || seededTemplates), ...addedTemplates.value]),
+     * fixture. */
+    tmTemplates: computed(() => (over.templates || seededTemplates)),
+    /* Cross-screen propagation is still visible, just not as extra rows: the
+     * (All) row reports how many reminders it covers, so creating one on
+     * Notification Preferences and saving still changes this card. Without
+     * this the two screens would look unrelated again. */
+    reminderCount: computed(() => {
+      const seededReminders = (over.templates || seededTemplates)
+        .filter((t) => t.type === 'compliance-reminder').length
+      return seededReminders + addedTemplates.value
+        .filter((t) => t.type === 'compliance-reminder').length
+    }),
     evt: EVENT,
   }
 }
@@ -348,17 +349,4 @@ export const Configured = tmc2Page({
 })
 Configured.parameters = { layout: 'fullscreen' }
 
-/** The same configured event, but the company has built out all four reminder
- *  tiers (DES-428 · P0-4). Kept as its own story rather than replacing
- *  Configured: the two are different real situations — a company running two
- *  reminders and one running the full ladder — and the event screen has to read
- *  well in both. Every tier is on here; per-event opt-out of a single tier is
- *  what the toggles are for. */
-export const ConfiguredWithTiers = tmc2Page({
-  active: 'events',
-  components: { DsSelect, DsInput, DsField },
-  setup: state({ ...CONFIGURED, templates: tierTemplates }),
-  slot: body,
-})
-ConfiguredWithTiers.storyName = 'Configured with Tiers'
-ConfiguredWithTiers.parameters = { layout: 'fullscreen' }
+

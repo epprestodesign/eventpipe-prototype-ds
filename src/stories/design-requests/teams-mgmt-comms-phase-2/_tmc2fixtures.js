@@ -185,22 +185,18 @@ export const TM_TEMPLATES = [
     recurring: false,
   },
   {
+    /* One row for every tier, not one row per tier (2026-08-12 planning): "at
+     * the Event-Level you would not see the different Compliance Reminder
+     * tiers, there would just be one row that represents all tiers and toggles
+     * on/off." The "(All)" is doing real work in the title — without it the row
+     * reads as the base reminder only, and a Hoco with four tiers would wonder
+     * where the other three went.
+     *
+     * A "Compliance Reminder - Tier 2" row sat beside this one until then. */
     key: 'reminder-standard',
     type: 'compliance-reminder',
-    title: 'Compliance Reminder',
+    title: 'Compliance Reminder (All)',
     desc: TM_DESC.complianceReminder,
-    companyOn: true,
-    eventOn: true,
-    recurring: true,
-  },
-  {
-    /* The second tier, per the DES-428 pivot. Review replaced Compliance
-     * Achieved here with this: what an event actually needs to switch on and off
-     * is each reminder tier, not the congratulations notice. */
-    key: 'reminder-tier-2',
-    type: 'compliance-reminder',
-    title: 'Compliance Reminder - Tier 2',
-    desc: 'A firmer follow-up for teams still below their requirement as the cutoff approaches.',
     companyOn: true,
     eventOn: true,
     recurring: true,
