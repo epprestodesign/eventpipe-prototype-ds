@@ -7,8 +7,8 @@
  */
 import { ref, computed } from 'vue'
 import { tmc2Page } from './_tmc2shell'
-import { COMPANY, DEFAULT_EMAILS, EVENT, FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED } from './_tmc2fixtures'
-import { addedTemplates, addTemplate } from './_tmc2store'
+import { COMPANY, DEFAULT_EMAILS, EVENT, FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED, TM_DESC } from './_tmc2fixtures'
+import { addedTemplates, addTemplate, removeTemplate } from './_tmc2store'
 import {
   companyHeader, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
   addReminderRow, customFromAddressError,
@@ -23,8 +23,9 @@ import DsField from './components/DsField.vue'
 import DsRichTextEditor from './components/DsRichTextEditor.vue'
 import DsInfoGrid from './components/DsInfoGrid.vue'
 import {
-  rowActions, previewDialog, testSendDialog, addReminderDialog,
+  tieredRowActions, previewDialog, testSendDialog, addReminderDialog,
   deleteTemplateDialog, restoreContentDialog, editorView, useTemplateEditor,
+  MAX_TIERS, tierAddRow,
 } from './_tmc2np'
 
 export default {
@@ -49,6 +50,31 @@ screen, since the reminder group is the one that grows.
 > **Three seeded templates, matching DES-427.** This screen showed a fourth,
 > *Compliance Achieved*, which was cut on 2026-08-11 as out of scope for this
 > phase. That also closes the discrepancy flagged here previously.
+
+### Tiers work exactly as they do on the configured screen
+
+*2026-08-13: "the tier logic is not the same, please update the First Run to
+match the functionality of the Compliance Reminder Tiers version so they are
+consistent."*
+
+This screen had kept the original named-template model — an *Add Compliance
+Reminder* dialog asking for a name and description — long after the configured
+screen pivoted to tiers. It now behaves identically:
+
+| | |
+| --- | --- |
+| **Add Compliance Reminder Tier** | One click, no dialog. The number is the whole identity |
+| **Ceiling of four** | The button greys out with a tooltip rather than disappearing |
+| **Tiers unwind from the end** | Delete stays visible but disabled on every tier but the last |
+| **The first tier carries no number** | The seeded reminder stays *Compliance Reminder*; additions start at *Tier 2* |
+
+The ceiling, the tooltip copy and the add-row config now live in the shared
+module rather than in one screen's story file — the divergence happened
+precisely because they were stated in only one place.
+
+Reminder rows here are unprefixed, so tiers added on this screen read
+*Compliance Reminder - Tier 2* rather than *STP - Compliance Reminder - Tier 2*.
+That follows this screen's own naming; only the prefix differs.
 
 Two things a first-time user meets here:
 
@@ -108,14 +134,14 @@ const seededList = `
             <template #trailing>
               <div class="row items-center no-wrap">
                 <div style="${COL_SEND}"><q-checkbox :model-value="it.on" @update:model-value="onToggleSend(it, $event)" color="primary" /></div>
-                <div style="${COL_TMPL}">${rowActions}</div>
+                <div style="${COL_TMPL}">${tieredRowActions}</div>
               </div>
             </template>
           </ds-list-item>
         </div>
       </template>
       <q-separator />
-      ${addReminderRow()}
+      ${addReminderRow(tierAddRow())}
     </q-expansion-item>
   </q-card>`
 
@@ -158,6 +184,9 @@ export const FirstRun = tmc2Page({
      * Send-Email edits beside it, so a rename does not reach the shared store
      * or Event Registration Settings until Save. */
     const metaEdits = ref({})
+    /* Deleting a SAVED tier is staged like everything else, so Discard puts it
+     * back and the shared store is only touched on Save. */
+    const pendingDeletes = ref([])
     let stagedSeq = 0
 
     /* DES-428 · P0-4 — same grouping as the configured screen: the closed set of
@@ -168,9 +197,14 @@ export const FirstRun = tmc2Page({
     const rows = computed(() => {
       const all = [
         ...seeded.value,
-        ...addedTemplates.value.map((t) => ({
-          key: t.key, title: t.title, purpose: t.desc, type: t.type, on: t.send, custom: true,
-        })),
+        // `userAdded` matters: it is what the row menu gates Delete on. Without
+        // it a tier survived a save and then could never be removed.
+        ...addedTemplates.value
+          .filter((t) => !pendingDeletes.value.includes(t.key))
+          .map((t) => ({
+            key: t.key, title: t.title, purpose: t.desc, type: t.type, on: t.send,
+            custom: true, userAdded: true,
+          })),
         ...pendingAdds.value,
       ].map((r) => {
         const meta = metaEdits.value[r.key]
@@ -193,6 +227,42 @@ export const FirstRun = tmc2Page({
     const startsReminderGroup = (i) => isReminderRow(rows.value[i])
       && (i === 0 || !isReminderRow(rows.value[i - 1]))
 
+    /* DES-427 (2026-08-13) — the tiers model, identical to Screens >
+     * Notification Preferences > Compliance Reminder Tiers. This screen kept the
+     * old named-template dialog long after the configured screen pivoted, which
+     * is exactly the inconsistency review caught: "the tier logic is not the
+     * same, please update the First Run to match."
+     *
+     * Reminder rows here are unprefixed — Compliance Reminder, not STP -
+     * Compliance Reminder — so tiers added here follow this screen's own naming
+     * rather than importing the other screen's prefix. */
+    const isReminderType = (r) => r.type === 'compliance-reminder'
+    const tierCount = computed(() => rows.value.filter(isReminderType).length)
+
+    const addTier = () => {
+      if (tierCount.value >= MAX_TIERS) return
+      stagedSeq += 1
+      pendingAdds.value = [...pendingAdds.value, {
+        key: 'tm-staged-' + stagedSeq,
+        id: 'tm-staged-' + stagedSeq,
+        title: 'Compliance Reminder - Tier ' + (tierCount.value + 1),
+        purpose: TM_DESC.addedTier,
+        type: 'compliance-reminder',
+        on: true,
+        custom: true,
+        userAdded: true,
+      }]
+    }
+
+    /* Only the furthest tier can go. Compared by key against the last reminder
+     * in the list, which is already sorted with reminders last and additions
+     * appended — so "furthest" is "last", staged or saved alike. */
+    const canDeleteTier = (it) => {
+      if (!it || !it.userAdded) return false
+      const reminders = rows.value.filter(isReminderType)
+      return reminders.length > 0 && reminders[reminders.length - 1].key === it.key
+    }
+
     const customFromError = computed(() => customFromAddressError(fromAddress.value, fromAddressCustom.value))
     const savedFrom = ref(fromAddress.value)
     const savedFromCustom = ref(fromAddressCustom.value)
@@ -200,6 +270,7 @@ export const FirstRun = tmc2Page({
     const dirty = computed(() => pendingAdds.value.length > 0
       || Object.keys(sendEdits.value).length > 0
       || Object.keys(metaEdits.value).length > 0
+      || pendingDeletes.value.length > 0
       || fromAddress.value !== savedFrom.value
       || fromAddressCustom.value !== savedFromCustom.value)
 
@@ -225,7 +296,12 @@ export const FirstRun = tmc2Page({
         const meta = metaEdits.value[t.key]
         if (meta) { t.title = meta.title; t.desc = meta.desc }
       })
+      pendingDeletes.value.forEach((key) => {
+        const target = addedTemplates.value.find((t) => t.key === key)
+        if (target) removeTemplate(target)
+      })
       pendingAdds.value = []
+      pendingDeletes.value = []
       sendEdits.value = {}
       metaEdits.value = {}
       savedFrom.value = fromAddress.value
@@ -234,6 +310,7 @@ export const FirstRun = tmc2Page({
 
     const discardChanges = () => {
       pendingAdds.value = []
+      pendingDeletes.value = []
       sendEdits.value = {}
       metaEdits.value = {}
       fromAddress.value = savedFrom.value
@@ -246,22 +323,15 @@ export const FirstRun = tmc2Page({
      * staging differs, and that is what gets passed in. */
     const editor = useTemplateEditor({
       baseReminderTitle: () => (baseReminder ? baseReminder.title : 'the standard Compliance Reminder'),
-      onConfirmAdd: ({ name, desc, baseTitle }) => {
-        stagedSeq += 1
-        pendingAdds.value = [...pendingAdds.value, {
-          key: 'tm-staged-' + stagedSeq,
-          id: 'tm-staged-' + stagedSeq,
-          title: name,
-          purpose: desc || (baseReminder ? baseReminder.purpose : ''),
-          baseTitle,
-          type: 'compliance-reminder',
-          on: true,
-          custom: true,
-          userAdded: true,
-        }]
-      },
+      /* No onConfirmAdd: in the tiers model the add row calls addTier directly
+       * and the naming dialog is unreachable. The dialog itself stays mounted —
+       * it also serves "Change description". */
       onConfirmDelete: (target) => {
-        pendingAdds.value = pendingAdds.value.filter((t) => t.key !== target.key)
+        if (pendingAdds.value.some((t) => t.key === target.key)) {
+          pendingAdds.value = pendingAdds.value.filter((t) => t.key !== target.key)
+        } else {
+          pendingDeletes.value = [...pendingDeletes.value, target.key]
+        }
       },
       // Keyed by `key` here rather than `id` — this screen's rows predate the
       // configured screen's id scheme and are still keyed that way.
@@ -290,6 +360,7 @@ export const FirstRun = tmc2Page({
       onToggleSend,
       startsFixedGroup,
       startsReminderGroup,
+      tierCount, addTier, canDeleteTier,
       groupLabelStyle: GROUP_LABEL,
       dirty,
       saveChanges,

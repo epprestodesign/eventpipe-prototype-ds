@@ -22,6 +22,7 @@ import {
   rowActions, tieredRowActions, testSendNote, previewDialog, testSendDialog,
   addReminderDialog, deleteTemplateDialog, restoreContentDialog,
   emailSettings, editorView, useTemplateEditor,
+  MAX_TIERS, tierAddRow,
 } from './_tmc2np'
 import { addedTemplates, addTemplate, removeTemplate } from './_tmc2store'
 import contentData from './tmc2-content.json'
@@ -226,13 +227,6 @@ const sectionConfigStrip = `
  * So the tiers variant differs in four ways: the button names a tier, the info
  * copy is about escalation rather than unlimited templates, there is no naming
  * dialog at all, and there is a hard ceiling of four. */
-// Not exported: Storybook indexes every export in a stories file as a story.
-const MAX_TIERS = 4
-
-const TIER_TOOLTIP = 'Add up to 3 Additional Compliance Reminder Tiers in order to escalate your'
-  + ' tone or cadence as events draw closer. Be sure to set the'
-  + ' <b>Days until Event Start to Begin/End Reminders</b> to avoid overlapping with other tiers.'
-
 /* ---- View 1: the preferences list ---- */
 const makeListView = (variant) => `
   <div style="padding:40px 32px; background:var(--ds-color-surface-sunken); min-height:100%;">
@@ -285,13 +279,7 @@ const makeListView = (variant) => `
           <template v-if="s.name === 'Teams Management'">
             <q-separator />
             ${variant === 'tiers'
-              ? addReminderRow({
-                handler: 'addTier',
-                label: 'Add Compliance Reminder Tier',
-                tooltip: TIER_TOOLTIP,
-                disableWhen: 'tierCount >= ' + MAX_TIERS,
-                disabledTooltip: 'Maximum of ' + MAX_TIERS + ' tiers reached. Delete the last tier to add another.',
-              })
+              ? addReminderRow(tierAddRow())
               : addReminderRow()}
           </template>
         </q-expansion-item>
