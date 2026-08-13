@@ -65,6 +65,30 @@ export const tieredRowActions = withPreviewAndTestSend(templateActions({
     + ' highest-numbered tier first.',
 }))
 
+/* ---- The tiers model, shared by BOTH Notification Preferences screens ----
+ *
+ * These lived only in the configured screen's story file, which is how the two
+ * screens ended up with different tier logic — First-Time Setup still had the
+ * old named-template dialog long after the configured screen had pivoted. Same
+ * failure as the seven copies of the template subtext: state a rule once, or the
+ * copies drift. Anything implementing tiers reads these.
+ */
+export const MAX_TIERS = 4
+
+export const TIER_TOOLTIP = 'Add up to 3 Additional Compliance Reminder Tiers in order to escalate your'
+  + ' tone or cadence as events draw closer. Be sure to set the'
+  + ' <b>Days until Event Start to Begin/End Reminders</b> to avoid overlapping with other tiers.'
+
+/** The add-row config for the tiers model. `handler` differs per screen only
+ *  because each stages additions into its own local state. */
+export const tierAddRow = (handler = 'addTier') => ({
+  handler,
+  label: 'Add Compliance Reminder Tier',
+  tooltip: TIER_TOOLTIP,
+  disableWhen: 'tierCount >= ' + MAX_TIERS,
+  disabledTooltip: 'Maximum of ' + MAX_TIERS + ' tiers reached. Delete the last tier to add another.',
+})
+
 /** Repeated wherever a test send is offered — the one thing about it that is
  *  easy to get wrong (DES-433 keeps the log to automated sends only). */
 export const testSendNote = `

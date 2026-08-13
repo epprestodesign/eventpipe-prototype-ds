@@ -141,15 +141,16 @@ export const COMPANY_SECTIONS_BOTTOM = [
  *  drifted apart in the first place. Anything showing one of these three
  *  templates should read from here rather than restate it.
  *
- *  Verbatim as supplied, including "for per team per event" and "compliance
- *  reminders emails" — those are copy decisions, not ours to quietly correct. */
+ *  Two slips in the original supply — "for per team per event" and "compliance
+ *  reminders emails" — were left verbatim and flagged rather than silently
+ *  corrected; both were confirmed as typos on 2026-08-13 and fixed here. */
 export const TM_DESC = {
-  welcome: 'Sent once for per team per event. Establishes that the event is'
+  welcome: 'Sent once per team per event. Establishes that the event is'
     + ' Stay-to-Play and points the team at the booking link. Intended for teams'
     + ' traveling to the event with a compliance requirement.',
   previouslyCompliant: 'Sent when a team that had met its goal drops back below'
     + ' it — usually after a cancellation. Sends once and if they remain'
-    + ' non-compliant then compliance reminders emails take over.',
+    + ' non-compliant then compliance reminder emails take over.',
   complianceReminder: 'The recurring nudge for teams. Runs on a cadence and date'
     + ' range you set relative to the event start. Intended for non-compliant'
     + ' teams. Add tiers to shift your tone, frequency, or audience as the event'
