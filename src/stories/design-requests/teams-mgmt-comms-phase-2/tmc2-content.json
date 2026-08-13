@@ -13,14 +13,14 @@
         },
         {
           "title": "STP - Welcome Email",
-          "desc": "Sent once for per team per event. Establishes that the event is Stay-to-Play and points the team at the booking link. Intended for teams traveling to the event with a compliance requirement.",
+          "desc": "Sent once per team per event. Establishes that the event is Stay-to-Play and points the team at the booking link. Intended for teams traveling to the event with a compliance requirement.",
           "send": true,
           "forced": false,
           "custom": false
         },
         {
           "title": "STP - Previously Compliant Notice",
-          "desc": "Sent when a team that had met its goal drops back below it — usually after a cancellation. Sends once and if they remain non-compliant then compliance reminders emails take over.",
+          "desc": "Sent when a team that had met its goal drops back below it — usually after a cancellation. Sends once and if they remain non-compliant then compliance reminder emails take over.",
           "send": true,
           "forced": false,
           "custom": true

@@ -44,7 +44,23 @@ import recurrenceFieldSrc from './app/compliance-reminder/RecurrenceField.vue?ra
 import reminderSettingsSrc from './app/compliance-reminder/ReminderSettings.vue?raw'
 import editorSrc from './app/compliance-reminder/ComplianceReminderEditor.vue?raw'
 
-const SECTIONS = contentData.sections
+/* The three Teams Management templates take their subtext from TM_DESC, not
+ * from this file's copy of it.
+ *
+ * tmc2-content.json was a SECOND copy of that text — which is how the two
+ * approved typo fixes landed on the event card and First-Time Setup but not
+ * here. TM_DESC wins now, so these screens cannot fall behind it again. The
+ * JSON keeps the same strings so the file still reads correctly on its own,
+ * but it is no longer what renders. */
+const TM_DESC_BY_TITLE = {
+  'STP - Welcome Email': TM_DESC.welcome,
+  'STP - Previously Compliant Notice': TM_DESC.previouslyCompliant,
+  'STP - Compliance Reminder': TM_DESC.complianceReminder,
+}
+const SECTIONS = contentData.sections.map((s) => ({
+  ...s,
+  items: s.items.map((it) => (TM_DESC_BY_TITLE[it.title] ? { ...it, desc: TM_DESC_BY_TITLE[it.title] } : it)),
+}))
 
 export default {
   title: 'Design Requests/Teams Mgmt Comms Phase 2/Screens/Notification Preferences',
