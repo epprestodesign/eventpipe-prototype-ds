@@ -1,0 +1,669 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Design Requests/Aug 19/Requirements Coverage" />
+
+# Requirements Coverage
+
+How each requirement in [Teams Mgmt Comms Phase 2 · STP Comms](https://linear.app/eventpipe/project/teams-mgmt-comms-phase-2-stp-comms-fc32de794752/overview)
+was addressed in design, and where to find it.
+
+**12 requirements are designed and in review.** Everything below is a prototype in
+this folder — clickable, not a static comp.
+
+| | Requirement | Where |
+| --- | --- | --- |
+| **P0-1** | Event-level communications toggle | Screens › Event Registration Settings |
+| **P0-2** | Team-level communications opt-out | Screens › Team Detail |
+| **P0-3** | Default TM comms (3 seeded templates) | First-Time Setup |
+| **P0-4** | Add / delete compliance reminder templates | Screens › Notification Preferences |
+| **P0-5** | From/Reply address | Screens › Notification Preferences |
+| **P0-6** | Email template variables | Components › Personalization Menu |
+| **P0-7** | Email configuration options | Screens › Notification Preferences |
+| **P0-8** | Daily job rules & send eligibility | **No mock — not requested** |
+| **P0-9** | Per-team communication log | Screens › Team Detail |
+| **P0-11** | Teams Mgmt locked upsell | Screens › Notification Preferences |
+| **P1-1** | Email preview & test send | Screens › Notification Preferences |
+| **P1-3** | Event-level non-compliance policy | Screens › Event Registration Settings |
+
+Everything renders against one tenant so the screens read as one product:
+**Traveloc** / **Mike Addesa** / event **2027 - San Antonio Soccer Classic** /
+team **Southern United 05B**.
+
+---
+
+## P0-1 · Event-level communications toggle
+
+**Requested** — A Hoco can enable or disable each automated STP template per
+event. Toggling off stops future sends for that type on that event. Toggle state
+is visible to everyone with event access.
+
+**Designed** — A **Communications** card on the event's Registration Settings
+tab, between Compliance and Restrictions. One toggle per company-level template.
+It is deliberately **toggle-only** — no edit buttons, no per-template config —
+with a line pointing to Company Settings › Notifications as the place content is
+authored.
+
+**Trimmed after review (2026-08-10)**
+
+- Header shortened from *Teams Management Communications* to **Communications**.
+- The line *"New events inherit the company-level on/off state"* removed.
+- *Compliance Achieved* dropped from the list and replaced with a second
+  reminder tier. What an event needs to switch on and off is reminders, not the
+  congratulations notice. (That template was cut from the project entirely on
+  2026-08-11.)
+
+**Tiers collapsed to one row (2026-08-12 planning)**
+
+*"At the Event-Level you would not see the different Compliance Reminder tiers,
+there would just be one row that represents all tiers and toggles on/off."*
+
+- The *Compliance Reminder - Tier 2* row is gone.
+- The remaining row is **Compliance Reminder (All)**. The *(All)* is
+  load-bearing: without it the row reads as the base reminder only, and a
+  company running four tiers would wonder where the other three went.
+- Order is now Welcome → Previously Compliant → Compliance Reminder (All).
+- The *Configured with Tiers* story was **deleted** — *"it will just cause
+  confusion."* Tiers are still designed and reviewed on *Screens › Notification
+  Preferences › Compliance Reminder Tiers*, which is where they are configured.
+- **Reminders created at company level no longer arrive as their own rows.**
+  Removing the seeded Tier 2 alone would have been half the rule: add a tier on
+  Notification Preferences and this card would have grown a *Tier 3* row, which
+  is the confusion the decision exists to remove. The card is now **always these
+  three rows**, whatever the company built.
+
+This also retires a justification used elsewhere in this document: the decision
+to leave the seeded reminder unnumbered was partly argued from the event card
+listing *Compliance Reminder* beside *Compliance Reminder - Tier 2*. That pairing
+no longer exists. The decision stands on its own — a company running one reminder
+should never meet the word "tier" — but it no longer has that corroboration.
+
+**Edge cases covered**
+
+- The card only appears when Compliance Tracking is on, since it is an STP concept.
+- A template that is on at company level but off for this event.
+- A reminder created on Notification Preferences is folded into the *(All)*
+  row rather than appearing separately, and the row's count goes up once it has
+  been saved. That count is deliberate: the two screens used to connect visibly
+  through a new row appearing here, and folding tiers in would have severed the
+  link entirely.
+
+**Find it** — *Screens › Event Registration Settings* → **Configured**.
+
+---
+
+## P0-2 · Team-level communications opt-out
+
+**Requested** — A checkbox on the team detail page opting a team out of *all*
+Teams Management communications. Every team is opted **in** by default.
+
+**Designed** — A single checkbox labelled *Opt out of Teams Management
+communications*, in its own **Communications** card sitting between Goals &
+Restrictions and Compliance Credits. The card is built exactly like Compliance
+Credits — same bordered shell, padding and heading treatment, one control
+beneath the heading — so the page reads as a consistent stack of sections rather
+than one form with an unrelated control appended to it.
+
+The header is the short form, *Communications*. Alongside *Goals &
+Restrictions* and *Compliance Credits* it reads better, and the full product
+name is still carried by the checkbox label directly beneath it — that label is
+the string that has to be unambiguous, not the header.
+
+A checkbox rather than a toggle, matching the send-checkbox used throughout this
+folder. It first sat inside Goals & Restrictions; that card is compliance
+overrides and org fields, and a comms opt-out is neither, so it was promoted to
+its own section.
+
+**Trimmed after review (2026-08-07)** — the first pass wrapped the checkbox in
+explanatory sub-text, an amber warning callout on the checked state, and a
+read-only communications-status panel. Review called all of it bloat: *"really
+just need checkbox with a label."* The label now carries the meaning on its own.
+
+**Find it** — *Screens › Team Detail* → **Details Notes**.
+
+---
+
+## P0-3 · Default TM comms (seeded templates)
+
+**Requested** — Every customer starts with three templates — Welcome, Compliance
+Reminder, Previously Compliant Notice — each with default settings.
+
+**Designed** — A whole *First-Time Setup* section, because "what a brand-new
+customer lands on" is a distinct state worth reviewing on its own. The list shows
+the seeded templates and nothing else; each email is also rendered as the team
+receives it, with its default configuration beside it.
+
+**Three templates, matching the ticket.** The list showed a fourth,
+*Compliance Achieved*, until 2026-08-11: *"please remove the Compliance Achieved
+template. We will not be building that in this phase of the project."* Its copy,
+its story and its seed entry are all gone, which closes the discrepancy flagged
+here previously.
+
+### The subtext under each template
+
+Rewritten 2026-08-11 and now **defined once**, as `TM_DESC` in `_aug19fixtures.js`.
+Two typos in the supplied copy — *"for per team per event"* and *"compliance
+reminders emails"* — were left verbatim and flagged rather than silently
+corrected; both were confirmed and fixed on 2026-08-13.
+It had been restated in three fixtures and four component stories — seven copies
+that had already drifted apart, which is why *"update this subtext everywhere you
+find it… so the prototypes are consistent"* was a real ask rather than a tidy-up.
+Every screen showing one of the three now reads from the same constant.
+
+| Template | Subtext |
+| --- | --- |
+| **Welcome Email** | Sent once per team per event. Establishes that the event is Stay-to-Play and points the team at the booking link. Intended for teams traveling to the event with a compliance requirement. |
+| **Previously Compliant Notice** | Sent when a team that had met its goal drops back below it — usually after a cancellation. Sends once and if they remain non-compliant then compliance reminder emails take over. |
+| **Compliance Reminder** | The recurring nudge for teams. Runs on a cadence and date range you set relative to the event start. Intended for non-compliant teams. Add tiers to shift your tone, frequency, or audience as the event draws closer. |
+
+**Tiers 2–4 keep their own escalating copy.** They are not one of the three named
+templates, and reusing the Compliance Reminder text would have every added tier
+telling you to add tiers. A tier created in the prototype gets a neutral line —
+`TM_DESC.addedTier` — in the same vocabulary of cadence, tone and audience.
+
+**A day-one banner was removed** from First-Time Setup in the same pass:
+*"Teams Management communications are ready to set up…"* — *"please remove that,
+it's unnecessary."*
+
+**Every email is the same eight paragraphs**, enforced by a shared skeleton
+rather than by convention:
+
+| # | Slot | Varies by type? |
+| --- | --- | --- |
+| 1 | Greeting | No |
+| 2 | Situation — why this email exists | **Yes** |
+| 3 | Requirement / booked / short by | No |
+| 4 | `{{team_group_block_info}}` | Merge field only |
+| 5 | Where to book | **Yes** |
+| 6 | Cutoff date | **Yes** |
+| 7 | `{{noncompliance_policy}}` | Merge field only |
+| 8 | Sign-off | No |
+
+Slots 4 and 7 drop out when they resolve to nothing, so a team with no group
+block at an event with no policy gets a clean six-paragraph email.
+
+**One source of truth.** The editor's Content field, the preview modal, Default
+Emails and First Run all derive from the same `body` array. Change a paragraph
+in the fixture and every surface moves together.
+
+**Edge cases covered**
+
+- Nothing configured yet, but the From/Reply address already defaults to Event Manager.
+- A paragraph whose only content is an empty variable is **dropped entirely** —
+  a blank non-compliance policy leaves no gap in the email.
+- *Show merge fields* flips between the sent email and the template source.
+
+**Caveat** — the body copy is **draft**. The spec records all three as "Pending
+Default Template Body" and DES-447 assigns the real wording to Scott. The
+structure — which variables, in what order — is what is up for review.
+
+**Find it** — *First-Time Setup › Notification Preferences* (**First Run**) and
+*First-Time Setup › Default Emails* (three stories).
+
+---
+
+## P0-4 · Add / delete compliance reminder templates
+
+**Requested** — Users can add more TM Comms templates from the company
+notifications page, naming and describing each, and can delete one.
+
+### Renaming, and no toast on add (2026-08-12)
+
+**Change description** is in every row's menu, directly under *Edit template*.
+It reopens the add dialog against an existing template, prefilled — the two jobs
+ask for the same pair of fields, so a second dialog would have been the first
+with a different heading. Confirm reads *Update* rather than *Add Reminder*, and
+the intro says what is **not** touched: content, schedule, statuses, recipients.
+
+It applies to **seeded templates too**. Nothing here treats a name as immutable,
+and a template's `type` is resolved from its *original* title — so renaming can
+never change how a template behaves. On the tiers screen it can rename a tier;
+that is safe because `canDeleteTier` compares row **ids** and the next tier
+number comes from a **count**, neither of which reads a number out of a title.
+
+Like everything else on these screens it is **staged** — a rename reaches the
+list immediately, the shared store and Event Registration Settings only on Save,
+and Discard drops it.
+
+**The add toast is gone.** Adding a reminder used to fire a success
+notification. The add is staged and the unsaved-changes bar already says so, so
+the toast was asserting something had happened when nothing had yet — the same
+reason the Send-Email toggle lost its toast earlier.
+
+**Designed — two models, side by side.** Review on 2026-08-10 pivoted this from
+unlimited named reminders to a fixed set of numbered tiers, and both stories are
+kept so the two can be compared rather than described.
+
+| Story | Model |
+| --- | --- |
+| **Notification Preferences** | Unlimited reminders, each named in a dialog |
+| **Compliance Reminder Tiers** | Up to **4 numbered tiers**, one click each, no dialog |
+
+In the tiers model the button reads *Add Compliance Reminder Tier*, the dialog is
+gone entirely, and the button disables at four rather than disappearing.
+
+**The first tier carries no number** (2026-08-11). The seeded template stays
+*STP - Compliance Reminder* in every state and additions start at **Tier 2**, so
+a company that only ever wants one reminder never meets the word "tier" — and the
+ceiling reads as one reminder plus three escalations. That is also how the Event
+Registration Settings card lists them (DES-425), so the two screens agree.
+
+**Tiers unwind from the end.** Delete is disabled on every tier but the last,
+with a tooltip explaining why. Deleting from the middle would either strand a gap
+or renumber the tiers below it under the user. With gaps impossible, adding a
+tier is just count-plus-one — the lowest-free-number scan that used to cope with
+gaps is gone.
+
+The original model: an *Add Compliance Reminder* action opens a minimal Name +
+Description dialog, confirmed with **Add Reminder**. The new template starts as a
+**copy of the standard Compliance Reminder** and is marked Custom. Unlimited —
+the fixed early/mid/late model is gone.
+
+**Two ways to delete**, both limited to user-added reminders:
+
+| Where | Why both |
+| --- | --- |
+| Row menu → *Delete template* | Deleting from the list, where you can see the whole set |
+| Template editor → **Save ▾** → *Delete template* | You often only decide a reminder is redundant once you are reading it. Making you back out to the list to act on that is a needless round trip |
+
+Both open the same confirmation. Deleting from the editor returns you to the
+list, since the template you were editing no longer exists.
+
+**The editor's Save is a split button** (2026-08-11), the same shape as *Edit* on
+the list rows: *Save*, *Restore to Default* and *Delete template* under the arrow,
+with **Preview email** kept out as its own button. **Restore now warns first** —
+it throws away everything the company has written for that email and cannot be
+undone, and it is reached from one item down a menu, which is where a mis-click
+happens. The dialog names the template, says what is lost, and says what is not
+(scheduling, recipients and statuses are untouched). See *Components ›
+Notification Preferences › Restore to Default*.
+
+Restoring also does something now: the rich-text field's `default-content` had
+been bound to the live content, so *Restore to Default* reset the content to
+whatever had just been typed into it. There is a proper snapshot taken when the
+template opens.
+
+**Fixed templates sort before reminders.** Welcome and Previously Compliant are a
+closed set — exactly one of each, forever. Compliance
+Reminders are open-ended. Sorting reminders last, under a quiet
+`COMPLIANCE REMINDERS` label, keeps added reminders from landing in among the
+fixed templates and making the order look arbitrary. The distinction is
+deliberately a small label rather than a heading or a second card.
+
+**Edge cases covered**
+
+- Confirm is disabled until a name is entered.
+- Only user-added templates can be deleted; seeded ones can be reverted but not removed.
+- Added templates survive a Controls-panel copy edit re-rendering the list.
+- Delete asks for confirmation and explains why seeded templates behave differently.
+- The group label appears on the first reminder wherever it falls, so it is right
+  whether there is one reminder or twenty.
+
+**Trimmed after review (2026-08-07)** — the blurb beside the Add button
+("Add as many reminder templates as you need — there is no fixed early / mid /
+late limit") is gone. In its place is an **info icon** whose tooltip explains
+what the feature is *for* rather than restating that the limit was removed:
+
+> Add additional Compliance Reminder templates to set a specific escalating tone
+> or cadence to your communications as your event draws closer. Be sure to set
+> the **Days until Event Start to Begin/End Reminders** to avoid overlapping with
+> other reminders you have in place.
+
+**Diverges from the written AC** — the ticket says the dialog offers a *type*
+choice (Compliance Reminder or General Communication). The newer direction is
+unlimited compliance reminders that duplicate an existing one, so there is no type
+picker. The AC text is stale, not missed.
+
+**Find it** — *Screens › Notification Preferences*.
+
+---
+
+## Saving — cross-cutting, both Notification Preferences screens
+
+Not a numbered requirement, but it governs how every setting on these two
+screens behaves, so it belongs here.
+
+**Nothing takes effect until Save.** An unsaved-changes bar appears fixed to the
+bottom of the viewport the moment anything differs from the last save — a Send
+Email checkbox, the From/Reply address, a reminder added or deleted — offering
+**Discard** and **Save**.
+
+| | Behaviour |
+| --- | --- |
+| Adding a reminder | Row appears in the list immediately, but is **staged**. It does not reach Event Registration Settings as an event-level toggle until Save |
+| Deleting a reminder | Staged the same way. A reminder that was never saved is simply dropped; a saved one is removed on Save |
+| Send Email checkboxes | Held by row id rather than mutating the row, so a Controls-panel edit rebuilding the list cannot lose them |
+| Discard | Drops all staging and restores From/Reply to its last-saved value |
+
+The shared session store (`_aug19store.js`) therefore holds **only saved
+templates** — that store is what Event Registration Settings reads, so an
+unsaved edit must not be visible there.
+
+**Deliberately not on the template editor.** That view has its own Cancel / Save
+in the header, next to the field being edited. Two competing save affordances on
+one screen would be worse than either alone.
+
+**No toast on toggling a checkbox.** There used to be one. Once the bar existed
+it was also untrue — *"Send email turned off"* claims something happened, when
+nothing does until Save. Toasts now fire only on things that actually completed:
+adding a reminder, saving, and a real test send.
+
+**Session-scoped, and that is the honest limit.** Storybook keeps one preview
+iframe as you move between stories, so a saved template survives navigation to
+Event Registration Settings. A hard browser reload clears it. It stands in for
+the server; it is not one.
+
+---
+
+## P0-5 · From/Reply address
+
+**Requested** — A From/Reply setting offering Event Manager, Event Customer
+Support Contact, or a custom address.
+
+**Designed** — a single row inside the **Teams Management** section it
+configures: the From/Reply select, the custom address field when *Other* is
+chosen, and one line of help beneath. It applies to every template in the
+section — not per template, and with no event-level override.
+
+Nothing names a concrete mailbox. *Event Manager* and *Event Customer Support
+Contact* are per-event roles, so the editor and the email preview report the
+role and when it resolves — *Event Manager — resolved per event when the email
+sends*. *Other* is a literal address, so that one still resolves normally.
+
+**This replaced an earlier design** (briefly shown as "V1" alongside it) that put
+the setting in its own card above every section, and echoed a concrete resolved
+address in the editor. Review on 2026-08-07 made three points, and all three are
+now the design:
+
+1. *"Too bloated with information"* → card became a single row.
+2. *"The preview email that shows below it doesn't make sense b/c the first 2
+   selections are relative to the event so you don't know what address any
+   particular email would really come from"* → **correct, and the old design was
+   wrong.** Naming one mailbox was never truthful, and the email preview
+   inherited that false certainty.
+3. *"It feels independent of the Teams Management Communications section ... over
+   time there will be more sections like Guests, Hotels, and each of those may
+   have specific config parameters"* → this drove the structure. The strip is a
+   **generic per-section config slot**, not a one-off for From/Reply. Future
+   sections fill the same slot instead of each adding another free-floating card
+   to the top of the page. It is one shared component
+   (`fromAddressSectionStrip`), used by both Notification Preferences screens so
+   they cannot drift.
+
+**Edge cases covered**
+
+- Custom address selected but not yet typed.
+- *Other* still shows the literal address in the editor, because there it is knowable.
+
+**Resolved 2026-08-10** — the unset state no longer exists. *Event Manager* is
+the default and the field cannot be cleared, so there is nothing to warn about
+and the asterisk came off with the warning. The one option that still needs
+checking is *Other*, whose address is typed rather than resolved from a person;
+it is validated for a plausible email.
+
+**Diverges from the written AC** — the ticket says the support-contact option
+should respect an event-level override. The newer direction is **no event-level
+override**: Event Manager and Support Contact already vary per event, which is
+where the flexibility comes from.
+
+**Find it** — *Screens › Notification Preferences*;
+*First-Time Setup › Notification Preferences* (unset state).
+
+---
+
+## P0-6 · Email template variables
+
+**Requested** — 23 merge fields across Event, Team, Compliance, Key Dates and
+Hoco Contact groups.
+
+**Designed** — The Personalization menu carries all 23, grouped as specced.
+Selecting one inserts the spec's exact `{{event_name}}` snake_case token. Each row
+shows the literal token it inserts beneath the human label, because that mapping
+is not guessable from a friendly name alone. Search matches label, token and
+description.
+
+**Edge cases covered**
+
+- `{{noncompliance_policy}}` is present but flagged as returning nothing until
+  P1-3 ships.
+- Variables that can return multi-sentence text or nothing at all
+  (`{{team_group_block_info}}`, `{{noncompliance_policy}}`) are placed on their own
+  paragraph in the default templates so they can vanish without breaking grammar.
+- Inline `{{` typing pops the same menu as the toolbar button.
+
+**Find it** — *Components › Personalization Menu* and *Components › Text
+Formatter*; in use throughout the template editor.
+
+---
+
+## P0-7 · Email configuration options
+
+**Requested** — Every template gets compliance-status targeting and recipients.
+Compliance reminders additionally get scheduling. The config must be able to hide
+scheduling per email type.
+
+**Designed** — A *Notification Settings* panel split into **Audience** (always
+shown — Team Recipients, then Compliance Statuses) and **Scheduling** (begin/end
+days, recurrence), shown only for `compliance-reminder` templates.
+
+**Revised 2026-08-11.** Everything below came from one review pass:
+
+| Change | Why it was asked for |
+| --- | --- |
+| *Email Settings* → **Notification Settings** | Matches the section it configures |
+| **Audience** now sits above **Scheduling** | Requested. Also reads better for the one-shot emails, where Scheduling is absent and Audience was the only block |
+| **Team Recipients** now sits above *Compliance Statuses to Include* | Requested |
+| *Recipients* → **Team Recipients** | Names whose recipients these are |
+| *Team Manager* → **Housing Contact**; *Group Block Contacts* → **Group Block Contact(s)** | Matches the real roles |
+| **Ends** block removed from the custom-recurrence modal | *"There is no end to these."* The begin/end day range already bounds the run, so an end date here was a second, contradictable answer to a settled question |
+| **year** removed from the repeat interval | A cadence in years is meaningless against an event a few hundred days out |
+| The **Recurring reminder** badge beside the editor title removed | *"Anywhere there is a tag next to the name of the template on the edit page… please remove it."* The Scheduling block already says it recurs, with the actual cadence |
+
+The badge that came off is the second one to go from that spot — *Triggered
+email* was removed earlier for labelling the normal case.
+
+**Edge cases covered**
+
+- Welcome and Previously Compliant show no scheduling at all, cleanly — not
+  disabled fields.
+- Template type is resolved from the template's *original* title, so renaming a
+  template in the Controls panel cannot change which sections it gets.
+- Custom reminders added via P0-4 inherit the reminder type and get scheduling.
+
+**Find it** — *Screens › Notification Preferences* → open any template.
+
+---
+
+## P0-8 · Daily job rules & send eligibility
+
+**Requested** — A 6am EST job honouring event, team and config eligibility rules;
+one-time send flags; and a maximum of one email per team per day.
+
+**Designed — nothing, deliberately.** P0-8 is engine logic and was never asked
+to be mocked. This was stated in the meeting; it was nonetheless treated as a
+design requirement and grew four surfaces across the folder. **All four have now
+been removed** (2026-08-07), at Scott's request:
+
+| Surface that existed | Where | Removed |
+| --- | --- | --- |
+| Event-level eligibility block (two gates) + the whole **SendingBlocked** story | Event Registration Settings | 2026-08-07 |
+| *One email per team per day* note and priority order | Notification Preferences › Notification Settings | 2026-08-07 |
+| Read-only *Communications status* block, incl. one-time send flags | Team Detail › Goals & Restrictions | 2026-08-07, with the P0-2 trim |
+| Send-eligibility banner above the log | Team Detail › Communications Log | 2026-08-07, with the P0-9 trim |
+
+The supporting fixtures (`EVENT_SEND_GATES`, `EVENT_SEND_GATES_BLOCKED`,
+`TEAM_SEND_STATE`, `SEND_PRIORITY`, `SEND_PRIORITY_NOTE`) were deleted with them,
+so nothing is left dormant waiting to be re-rendered.
+
+**Worth stating plainly, as a process note:** the rules in this ticket are real
+and still govern behaviour — the daily 6am EST job, the event/team/config gates,
+the one-time send flags, one email per team per day, the Welcome → Previously
+Compliant → Compliance Reminder priority. They just do not need pictures. If a
+future conversation decides a Hoco *does* need to see "why isn't this team
+getting email", that should start as its own request rather than reappear as a
+side effect of another ticket.
+
+**Find it** — nowhere, by design.
+
+---
+
+## P0-9 · Per-team communication log
+
+**Requested** — A per-team record of every automated communication with
+timestamp, email type, recipients and send status, sortable and filterable.
+
+**Designed** — A third tab on the team page: a heading and a table, nothing else.
+**View-only** — no resend, no row actions. Recipients are their **own column**,
+one address per line, never merged into another column. Status renders as a chip
+using the design system's status pattern. Sortable column headers are the only
+control on the tab.
+
+**Trimmed after review (2026-08-07)** — review kept the table (*"the table part
+of the mock works well"*) and removed everything around it: the sub-text under
+the heading, the send-eligibility banner, and the email-type and date-range
+filter bar. *"Should be a simple log with sortable headers, that's it."*
+
+**The acceptance criteria are now stale.** DES-433 still reads *"Log is sortable
+**and filterable** by email type and date."* Filtering was built to that AC and
+then removed by this review. The ACs have been left untouched for Scott to amend
+— flagging it here so the gap is not read as an oversight.
+
+**Edge cases covered**
+
+- Multiple recipients on one send.
+- Bounced and Read statuses alongside Sent.
+- Sorting on *Sent* orders chronologically via a derived date, not the display string.
+- Test sends (P1-1) are excluded — this is the record of automated sends only.
+- An empty log reads *"No communications have been sent to this team yet."*
+  Note this no longer distinguishes *nothing sent yet* from *team opted out* —
+  the banner that drew that distinction was part of the trim.
+
+**Open question answered** — the ticket asks whether this should be a general team
+activity log or a dedicated communications log. The mock goes **dedicated**: a
+general activity feed would mix in reservation and note events for which the
+Recipients and Status columns are meaningless, and the driving use case ("prove
+this team was emailed") is a communications question. Worth Scott confirming.
+
+**Find it** — *Screens › Team Detail* → **Communications Log** tab.
+
+---
+
+## P0-11 · Teams Mgmt locked upsell
+
+**Requested** — Customers without Teams Management see the communications section
+greyed out with a pitch to contact their account manager. Scope later extended to
+all of Teams Management, plus a compliance nav entry routing to a value-prop page.
+
+**Designed** — A dedicated story showing the locked state: upsell banner, the
+Teams Management section greyed and non-interactive with a Locked badge, and a
+concept treatment for the locked Compliance nav entry.
+
+**Edge cases covered**
+
+- Locked rows are visually present but non-interactive, so the value is legible
+  without being usable.
+- Template names and descriptions still show — the pitch is what they are missing.
+
+**Status** — the nav-entry concept is marked *Concept · in development*, matching
+its low priority and the note that Justin and Porter are developing it async.
+
+**Find it** — *Screens › Notification Preferences* → **Locked Upsell**.
+
+---
+
+## P1-1 · Email preview & test send
+
+**Requested** — Preview a rendered email with sample data, and send a test before
+enabling it.
+
+**Designed** — The row menu's *Preview* opens the email in a modal, rendered from
+the **same shared fragment** as the seeded Default Emails so the two cannot drift,
+with *Show merge fields* to flip between sent email and template source. *Send
+test email* is reachable from the row menu, the preview modal footer, and the
+editor — all opening one address dialog.
+
+**Edge cases covered**
+
+- A user-added reminder previews as the seeded template it was copied from.
+- The preview's From line reflects the address actually selected in P0-5.
+- Test sends do **not** write to a team's Communications Log, stated at all three
+  entry points.
+
+**Resolves a TBD** — the ticket's third AC left "flagged as tests" open. Decided:
+excluded entirely, because the log's job is proving what a *team* was sent.
+
+**Find it** — *Screens › Notification Preferences*.
+
+---
+
+## P1-3 · Event-level non-compliance policy
+
+**Requested** — An optional text area at event level whose content drops into
+templates via a merge field, and which is omitted entirely when blank.
+
+**Designed** — A text area at the foot of the Compliance card on Registration
+Settings, with hint text explaining it becomes its own paragraph in Teams
+Management emails.
+
+**Edge cases covered**
+
+- Blank policy: the paragraph is dropped from the rendered email entirely — no
+  empty line, no stray punctuation. Verified in the Default Emails stories.
+- Populated: renders as a self-contained paragraph.
+- Unblocks `{{noncompliance_policy}}` in P0-6, which returns nothing until this exists.
+
+**Find it** — *Screens › Event Registration Settings* → **Configured** (populated)
+and **Default** (empty).
+
+---
+
+## How this folder is built
+
+Not a requirement, but it is what keeps the screens honest, and it is worth
+knowing before reviewing them.
+
+**Both Notification Preferences screens are one implementation.** The configured
+screen and First-Time Setup are the same product surface at two moments. The
+editor, its dialogs and all their state live in `_aug19np.js` and are imported by
+both, so Edit opens the same editor, Preview shows the same email and a test send
+behaves the same way. What stays in each story file is only what genuinely
+differs: the list, the starting data, and what "unsaved" means there.
+
+**Components are grouped by the screen they belong to**, mirroring *Screens* in
+the sidebar. Each component's docs states what it replaced on the original screen
+and, where review changed it, what came out and why — the itemisation lives next
+to the component rather than in a list that goes stale.
+
+Components inherited from DES-207 were **deleted** rather than carried along;
+they are unchanged there and were never Phase 2 work. Two were kept because they
+are: *Personalization Menu* (P0-6's merge-field list) and *Text Formatter*.
+
+---
+
+## Not addressed yet
+
+Listed so this page reflects the whole project, not only the finished parts.
+
+| Requirement | Status | Why not designed |
+| --- | --- | --- |
+| **P0-10** Recipient resolution | Backlog | Backend logic — resolving contacts and skipping invalid addresses. No UI surface beyond the Communications Log already showing recipients. |
+| **P1-2** Event-level comms dashboard (PipeSights) | Needs Spec | Not specced. All forecasting was deliberately kept out of P0-8 and reserved for this. |
+| **P2-1 … P2-6** | Backlog | Explicitly out of scope for v1 — open tracking, non-STP types, multi-language, WYSIWYG builder, enriched contacts, customer-created templates. |
+
+Five open questions also remain in *Needs Spec*, including the default template
+copy (DES-447) that P0-3 depends on, and the reporting strategy (DES-446) that
+shapes P1-2.
+
+---
+
+## Decisions worth reviewing
+
+Things where the design made a call rather than following the spec literally.
+
+| # | Decision | Why |
+| --- | --- | --- |
+| P0-4 | No type picker in the add dialog | Newer direction is unlimited compliance reminders, not a type choice. AC is stale. |
+| P0-5 | No event-level override | Event Manager and Support Contact already vary per event. |
+| P0-6 | Tokens insert as `{{event_name}}`, not a friendly name | Matches the spec's variable list verbatim; the literal token is shown in the menu so the mapping is visible. |
+| P0-9 | Dedicated communications log, not a general activity log | Recipients and Status are meaningless for note and reservation events. |
+| P1-1 | Test sends excluded from the log | The log's purpose is proving what a *team* was sent. |
+| P0-3 | Draft body copy written rather than left blank | Gives DES-447 something concrete to react to. Not approved copy. |
