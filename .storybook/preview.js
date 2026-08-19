@@ -101,6 +101,32 @@ const preview = {
                 'Team Detail',
               ],
             ],
+            // Aug 19 · full duplicate of Phase 2, taken at 55e7672, kept as a
+            // separate sandbox so edits there cannot disturb the delivered
+            // Phase 2 screens. Same internal ordering as Phase 2 above.
+            'Aug 19', [
+              'Requirements Coverage',
+              // Concepts sit above the built screens: they are the open
+              // questions, and burying them under the settled work is how they
+              // stop getting looked at.
+              'Concepts',
+              'First-Time Setup', [
+                'Notification Preferences',
+                'Default Emails',
+              ],
+              'Screens', [
+                'Notification Preferences',
+                'Company Settings',
+                'Event Registration Settings',
+                'Team Detail',
+              ],
+              'Components', [
+                'Notification Preferences',
+                'Company Settings',
+                'Event Registration Settings',
+                'Team Detail',
+              ],
+            ],
             'Multiple Secondary Fees', [
               'Requirements Coverage',
               // Screens first (the proposal), then the current-state baseline
