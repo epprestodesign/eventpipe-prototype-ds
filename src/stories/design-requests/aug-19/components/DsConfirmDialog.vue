@@ -1,13 +1,20 @@
 <script setup>
 // DsConfirmDialog — a focused confirm/deny dialog for a single decision
-// (revert, discard, delete…). Wraps Quasar QDialog + the DS `.ds-dialog`
-// styling so callers only supply copy. Set `destructive` to render the confirm
-// action in danger red; it's `persistent` by default so the choice is explicit.
+// (revert, discard, delete…). Set `destructive` to render the confirm action in
+// danger red; it's `persistent` by default so the choice is explicit.
+//
+// Shares its layout with DsDiscardChangesDialog via ds-dialog-shell.css
+// (2026-08-20). It used to carry the DS `.ds-dialog` treatment — bold title,
+// two full-width buttons, a solid red confirm — which sat beside the discard
+// dialog looking like a different product. Same box, same title weight, same
+// right-aligned text buttons now; the only thing that changes between them is
+// the colour of the committing action, which is the one thing that should.
 //
 //   <ds-confirm-dialog v-model="open" title="Revert to default template?"
 //     message="…" destructive confirm-label="Revert to default"
 //     cancel-label="Keep custom" @confirm="revert" />
 import { computed } from 'vue'
+import './ds-dialog-shell.css'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -31,17 +38,17 @@ function onConfirm () { emit('confirm'); open.value = false }
 
 <template>
   <q-dialog v-model="open" :persistent="persistent">
-    <q-card class="ds-dialog" role="alertdialog">
-      <h2 class="ds-dialog__title">{{ title }}</h2>
-      <div class="ds-dialog__body">
+    <q-card class="dsdlg" role="alertdialog">
+      <h2 class="dsdlg__title">{{ title }}</h2>
+      <div class="dsdlg__body">
         <slot name="body">{{ message }}</slot>
       </div>
-      <div class="ds-dialog__actions">
-        <q-btn unelevated no-caps class="ds-dialog__btn ds-btn--secondary" :label="cancelLabel" @click="onCancel" />
-        <q-btn
-          unelevated no-caps
-          class="ds-dialog__btn"
-          :class="destructive ? 'ds-btn--danger' : 'ds-btn--primary'"
+      <div class="dsdlg__actions">
+        <q-btn flat no-caps class="dsdlg__btn dsdlg__btn--cancel"
+          :label="cancelLabel" @click="onCancel" />
+        <q-btn flat no-caps
+          class="dsdlg__btn"
+          :class="destructive ? 'dsdlg__btn--danger' : 'dsdlg__btn--primary'"
           :label="confirmLabel"
           @click="onConfirm"
         />
@@ -49,18 +56,3 @@ function onConfirm () { emit('confirm'); open.value = false }
     </q-card>
   </q-dialog>
 </template>
-
-<style scoped>
-/* Un-bold the action buttons (Aug 19).
- *
- * .ds-dialog__btn in src/css/app.scss sets font-weight: 700 globally. That file
- * is shared with Phase 2 and the rest of the design system, so it is not touched
- * here — this scoped rule adds the component's data attribute to the selector,
- * which outranks the global one without changing anything outside this folder's
- * copy of the component.
- *
- * 500 rather than 400: it matches the weight Quasar gives every other q-btn on
- * these screens, so the confirm buttons stop being the only heavy text in the
- * dialog. */
-.ds-dialog__btn { font-weight: 500; }
-</style>

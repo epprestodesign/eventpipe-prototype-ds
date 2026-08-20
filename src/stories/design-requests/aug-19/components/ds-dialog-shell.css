@@ -1,0 +1,94 @@
+/* Shared dialog shell — Aug 19.
+ *
+ * ONE definition of the dialog layout, imported by both DsDiscardChangesDialog
+ * and DsConfirmDialog. They were going to carry the same metrics in two scoped
+ * blocks, which is how two dialogs end up 40px apart while both files claim to
+ * match. Anything about the box lives here; anything about a specific dialog's
+ * meaning lives in its component.
+ *
+ * Deliberately NOT scoped and deliberately prefixed `dsdlg-`. The design
+ * system's own `.ds-dialog` is styled globally in src/css/app.scss with
+ * full-width 700-weight buttons and is shared with Phase 2 — borrowing that
+ * class would mean fighting those rules here and risking a change that leaks
+ * outward. This prefix exists nowhere else.
+ */
+
+/* The doubled class is deliberate. Quasar ships
+   `.q-dialog__inner--minimized > div { max-width: 560px }`, which at (0,1,1)
+   outranks a single class — so a plain `.dsdlg` rule silently rendered at 560
+   while claiming 484. This file is not scoped (it is shared by two components),
+   so it cannot rely on a [data-v-…] attribute to win the way a scoped block
+   would. `.dsdlg.dsdlg` is (0,2,0) and takes it without !important. */
+.dsdlg.dsdlg {
+  width: 92vw;
+  /* 484, chosen from where the message wraps rather than by eye. At 16px the
+     reference's first line ("…Are you sure you want to") measures 408px and
+     adding "go" takes it to 430, so the content box has to sit in [408, 429] to
+     break in the same place — a card of [472, 493]. 484 is the middle of that
+     window, far enough from either edge that a font tweak will not silently
+     reflow it.
+
+     Note this is narrower than the design system's .ds-dialog, which renders at
+     560: its own `max-width: 460px` never applies, because Quasar's
+     `.q-dialog__inner--minimized > div` is more specific and overrides it. */
+  max-width: 484px;
+  padding: 32px;
+  border-radius: var(--ds-radius-md);
+  box-shadow: var(--ds-shadow-4, 0 24px 60px rgba(0, 0, 0, 0.25));
+  background: var(--ds-color-surface);
+}
+
+/* Regular weight, not bold. These dialogs ask a question; they do not announce
+   a failure, and bold at 24px reads as the latter. */
+.dsdlg__title {
+  margin: 0 0 12px;
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--ds-color-text);
+}
+
+.dsdlg__body {
+  margin: 0 0 24px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ds-color-text);
+}
+
+/* Right-aligned rather than two full-width halves: these are an answer to the
+   question above them, not two equal commitments competing for the width. */
+.dsdlg__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.dsdlg__btn {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--ds-radius-button);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+/* The dismissing action is plain text — it is the safe default, and it should
+   not compete with the one that actually does something. */
+.dsdlg__btn--cancel { color: var(--ds-color-text); }
+
+/* The committing action carries a soft tonal background. Two identical text
+   buttons side by side make you read both to work out which is which. Tonal
+   rather than filled: it earns emphasis, not alarm. Colour alone carries the
+   severity — blue for ordinary, red for destructive — so the two dialogs share
+   one button system instead of inventing a second. */
+.dsdlg__btn--primary {
+  color: var(--ds-color-text-brand);
+  /* --ds-color-text-brand at 10%. No subtle-brand surface token exists in this
+     system, so it is written out rather than hidden behind a var() fallback that
+     would never resolve. Worth promoting to a token if this spreads. */
+  background: rgba(37, 97, 250, 0.10);
+}
+.dsdlg__btn--danger {
+  color: var(--ds-color-text-danger);
+  background: var(--ds-color-background-danger);
+}

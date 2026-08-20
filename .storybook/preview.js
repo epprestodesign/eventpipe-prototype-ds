@@ -121,6 +121,9 @@ const preview = {
                 'Team Detail',
               ],
               'Components', [
+                // Shared first: it holds the reusable pieces the screen-specific
+                // groups below all draw on.
+                'Shared',
                 'Notification Preferences',
                 'Company Settings',
                 'Event Registration Settings',
