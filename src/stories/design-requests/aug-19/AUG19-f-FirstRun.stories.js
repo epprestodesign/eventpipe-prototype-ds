@@ -24,7 +24,7 @@ import DsRichTextEditor from './components/DsRichTextEditor.vue'
 import DsInfoGrid from './components/DsInfoGrid.vue'
 import {
   tieredRowActions, previewDialog, testSendDialog, addReminderDialog,
-  deleteTemplateDialog, restoreContentDialog, editorView, useTemplateEditor,
+  deleteTemplateDialog, restoreContentDialog, leaveTemplateDialog, editorView, useTemplateEditor,
   MAX_TIERS, tierAddRow,
 } from './_aug19np'
 
@@ -393,6 +393,7 @@ export const FirstRun = aug19Page({
     ${previewDialog}
     ${testSendDialog}
     ${deleteTemplateDialog}
-    ${restoreContentDialog}`,
+    ${restoreContentDialog}
+    ${leaveTemplateDialog}`,
 })
 FirstRun.parameters = { layout: 'fullscreen' }

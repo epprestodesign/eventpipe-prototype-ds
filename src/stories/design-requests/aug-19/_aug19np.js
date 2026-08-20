@@ -181,6 +181,21 @@ export const addReminderDialog = `
  * Mount it beside the other dialogs, outside the view switch — same reason as
  * deleteTemplateDialog below. It names the template and says plainly what is
  * lost, because "restore" on its own sounds recoverable and this is not. */
+/** "Leave template?" — the guard on the editor's Go Back link.
+ *
+ *  Same component as the other two confirmations in this folder, so an
+ *  irreversible choice always looks the same. Destructive styling because the
+ *  edits are gone once you leave; Cancel is the safe way out and comes first.
+ *
+ *  Mount OUTSIDE any v-if that switches views. */
+export const leaveTemplateDialog = `
+  <ds-confirm-dialog v-model="leaveOpen" title="Leave template?" destructive
+    confirm-label="Leave" cancel-label="Cancel" @confirm="confirmLeave">
+    <template #body>
+      Changes you made may not be saved.
+    </template>
+  </ds-confirm-dialog>`
+
 export const restoreContentDialog = `
   <ds-confirm-dialog v-model="restoreOpen" title="Restore the default template?" destructive
     confirm-label="Restore default" cancel-label="Keep my content" @confirm="confirmRestoreContent">
@@ -531,6 +546,30 @@ export function useTemplateEditor({
      * left to do on it. */
     goBack()
   }
+  /* Leaving with unsaved edits (2026-08-20).
+   *
+   * The save bar is easy to ignore — it sits at the bottom of the viewport while
+   * you are working at the top, and nothing stops you clicking Go Back straight
+   * past it. This catches that one case: dirty, and heading for the exit without
+   * having answered the bar.
+   *
+   * It is deliberately NOT a second warning for every exit. Save leaves through
+   * goBack directly, because it has just written the changes; Discard stays put;
+   * and deleting the template runs its own confirmation. Only the Go Back link
+   * routes through here, and only while something is actually pending. */
+  const leaveOpen = ref(false)
+  const requestGoBack = () => {
+    if (editorDirty.value) leaveOpen.value = true
+    else goBack()
+  }
+  /* Puts the fields back before leaving. Without this the editor would keep the
+   * abandoned edits in memory, and the save bar would be waiting on the next
+   * template you opened, blaming it for changes made somewhere else. */
+  const confirmLeave = () => {
+    discardEditorContent()
+    goBack()
+  }
+
   /* Discard puts the fields back and stays in the editor. It does NOT leave:
    * Discard answers "undo what I typed", and the Go back link above answers
    * "get me out of here". Collapsing the two would make one of them a surprise. */
@@ -699,6 +738,7 @@ export function useTemplateEditor({
     emailFor,
     view, editing, content, defaultContent, openEditor, goBack, isReminder,
     editorDirty, saveEditorContent, discardEditorContent, composeSaveBar,
+    leaveOpen, requestGoBack, confirmLeave,
     changeEditingMeta, testSendEditing, canChangeMeta, actionsOpen,
     restoreContent, restoreOpen, openRestoreContent, confirmRestoreContent,
     previewOpen, previewTarget, previewLive, showRaw, previewEmail, previewTitle,

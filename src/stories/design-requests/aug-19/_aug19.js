@@ -23,8 +23,12 @@ export const companyHeader = `
     </q-tabs>
   </div>`
 
+/* Calls requestGoBack, not goBack. Leaving the editor with unsaved edits asks
+ * first (2026-08-20); requestGoBack is the guarded version and falls straight
+ * through to goBack when there is nothing pending. goBack stays the raw action
+ * so saving — which has just written the changes — can leave without a prompt. */
 export const goBackLink = `
-  <a href="#" @click.prevent="goBack"
+  <a href="#" @click.prevent="requestGoBack"
     style="display:inline-flex; align-items:center; gap:2px; color:var(--ds-color-text-brand); text-decoration:none; font-weight:600; font-size:0.9375rem;">
     <q-icon name="chevron_left" size="18px" /> Go Back to Preferences
   </a>`
