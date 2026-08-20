@@ -14,13 +14,13 @@ import {
   FROM_ADDRESS_OPTIONS, FROM_ADDRESS_RESOLVED, EVENT, TM_DESC,
 } from './_aug19fixtures'
 import {
-  companyHeader, goBackLink, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
+  companyHeader, colHeaders, fromAddressSectionStrip, unsavedChangesBar,
   addReminderRow, customFromAddressError,
   LIST_TITLE_STYLE, COL_SEND, COL_TMPL, COL_HEAD,
 } from './_aug19'
 import {
   rowActions, tieredRowActions, previewDialog, testSendDialog,
-  addReminderDialog, deleteTemplateDialog, restoreContentDialog,
+  addReminderDialog, deleteTemplateDialog, restoreContentDialog, leaveTemplateDialog,
   emailSettings, editorView, useTemplateEditor,
   MAX_TIERS, tierAddRow,
 } from './_aug19np'
@@ -344,6 +344,7 @@ const makeBody = (variant) => `
     ${addReminderDialog}
     ${deleteTemplateDialog}
     ${restoreContentDialog}
+    ${leaveTemplateDialog}
   </div>
   <div v-show="tab === 'general'">${generalTab}</div>`
 
