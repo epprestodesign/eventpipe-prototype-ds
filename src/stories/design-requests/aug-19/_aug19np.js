@@ -181,20 +181,21 @@ export const addReminderDialog = `
  * Mount it beside the other dialogs, outside the view switch — same reason as
  * deleteTemplateDialog below. It names the template and says plainly what is
  * lost, because "restore" on its own sounds recoverable and this is not. */
-/** "Leave template?" — the guard on the editor's Go Back link.
+/** The guard on the editor's Go Back link.
  *
- *  Same component as the other two confirmations in this folder, so an
- *  irreversible choice always looks the same. Destructive styling because the
- *  edits are gone once you leave; Cancel is the safe way out and comes first.
+ *  Uses DsDiscardChangesDialog, not DsConfirmDialog. The two answer different
+ *  questions: DsConfirmDialog is for something irreversible you asked for
+ *  (delete, restore) and shouts accordingly; this is for navigating away with
+ *  work in progress, where nothing has gone wrong and nothing is being
+ *  destroyed. Dressing an ordinary Back click as a delete confirmation
+ *  overstated it.
+ *
+ *  All copy is the component's default, so every discard-changes prompt in the
+ *  folder reads identically.
  *
  *  Mount OUTSIDE any v-if that switches views. */
 export const leaveTemplateDialog = `
-  <ds-confirm-dialog v-model="leaveOpen" title="Leave template?" destructive
-    confirm-label="Leave" cancel-label="Cancel" @confirm="confirmLeave">
-    <template #body>
-      Changes you made may not be saved.
-    </template>
-  </ds-confirm-dialog>`
+  <ds-discard-changes-dialog v-model="leaveOpen" @confirm="confirmLeave" />`
 
 export const restoreContentDialog = `
   <ds-confirm-dialog v-model="restoreOpen" title="Restore the default template?" destructive

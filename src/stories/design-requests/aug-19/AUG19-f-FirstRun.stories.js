@@ -19,6 +19,7 @@ import DsSectionHeader from './components/DsSectionHeader.vue'
 import DsSelect from './components/DsSelect.vue'
 import DsInput from './components/DsInput.vue'
 import DsConfirmDialog from './components/DsConfirmDialog.vue'
+import DsDiscardChangesDialog from './components/DsDiscardChangesDialog.vue'
 import DsField from './components/DsField.vue'
 import DsRichTextEditor from './components/DsRichTextEditor.vue'
 import DsInfoGrid from './components/DsInfoGrid.vue'
@@ -148,7 +149,7 @@ const seededList = `
 export const FirstRun = aug19Page({
   active: 'none',
   components: {
-    DsListItem, DsSectionHeader, DsSelect, DsInput, DsConfirmDialog, DsField,
+    DsListItem, DsSectionHeader, DsSelect, DsInput, DsConfirmDialog, DsDiscardChangesDialog, DsField,
     DsRichTextEditor, DsInfoGrid,
   },
   setup: () => {

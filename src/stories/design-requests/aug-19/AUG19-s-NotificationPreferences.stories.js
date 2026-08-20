@@ -30,6 +30,7 @@ import DsListItem from './components/DsListItem.vue'
 import DsSectionHeader from './components/DsSectionHeader.vue'
 import DsInfoGrid from './components/DsInfoGrid.vue'
 import DsConfirmDialog from './components/DsConfirmDialog.vue'
+import DsDiscardChangesDialog from './components/DsDiscardChangesDialog.vue'
 import DsField from './components/DsField.vue'
 import DsInput from './components/DsInput.vue'
 import DsSelect from './components/DsSelect.vue'
@@ -427,7 +428,7 @@ function sectionsFromArgs(args = {}, added = [], sendEdits = {}, metaEdits = {})
   })
 }
 
-const COMPONENTS = { DsListItem, DsSectionHeader, DsInfoGrid, DsConfirmDialog, DsField, DsInput, DsSelect, DsRichTextEditor }
+const COMPONENTS = { DsListItem, DsSectionHeader, DsInfoGrid, DsConfirmDialog, DsDiscardChangesDialog, DsField, DsInput, DsSelect, DsRichTextEditor }
 const SETTINGS_SECTIONS = [...COMPANY_SECTIONS_TOP, { title: 'Reconciliation & Invoice Settings', items: COMPANY_RECON }, ...COMPANY_SECTIONS_BOTTOM]
 
 const makeStory = (variant) => aug19Page({
