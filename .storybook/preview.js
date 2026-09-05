@@ -143,10 +143,20 @@ const preview = {
               'References',
             ],
             'Sept 4', [
+              'Introduction',
               'Requirements Coverage',
+              // Concepts sit above the built screens — they are the open
+              // questions, and burying them under settled work is how they stop
+              // getting looked at. Same reasoning as Aug 19.
+              'Concepts',
               'Screens', [
                 '01 · Edit Event — Email Settings',
                 '02 · Registration Settings',
+              ],
+              // Components in the order of the screens they belong to.
+              'Components', [
+                'Email Settings',
+                'Registration Settings',
               ],
               'References',
             ],

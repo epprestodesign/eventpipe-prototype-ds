@@ -222,3 +222,41 @@ export const eventHeader = `
       <q-tab v-for="t in evt.tabs" :key="t" :name="t.toLowerCase().replace(/ /g,'-')" :label="t" />
     </q-tabs>
   </div>`
+
+/* ---------------------------------------------------------------------------
+ * The company's Teams Management templates, worded as in the 09/04 capture.
+ * Shared by the Registration Settings screen and the Communications Card
+ * component story so the two can't drift.
+ * ------------------------------------------------------------------------- */
+export const TM_TEMPLATES = [
+  {
+    key: 'previously-compliant',
+    title: 'Previously Compliant Notice',
+    desc: 'Sent when a team that had met its goal drops back below it — usually after a cancellation. Sends once and if they remain non-compliant then compliance reminder emails take over.',
+    on: false,
+  },
+  {
+    key: 'compliance-reminder',
+    title: 'Compliance Reminder',
+    desc: 'The recurring nudge for teams. Runs on a cadence and date range you set relative to the event start. Intended for non-compliant teams. Add tiers to shift your tone, frequency, or audience as the event draws closer.',
+    on: false,
+  },
+  {
+    key: 'welcome',
+    title: 'Welcome Email',
+    desc: 'Sent once per team per event. Establishes that the event is Stay-to-Play and points the team at the booking link. Intended for teams traveling to the event with a compliance requirement.',
+    on: true,
+  },
+]
+
+/** The four Email Settings rows that exist today, in production order. */
+export const EXISTING_EMAIL_ROWS = [
+  { key: 'preArrival', label: 'Pre Arrival', value: 0, enabled: false,
+    tooltip: 'When enabled, a pre-arrival email is sent to guests the number of days prior to check-in specified.' },
+  { key: 'resReminder', label: 'Reservation Reminder', value: 45, enabled: true, caption: 'Sat, 10/17/2026',
+    tooltip: 'When enabled, a reminder is sent to guests who have not yet booked, the number of days prior to the event specified.' },
+  { key: 'depositReminder', label: 'Deposit Reminder', value: 5, enabled: true,
+    tooltip: 'When enabled, a reminder is sent the number of days before the deposit is due.' },
+  { key: 'hotelVerification', label: 'Hotel User Verification', value: 45, enabled: true, caption: 'Prior to the first hotel cutoff date',
+    tooltip: 'When enabled, a verification email will be sent to hotel users the number of days prior to the first hotel cutoff specified. This email will verify the user is still involved with your event at the hotel and the level of access they will need.' },
+]

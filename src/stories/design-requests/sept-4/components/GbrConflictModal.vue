@@ -32,8 +32,13 @@ const props = defineProps({
   interval: { type: [Number, String], default: 3 },
   /** How many compliance reminder tiers include group block contacts. */
   tiers: { type: Number, default: 1 },
+  /** What the X and Escape do — see Concepts › Modal Dismiss Behavior.
+   *  'save'   (PP-44 as written) completes the save with both left on
+   *  'cancel' abandons the save and returns to the dirty page
+   *  'none'   removes the X entirely, forcing the choice between the buttons */
+  dismissMode: { type: String, default: 'save' },
 })
-const emit = defineEmits(['update:modelValue', 'turn-off-and-save', 'save-anyway'])
+const emit = defineEmits(['update:modelValue', 'turn-off-and-save', 'save-anyway', 'cancel'])
 
 const open = computed({
   get: () => props.modelValue,
@@ -52,7 +57,7 @@ const tierText = computed(() => (props.tiers === 1 ? '1 compliance reminder tier
    with both reminder types left on"), so the X is wired to the same handler as
    Save with both on rather than to a silent close. */
 function dismiss() {
-  emit('save-anyway')
+  emit(props.dismissMode === 'cancel' ? 'cancel' : 'save-anyway')
   open.value = false
 }
 function turnOff() {
@@ -71,8 +76,8 @@ function saveAnyway() {
       <div class="gbrm__head">
         <q-icon name="notifications_active" size="22px" class="gbrm__icon" />
         <div class="gbrm__title">Group block creators will get two sets of reminders</div>
-        <q-btn flat round dense icon="close" size="sm" class="gbrm__x" @click="dismiss">
-          <q-tooltip>Save with both on</q-tooltip>
+        <q-btn v-if="dismissMode !== 'none'" flat round dense icon="close" size="sm" class="gbrm__x" @click="dismiss">
+          <q-tooltip>{{ dismissMode === 'cancel' ? 'Close without saving' : 'Save with both on' }}</q-tooltip>
         </q-btn>
       </div>
 

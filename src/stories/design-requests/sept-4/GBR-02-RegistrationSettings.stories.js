@@ -17,8 +17,9 @@
  *  shared state between screens — the modal reports what it did and stops there.
  */
 import { reactive, ref, computed } from 'vue'
-import { gbrPage, eventHeader, EVENT, DEFAULT_INTERVAL, hasReminderConflict } from './_gbr'
+import { gbrPage, eventHeader, EVENT, DEFAULT_INTERVAL, hasReminderConflict, TM_TEMPLATES } from './_gbr'
 import GbrConflictModal from './components/GbrConflictModal.vue'
+import GbrCommunicationsCard from './components/GbrCommunicationsCard.vue'
 
 export default {
   title: 'Design Requests/Sept 4/Screens/02 · Registration Settings',
@@ -33,26 +34,6 @@ const CARD = 'margin-bottom:20px;'
 const CARD_BODY = 'padding:28px 32px;'
 const SECTION_TITLE = 'color:var(--ds-color-background-brand-bold); font-size:1.125rem; font-weight:500; margin-bottom:20px;'
 const COL = 'max-width:320px;'
-
-/** The company's Teams Management templates, worded as in the capture.
- *  Deliberately not exported: every export in a stories file becomes a story. */
-const TM_TEMPLATES = [
-  {
-    key: 'previously-compliant',
-    title: 'Previously Compliant Notice',
-    desc: 'Sent when a team that had met its goal drops back below it — usually after a cancellation. Sends once and if they remain non-compliant then compliance reminder emails take over.',
-  },
-  {
-    key: 'compliance-reminder',
-    title: 'Compliance Reminder',
-    desc: 'The recurring nudge for teams. Runs on a cadence and date range you set relative to the event start. Intended for non-compliant teams. Add tiers to shift your tone, frequency, or audience as the event draws closer.',
-  },
-  {
-    key: 'welcome',
-    title: 'Welcome Email',
-    desc: 'Sent once per team per event. Establishes that the event is Stay-to-Play and points the team at the booking link. Intended for teams traveling to the event with a compliance requirement.',
-  },
-]
 
 const checkRow = (label, model, tooltip = '') => `
   <div style="margin-bottom:14px;">
@@ -111,38 +92,14 @@ const compliance = `
     </q-card-section>
   </q-card>`
 
-/* Communications — the card whose Compliance Reminder toggle is half of the
-   conflict. The group-block-contacts note under that row is new: it is the one
-   condition of the three a user cannot see from this screen, and without it the
-   modal arrives from nowhere. It reads only when the company config has it on. */
+/* Communications — now the documented component (Components › Registration
+   Settings › Communications Card), so the screen and the component story cannot
+   drift. Hidden until Compliance Tracking is ticked, exactly like Compliance. */
 const communications = `
-  <q-card v-if="f.complianceTracking" flat bordered style="${CARD}">
-    <q-card-section style="${CARD_BODY}">
-      <div style="${SECTION_TITLE}">Communications</div>
-      <div style="color:var(--ds-color-text); line-height:1.5; max-width:780px; margin:-10px 0 4px;">
-        These are your company's Teams Management templates. Switching one off here only stops it
-        sending <strong>for this event</strong> — the content itself is edited globally, in
-        <strong>Company Settings &rsaquo; Notifications</strong>.
-      </div>
-      <div style="max-width:780px;">
-        <div v-for="(t, ti) in templates" :key="t.key">
-          <q-separator v-if="ti" />
-          <div class="row items-center no-wrap" style="padding:14px 0; gap:24px;">
-            <div style="flex:1; min-width:0;">
-              <div style="font-weight:700; color:var(--ds-color-text);">{{ t.title }}</div>
-              <div style="font-size:0.875rem; color:var(--ds-color-text-subtle); line-height:1.45; margin-top:2px;">{{ t.desc }}</div>
-              <div v-if="t.key === 'compliance-reminder' && recipientsIncludeGroupBlockContacts"
-                style="font-size:0.8125rem; color:var(--ds-color-text-subtle); margin-top:6px;">
-                <q-icon name="groups" size="15px" class="q-mr-xs" />
-                Recipients for {{ tiers }} {{ tiers === 1 ? 'tier' : 'tiers' }} include <strong>group block contacts</strong>.
-              </div>
-            </div>
-            <q-toggle v-model="t.on" color="primary" style="flex:none;" :aria-label="'Send ' + t.title + ' for this event'" />
-          </div>
-        </div>
-      </div>
-    </q-card-section>
-  </q-card>`
+  <gbr-communications-card v-if="f.complianceTracking" style="display:block; margin-bottom:20px;"
+    :templates="templates"
+    :recipients-include-group-block-contacts="recipientsIncludeGroupBlockContacts"
+    :tiers="tiers" />`
 
 const registrationManagement = `
   <q-card flat bordered style="${CARD}">
@@ -192,7 +149,7 @@ function state({ complianceReminderOn = false, groupBlockRemindersOn = true, rec
   })
   const templates = reactive(TM_TEMPLATES.map((t) => ({
     ...t,
-    on: t.key === 'welcome' ? true : (t.key === 'compliance-reminder' ? complianceReminderOn : false),
+    on: t.key === 'compliance-reminder' ? complianceReminderOn : t.on,
   })))
   const modalOpen = ref(openOnLoad)
   const toast = ref('')
@@ -230,7 +187,7 @@ function state({ complianceReminderOn = false, groupBlockRemindersOn = true, rec
 }
 
 const story = (opts) => gbrPage({
-  components: { GbrConflictModal },
+  components: { GbrConflictModal, GbrCommunicationsCard },
   setup: () => state(opts),
   slot: SLOT,
 })
