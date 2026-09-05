@@ -75,14 +75,6 @@ editor's **Actions** menu is bound with \`v-model\` so its items can do the same
 
 const email = DEFAULT_EMAILS.find((e) => e.key === 'compliance-reminder')
 
-const testSendNote = `
-  <div class="row items-start no-wrap" style="gap:6px; line-height:1.45;
-    font-size:0.75rem; color:var(--ds-color-text-subtle);">
-    <q-icon name="info" size="14px" style="margin-top:1px; flex:none;" />
-    <span>Test sends go to this address only and are <b>not</b> recorded in a team's
-      Communications Log — that log is the record of automated sends.</span>
-  </div>`
-
 const previewSetup = (raw) => ({
   components: { DsInput },
   setup: () => {

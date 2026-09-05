@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import { mergeConfig } from 'vite'
 import { quasar } from '@quasar/vite-plugin'
+import remarkGfm from 'remark-gfm'
 
 const quasarVariables = fileURLToPath(
   new URL('../src/css/quasar.variables.scss', import.meta.url)
@@ -12,7 +13,22 @@ const config = {
     '../src/**/*.mdx',
     '../src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
-  addons: ['@storybook/addon-themes', '@storybook/addon-docs'],
+  addons: [
+    '@storybook/addon-themes',
+    {
+      // MDX ships without GFM, so every markdown TABLE in a .mdx file rendered
+      // as raw `| --- |` pipes — the Getting Started pages and every design
+      // request's coverage doc included. remark-gfm restores tables (plus
+      // strikethrough, task lists and autolinks). Docblock markdown inside
+      // .stories.js was never affected; Storybook renders that separately.
+      name: '@storybook/addon-docs',
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: { remarkPlugins: [remarkGfm] },
+        },
+      },
+    },
+  ],
   framework: {
     name: '@storybook/vue3-vite',
     options: {},

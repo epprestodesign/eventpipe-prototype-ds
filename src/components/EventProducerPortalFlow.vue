@@ -35,7 +35,6 @@ const props = defineProps({
 const EVENT = '2027 - CHEERSPORT Nationals - Atlanta'
 const USER = 'Mike Addesa'
 const SHARED_EMAIL = 'staff@teamtravelsource.com'
-const VENUE = 'Georgia World Congress Center'
 
 const HOTELS = [
   { name: 'Omni Atlanta Hotel at CNN Center', addr: '100 CNN Center, Atlanta, GA', dist: '0.2 miles from Georgia World Congress Center', cutoff: 'Fri, 01/22/2027', comp: 0, contracted: 90, booked: 0, held: 0 },
@@ -191,7 +190,6 @@ const colOn = reactive({ ...DEFAULT_ON })
 const shownCols = computed(() => COLS.filter((c) => colOn[c.key]))
 const selectAllCols = () => COLS.forEach((c) => { colOn[c.key] = true })
 const clearAllCols = () => COLS.forEach((c) => { colOn[c.key] = false })
-const EDITABLE = new Set(['name', 'email']) // V1: only name + email are editable
 const COL_STORE = 'epp-cols'
 try {
   const saved = JSON.parse(sessionStorage.getItem(COL_STORE) || 'null')

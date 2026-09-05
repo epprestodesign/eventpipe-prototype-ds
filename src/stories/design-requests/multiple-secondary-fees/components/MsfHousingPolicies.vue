@@ -52,6 +52,10 @@ function edit() {
 function cancel() {
   if (snapshot) {
     Object.assign(form, snapshot.form)
+    // `fees` is a reactive array the parent owns, and this component is
+    // documented as editing it in place; restoring the snapshot is the other
+    // half of that same contract, not an accidental write.
+    // eslint-disable-next-line vue/no-mutating-props
     snapshot.fees.forEach((fee, i) => Object.assign(props.fees[i], fee))
   }
   mode.value = 'view'

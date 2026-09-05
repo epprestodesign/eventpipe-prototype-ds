@@ -5,7 +5,7 @@
 // clearable, and searchable (use-input) modes.
 import DsField from './DsField.vue'
 
-const props = defineProps({
+defineProps({
   modelValue: { type: [String, Number, Array, Object], default: null },
   options: { type: Array, default: () => [] },
   label: { type: String, default: '' },

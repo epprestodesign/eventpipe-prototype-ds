@@ -23,6 +23,28 @@ pnpm storybook          # dev gallery at http://localhost:6006
 pnpm build-storybook    # static build → storybook-static/
 ```
 
+## Checks
+
+```bash
+pnpm lint               # ESLint (flat config) — Vue 3 + TS-aware
+pnpm lint:fix           # …and apply the safe fixes
+pnpm test               # Vitest — unit tests for the pure logic behind each design request
+pnpm test:stories       # render EVERY story in a browser; fail on blank or console error
+pnpm verify             # lint + test + build-storybook
+```
+
+`pnpm test:stories` needs a Storybook to point at — either `pnpm storybook` in
+another terminal, or `--url` against a built one. It exists because nearly every
+screen here is a **runtime-compiled Vue template string**: a typo produces no
+build error, so the story just renders blank. Rendering each one is the only way
+to catch that, and it is what CI runs on every PR
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+
+```bash
+pnpm test:stories --filter sept-4          # just one folder
+pnpm test:stories --url http://localhost:6008
+```
+
 ## Design tokens & theming
 A 3-tier token pipeline — change the brand in one place and every component reskins:
 
@@ -60,7 +82,8 @@ The sidebar is ordered the way product & design think (set in `.storybook/previe
   Event Companies, Companies, Requests, Admin Tools, Pipe Tools, Webhooks,
   Company Settings.
 - **Design Requests** — ticket-scoped design work: Teams Mgmt Comms (Phase 1 &
-  2), DES-95 Customized Page Revamp, and Multiple Secondary Fees (DES-451/452/456).
+  2), Aug 19, DES-95 Customized Page Revamp, Multiple Secondary Fees
+  (DES-451/452/456), and Sept 4 — Group Block Reminder Controls (PP-42/43/44).
 
 > A story's sidebar placement comes from its `title` (e.g. `Components/Forms/Input`),
 > not its source folder.

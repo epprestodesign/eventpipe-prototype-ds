@@ -6,7 +6,7 @@
 import { ref } from 'vue'
 import DsSearch from './DsSearch.vue'
 
-const props = defineProps({
+defineProps({
   org: { type: String, default: 'Team Travel Source' },
   orgs: { type: Array, default: () => ['Team Travel Source', 'Global Sports Group', 'Summit Events Co.'] },
   user: { type: String, default: 'Mike Addesa' },

@@ -50,7 +50,7 @@ async function commit(token, args) {
 const h = React.createElement
 
 function Panel() {
-  const [args, updateArgs, resetArgs] = useArgs()
+  const [args, , resetArgs] = useArgs()
   const [token, setToken] = useState(readToken)
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState(null) // { msg, ok }

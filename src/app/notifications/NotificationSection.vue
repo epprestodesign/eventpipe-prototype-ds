@@ -5,7 +5,7 @@
 import NotificationRow from './NotificationRow.vue'
 import type { NotificationGroup } from './useNotificationPreferences'
 
-const props = defineProps<{ group: NotificationGroup }>()
+defineProps<{ group: NotificationGroup }>()
 
 const emit = defineEmits<{
   'update:send': [index: number, value: boolean]

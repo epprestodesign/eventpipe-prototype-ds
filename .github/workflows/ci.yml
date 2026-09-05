@@ -1,0 +1,49 @@
+# Lint, unit tests, build, and a smoke test of every story.
+#
+# The smoke test is the one that matters most here: almost every screen in this
+# repo is a runtime-compiled Vue template string, so a typo produces no build
+# error — the story just renders blank. Only actually rendering catches it.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build Storybook
+        run: pnpm build-storybook
+
+      - name: Install Chromium for the story smoke test
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Smoke-test every story
+        run: |
+          python3 -m http.server 6006 --directory storybook-static &
+          for i in $(seq 1 60); do
+            curl -sf -o /dev/null http://localhost:6006/index.json && break
+            sleep 1
+          done
+          node scripts/smoke-stories.mjs --url http://localhost:6006

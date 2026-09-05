@@ -35,7 +35,7 @@ than staying pinned to the top, so the two never separate. See **With error**.
 ` } } },
 }
 
-const row = (props, slots = {}) => ({
+const row = (props) => ({
   components: { GbrSettingRow },
   setup: () => ({ v: ref(props.modelValue ?? 3), on: ref(props.enabled ?? true), props }),
   template: `
