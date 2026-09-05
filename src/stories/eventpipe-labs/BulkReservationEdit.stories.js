@@ -279,6 +279,7 @@ export const BulkEdit = {
       // Confirm Changes → progress → Results.
       const moving = ref(false)
       const movedRows = ref([])
+      // eslint-disable-next-line no-unused-vars -- bound in the template string below (@click="confirmChanges")
       const confirmChanges = () => {
         movedRows.value = picked.value.map((r) => ({ ...r }))
         moving.value = true

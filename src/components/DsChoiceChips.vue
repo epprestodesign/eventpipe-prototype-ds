@@ -5,14 +5,13 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  modelValue: { default: undefined },
+  modelValue: { type: [Array, String, Number, Boolean, Object], default: undefined },
   options: { type: Array, default: () => [] },
   multiple: { type: Boolean, default: true },
 })
 const emit = defineEmits(['update:modelValue'])
 
 const norm = computed(() => props.options.map((o) => (typeof o === 'object' ? o : { value: o, label: String(o) })))
-const selected = computed(() => (props.multiple ? (props.modelValue || []) : props.modelValue))
 const isOn = (v) => (props.multiple ? (props.modelValue || []).includes(v) : props.modelValue === v)
 const toggle = (v) => {
   if (props.multiple) {

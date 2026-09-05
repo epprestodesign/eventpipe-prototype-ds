@@ -427,6 +427,33 @@ body {
 /* DES-95 expandable-section (accordion) header — blue + bold, section-title size. */
 .des95-acc__hdr { color: var(--ds-color-text-brand); font-weight: 700; font-size: 1.0625rem; }
 
+/* Group Block Reminder Controls (Sept 4 / PP-42·43·44) — Edit Event section
+   accordion header, the Email Settings row anatomy, and the sticky unsaved-
+   changes bar from the capture. Scoped to this design request so tuning it
+   cannot move the other folders. */
+.gbr-acc__hdr { color: var(--ds-color-text-brand); font-weight: 500; font-size: 1.125rem; padding: 14px 22px; }
+.gbr-em__label { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8125rem; color: var(--ds-color-text-subtle); margin-bottom: 6px; }
+.gbr-em__info { color: var(--ds-color-icon-subtle); cursor: help; }
+.gbr-em__caption { font-size: 0.75rem; color: var(--ds-color-text-subtle); margin-top: 4px; }
+.gbr-concept__h {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--ds-color-text-subtle); margin-bottom: 12px;
+}
+.gbr-toast {
+  position: sticky; top: 12px; z-index: 5; width: fit-content; margin: 0 auto 14px;
+  background: var(--ds-color-background-success-bold, #21ba45); color: #fff; font-weight: 600;
+  padding: 10px 22px; border-radius: var(--ds-radius-md); box-shadow: var(--ds-shadow-card);
+}
+.gbr-fade-enter-active, .gbr-fade-leave-active { transition: opacity var(--ds-duration-fast, 150ms) ease; }
+.gbr-fade-enter-from, .gbr-fade-leave-to { opacity: 0; }
+.gbr-savebar {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px;
+  background: var(--ds-color-text); color: #fff;
+  padding: 8px 10px 8px 18px; border-radius: var(--ds-radius-md);
+  box-shadow: var(--ds-shadow-card); font-size: 0.875rem; z-index: 3;
+}
+
 /* Multiple Secondary Fees (DES-451/452) — the Edit Contracted Event section
    accordion header. Same shape as the DES-95 one, kept separate so tuning one
    design request can't move the other. */

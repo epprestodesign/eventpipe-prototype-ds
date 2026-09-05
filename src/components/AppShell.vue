@@ -6,11 +6,11 @@
 // an elevated white panel (--ds-shadow-2, level 2). Default slot = page content.
 //
 // The logo SVG is inlined (?raw) so the dark "event" wordmark can be recolored to
-// white for the navy sidebar while the teal mark/​"pipe" stay on-brand.
+// white for the navy sidebar while the teal mark/"pipe" stay on-brand.
 import logoSvg from '../assets/logo/eventpipe-logo.svg?raw'
 import AppBar from './AppBar.vue'
 
-const props = defineProps({
+defineProps({
   // Nav items: { key, label, icon (Material Icons name) }
   items: {
     type: Array,

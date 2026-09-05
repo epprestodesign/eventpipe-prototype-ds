@@ -5,7 +5,7 @@
 import DsListItem from '../../components/DsListItem.vue'
 import type { NotificationTemplate } from './useNotificationPreferences'
 
-const props = defineProps<{ template: NotificationTemplate }>()
+defineProps<{ template: NotificationTemplate }>()
 
 const emit = defineEmits<{
   'update:send': [value: boolean]

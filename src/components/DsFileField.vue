@@ -9,7 +9,7 @@
 import { ref } from 'vue'
 import DsField from './DsField.vue'
 
-const props = defineProps({
+defineProps({
   modelValue: { type: [Object, Array], default: null }, // File | File[] | null
   // DsField anatomy
   label: { type: String, default: '' },

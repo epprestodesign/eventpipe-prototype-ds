@@ -191,7 +191,6 @@ const openWizard = () => { rows.forEach((r) => { r.pick = false; r.sel = false }
 const closeWizard = () => { screen.value = 'list'; tab.value = 'reservations'; resetPage() }
 const goEdit = () => { if (pickedCount.value) { rows.forEach((r) => { r.sel = r.pick }); step.value = 2; resetPage() } }
 const backToSelect = () => { step.value = 1; resetPage() }
-const finishToResults = () => { screen.value = 'results'; tab.value = 'reservations'; resetPage() }
 const viewChanges = () => { screen.value = 'activity'; tab.value = 'activity-logs'; resetPage() }
 // Clicking the event tabs switches the body: Activity Logs → activity, Reservations
 // → the list. Other (unimplemented) tabs snap back to the current screen's tab.
