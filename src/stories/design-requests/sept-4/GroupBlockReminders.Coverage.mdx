@@ -1,0 +1,121 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Design Requests/Sept 4/Requirements Coverage" />
+
+# Requirements Coverage
+
+Concepts for [Group Block Reminder Controls](https://linear.app/eventpipe/project/group-block-reminder-controls-906d7f0e4189),
+from Scott's 09/04 Loom, *Group Block Reminders UI and Modal*.
+
+> Scott: "it consists of two pretty simple UI changes."
+
+Everything here is a working prototype — flip the toggle, type an invalid
+interval, press Save and watch the modal fire.
+
+| Ticket | Requirement | Where |
+| --- | --- | --- |
+| **PP-42 · GBR-1** | Event-level group block reminder toggle | Screens › 01 · Edit Event — Email Settings |
+| **PP-43 · GBR-3** | Days between reminders | Screens › 01 · Edit Event — Email Settings |
+| **PP-44 · GBR-2** | Compliance / group block conflict modal | Screens › 02 · Registration Settings |
+| PP-45 · GBR-4 | PipeSights columns | **Not designed** — Sigma reporting, owned separately |
+
+One event throughout, the one Scott demos with: **Team Travel Source (TTS)** /
+**2026 - Scott-O Invitational Showdown** / Atlanta, GA / 3STEP Sports - 3D
+Lacrosse. The Events list and event record are rebuilt under **References** so
+the two changed screens can be seen where they actually live.
+
+---
+
+## 01 · Email Settings — the new row
+
+**Asked for** — "There's no current setting for group block reminders, but
+there needs to be a setting for that. There should be an on-off toggle, just
+like this. And then there should be a setting for interval between reminders."
+
+**Designed** — a fifth row in Email Settings built from the parts already on
+that screen: label + ⓘ, a number field with a `Days` suffix, a toggle on the
+right, a caption underneath. Four rows already read that way; a fifth that
+didn't would look bolted on.
+
+Scott named all three pieces of copy, and they are used as given:
+
+- **Title** — Group Block Reminders
+- **Caption** — Interval between each reminder
+- **ⓘ** — "When on, the person who created a group block gets a reminder 2 days
+  after the block opens, then every 3 days until the block's release date. The
+  group block confirmation email sends either way."
+
+Two things the tooltip does deliberately. It **states the interval currently
+set** rather than saying "every N days" — the value is in the field beside it,
+so echoing it makes the sentence answerable instead of abstract; set the field
+to 14 and the tooltip says 14. And it carries the **confirmation-email
+exception** from PP-42 ("The group block confirmation email sends regardless of
+toggle state"), because the natural reading of an off switch is that group block
+email stops entirely.
+
+**Placement** — appended after Hotel User Verification, at the end of the
+section. It is the newest setting and the least related to the four guest/hotel
+reminders above it, so the end is where it disturbs least.
+
+**Off state** — the interval field stays visible and disabled rather than
+disappearing. Pre Arrival sits switched off on this same screen with its field
+still on screen; hiding this one would make the row jump and hide the value the
+user is about to come back to.
+
+**Validation (PP-43)** — positive integers only. Zero, negatives, decimals,
+text and empty are each rejected inline, and both Save buttons disable while the
+error stands. See *Proposed · invalid interval*.
+
+## 02 · Registration Settings — the conflict modal
+
+**Asked for** — "when you turn that on and you save settings, the system's
+going to check a few things, and if they're all set a certain way, then a modal
+should pop up… warning the user: hey, you have compliance reminders and group
+block reminders turned on for this event… I think we should say it's recommended
+that you turn off group block reminders. And then there's an option to turn off
+group block reminders and continue with the save, or save without changing."
+
+**Designed** — an advisory modal on Save, raised only when all three PP-44
+conditions hold. The trigger lives in one function, `hasReminderConflict()`, so
+the screens can't drift from the ticket.
+
+Three decisions in the modal:
+
+- **It names who is affected.** "Group block creators will get two sets of
+  reminders" is the consequence; "you have two settings on" is only the cause.
+  The cause is stated underneath, because the user still has to know which two
+  things to change.
+- **It shows the real overlap** — the tier count and the configured interval —
+  rather than a generic warning. Deciding whether this matters means knowing
+  whether it is two emails or nine.
+- **Neither button is a cancel, and neither is red.** Both save. They differ
+  only in what gets saved, and the recommended one is primary. Advisory means
+  advisory.
+
+**Not simulated, on Scott's instruction** — the primary action turning off the
+toggle over on Email Settings. "You don't have to simulate that. I just need a
+mock of this page." So no state is shared between the two screens; the modal
+reports what it did and stops. (PP-44's AC does require the two to stay in sync
+in the build.)
+
+---
+
+## Open questions
+
+1. **The X dismisses into a save.** PP-44 says "Secondary action, **or
+   dismissing the modal**, completes the save with both reminder types left on",
+   so that is what is built — but an X that commits a write is not what an X
+   usually means, and a user hitting Escape has not knowingly chosen "both on".
+   Worth confirming before build; making the X a true cancel that returns to the
+   unsaved page would cost nothing in the flow.
+2. **Placement of the new row** — end of Email Settings, per above. If group
+   block settings should instead cluster near other group block controls
+   elsewhere in event settings, that's a different placement and worth saying now.
+3. **Interval bounds.** PP-43 sets a floor of 1 day and no ceiling. A 365-day
+   interval is valid input that silently means "no reminders". Worth a soft cap
+   or a warning?
+4. **Existing blocks when the interval changes.** PP-43 says the next reminder
+   is "the last one sent plus the new interval". Nothing in the UI says this, so
+   a Hoco shortening the interval mid-event can't tell when the next send lands.
+   A computed `next reminder: <date>` line under the field would answer it — not
+   built, since it wasn't asked for.

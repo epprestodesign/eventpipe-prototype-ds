@@ -142,6 +142,14 @@ const preview = {
               ],
               'References',
             ],
+            'Sept 4', [
+              'Requirements Coverage',
+              'Screens', [
+                '01 · Edit Event — Email Settings',
+                '02 · Registration Settings',
+              ],
+              'References',
+            ],
             'DES-95 Customized Page Revamp', [
               'Customized Event Site Edits 072426',
               'References', [
