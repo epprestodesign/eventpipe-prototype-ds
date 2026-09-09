@@ -14,7 +14,7 @@ import hotelA from '../../../assets/hotel/exterior.jpg'
 import hotelB from '../../../assets/hotel/lobby.jpg'
 
 export default {
-  title: 'Design Requests/Sept 4/References/Context Screens',
+  title: 'Design Requests/GB Reminder Controls/References/Context Screens',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

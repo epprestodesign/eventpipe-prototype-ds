@@ -7,7 +7,7 @@ import { ref } from 'vue'
 import GbrConflictModal from './components/GbrConflictModal.vue'
 
 export default {
-  title: 'Design Requests/Sept 4/Components/Registration Settings/Conflict Modal',
+  title: 'Design Requests/GB Reminder Controls/Components/Registration Settings/Conflict Modal',
   component: GbrConflictModal,
   tags: ['autodocs'],
   parameters: { layout: 'centered', docs: { description: { component: `
