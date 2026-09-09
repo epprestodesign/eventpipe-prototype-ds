@@ -41,7 +41,7 @@ to catch that, and it is what CI runs on every PR
 ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 
 ```bash
-pnpm test:stories --filter sept-4          # just one folder
+pnpm test:stories --filter gb-reminder-controls   # just one folder
 pnpm test:stories --url http://localhost:6008
 ```
 
@@ -83,7 +83,7 @@ The sidebar is ordered the way product & design think (set in `.storybook/previe
   Company Settings.
 - **Design Requests** — ticket-scoped design work: Teams Mgmt Comms (Phase 1 &
   2), Aug 19, DES-95 Customized Page Revamp, Multiple Secondary Fees
-  (DES-451/452/456), and Sept 4 — Group Block Reminder Controls (PP-42/43/44).
+  (DES-451/452/456), and GB Reminder Controls (PP-42/43/44).
 
 > A story's sidebar placement comes from its `title` (e.g. `Components/Forms/Input`),
 > not its source folder.

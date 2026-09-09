@@ -8,7 +8,7 @@ import GbrReminderControl from './components/GbrReminderControl.vue'
 import { reminderTooltip } from './_gbr'
 
 export default {
-  title: 'Design Requests/Sept 4/Components/Email Settings/Group Block Reminder Control',
+  title: 'Design Requests/GB Reminder Controls/Components/Email Settings/Group Block Reminder Control',
   component: GbrReminderControl,
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: `

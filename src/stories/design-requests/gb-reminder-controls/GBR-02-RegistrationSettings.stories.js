@@ -22,7 +22,7 @@ import GbrConflictModal from './components/GbrConflictModal.vue'
 import GbrCommunicationsCard from './components/GbrCommunicationsCard.vue'
 
 export default {
-  title: 'Design Requests/Sept 4/Screens/02 · Registration Settings',
+  title: 'Design Requests/GB Reminder Controls/Screens/02 · Registration Settings',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

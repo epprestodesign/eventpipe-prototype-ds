@@ -8,7 +8,7 @@ import GbrCommunicationsCard from './components/GbrCommunicationsCard.vue'
 import { TM_TEMPLATES } from './_gbr'
 
 export default {
-  title: 'Design Requests/Sept 4/Components/Registration Settings/Communications Card',
+  title: 'Design Requests/GB Reminder Controls/Components/Registration Settings/Communications Card',
   component: GbrCommunicationsCard,
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: `

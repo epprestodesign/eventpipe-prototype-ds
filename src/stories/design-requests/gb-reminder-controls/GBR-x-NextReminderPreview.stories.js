@@ -7,7 +7,7 @@ import { ref } from 'vue'
 import GbrReminderControl from './components/GbrReminderControl.vue'
 
 export default {
-  title: 'Design Requests/Sept 4/Concepts/Next Reminder Preview',
+  title: 'Design Requests/GB Reminder Controls/Concepts/Next Reminder Preview',
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: `
 **Open question — nothing here is in scope yet.**

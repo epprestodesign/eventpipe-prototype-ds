@@ -18,7 +18,7 @@ import GbrSettingRow from './components/GbrSettingRow.vue'
 import GbrReminderControl from './components/GbrReminderControl.vue'
 
 export default {
-  title: 'Design Requests/Sept 4/Screens/01 · Edit Event — Email Settings',
+  title: 'Design Requests/GB Reminder Controls/Screens/01 · Edit Event — Email Settings',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

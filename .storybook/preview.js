@@ -142,7 +142,7 @@ const preview = {
               ],
               'References',
             ],
-            'Sept 4', [
+            'GB Reminder Controls', [
               'Introduction',
               'Requirements Coverage',
               // Concepts sit above the built screens — they are the open

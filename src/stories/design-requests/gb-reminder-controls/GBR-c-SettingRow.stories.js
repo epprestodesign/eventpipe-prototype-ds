@@ -9,7 +9,7 @@ import GbrSettingRow from './components/GbrSettingRow.vue'
 import { EXISTING_EMAIL_ROWS } from './_gbr'
 
 export default {
-  title: 'Design Requests/Sept 4/Components/Email Settings/Setting Row',
+  title: 'Design Requests/GB Reminder Controls/Components/Email Settings/Setting Row',
   component: GbrSettingRow,
   tags: ['autodocs'],
   parameters: { layout: 'padded', docs: { description: { component: `

@@ -7,7 +7,7 @@ import { ref } from 'vue'
 import GbrConflictModal from './components/GbrConflictModal.vue'
 
 export default {
-  title: 'Design Requests/Sept 4/Concepts/Modal Dismiss Behavior',
+  title: 'Design Requests/GB Reminder Controls/Concepts/Modal Dismiss Behavior',
   tags: ['autodocs'],
   parameters: { layout: 'centered', docs: { description: { component: `
 **Open question.** What should the X — and Escape — do on the conflict modal?
