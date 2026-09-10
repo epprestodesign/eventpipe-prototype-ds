@@ -159,6 +159,24 @@ const preview = {
                 'Registration Settings',
               ],
               'References',
+              // Sept 10 · full duplicate of the folder above, taken at b430c96
+              // and holding Scott's 09/09 review edits, so the version he
+              // reviewed stays browsable and the links already in PP-42/43/44
+              // keep resolving. Same internal ordering as the parent.
+              'Sept 10', [
+                'Introduction',
+                'Requirements Coverage',
+                'Concepts',
+                'Screens', [
+                  '01 · Edit Event — Email Settings',
+                  '02 · Registration Settings',
+                ],
+                'Components', [
+                  'Email Settings',
+                  'Registration Settings',
+                ],
+                'References',
+              ],
             ],
             'DES-95 Customized Page Revamp', [
               'Customized Event Site Edits 072426',
