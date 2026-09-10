@@ -1,0 +1,102 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Design Requests/GB Reminder Controls/Sept 10/Introduction" />
+
+# Group Block Reminder Controls
+
+Design for [PP-42, PP-43 and PP-44](https://linear.app/eventpipe/project/group-block-reminder-controls-906d7f0e4189),
+from Scott Villemain's 09/04 Loom, *Group Block Reminders UI and Modal*.
+
+> "It consists of two pretty simple UI changes." — Scott, 0:07
+
+**This is the Sept 10 copy**, holding Scott's 09/09 review feedback. The version
+he reviewed sits one level up, unchanged, so the links already in PP-42, PP-43
+and PP-44 still resolve to what he saw. See **Requirements Coverage** for what
+changed between the two.
+
+---
+
+## The problem
+
+Group block reminders are **hard-coded**: a confirmation when the block is
+created, a reminder 2 days later, then **every 3 days until the release date**.
+There is no way to change any of it, and no way to turn it off.
+
+A housing company that lets blocks stay open longer therefore gets
+proportionally more reminder email, aimed at the people who created those
+blocks. At least one customer has resorted to **swapping the block contact email
+to their own address and back** to suppress them — a workaround that quietly
+breaks every other email that contact should receive.
+
+Teams Management Communications Phase 2 makes this sharper: compliance reminders
+can now be configured to send to the same group block contacts, so the same
+people can end up on two independent reminder schedules that know nothing about
+each other.
+
+## The two changes
+
+**1 · A setting on the event** — Edit Event › Email Settings gains an on/off
+toggle and an interval, so a Hoco can stop the reminders or slow them down for
+one event. Defaults preserve today's behavior exactly: on, every 3 days.
+
+**2 · A warning when the two overlap** — saving Registration Settings with both
+compliance reminders and group block reminders on raises an advisory modal, with
+a way to turn group block reminders off as part of that save.
+
+## How this folder is organised
+
+<table>
+  <thead>
+    <tr><th>Section</th><th>What's in it</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Introduction</strong></td><td>This page</td></tr>
+    <tr><td><strong>Requirements Coverage</strong></td><td>Every requirement, where it's addressed, and the open questions</td></tr>
+    <tr><td><strong>Concepts</strong></td><td>Two decisions worth taking before build, each built both ways</td></tr>
+    <tr><td><strong>Screens</strong></td><td>The two screens that change, live and clickable</td></tr>
+    <tr><td><strong>Components</strong></td><td>Each piece on its own, with its states and the reasoning</td></tr>
+    <tr><td><strong>References</strong></td><td>Events list and event record — unchanged, for context</td></tr>
+  </tbody>
+</table>
+
+The **screens are assembled from the components**, not copies of them: change
+`GbrReminderControl` and screen 01 changes with it. So a component story and the
+screen it appears on can never drift apart.
+
+Everything runs on one event — the one Scott demos with:
+
+- **Team Travel Source (TTS)** · Scott Villemain
+- **2026 - Scott-O Invitational Showdown** — Atlanta, GA
+- 3STEP Sports - 3D Lacrosse · Tue 12/01/2026 – Sat 12/05/2026
+
+## Scope
+
+<table>
+  <thead>
+    <tr><th>Ticket</th><th></th><th>Status here</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><a href="https://linear.app/eventpipe/issue/PP-42">PP-42</a></td><td>GBR-1 · Event-level toggle</td><td>Designed</td></tr>
+    <tr><td><a href="https://linear.app/eventpipe/issue/PP-43">PP-43</a></td><td>GBR-3 · Days between reminders</td><td>Designed</td></tr>
+    <tr><td><a href="https://linear.app/eventpipe/issue/PP-44">PP-44</a></td><td>GBR-2 · Conflict modal</td><td>Designed — ticket says <em>Prototype Pending</em>, so this is net-new</td></tr>
+    <tr><td><a href="https://linear.app/eventpipe/issue/PP-45">PP-45</a></td><td>GBR-4 · PipeSights columns</td><td><strong>Not designed</strong> — Sigma reporting, owned separately</td></tr>
+  </tbody>
+</table>
+
+Sequencing from the project: GBR-2 depends on GBR-1; GBR-3 is independent and
+could ship alone; GBR-4 depends on GBR-1 and GBR-3.
+
+## What was deliberately not built
+
+**Cross-screen state.** The modal's primary action turns group block reminders
+off, which in the product also flips the toggle on Email Settings. Scott, at
+3:00: *"You don't have to simulate that. I just need a mock of this page."* So
+the two screens hold their own state and the modal reports what it did. PP-44's
+acceptance criteria do require the two to stay in sync in the build.
+
+**PP-45.** Reporting work, owned outside the application design.
+
+---
+
+Four open questions are listed at the bottom of **Requirements Coverage**; two
+of them are built both ways under **Concepts**.
