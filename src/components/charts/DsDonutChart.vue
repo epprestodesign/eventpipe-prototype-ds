@@ -38,6 +38,7 @@ const props = defineProps({
   error: { type: String, default: '' },
   emptyText: { type: String, default: 'No data for this period' },
   ariaLabel: { type: String, default: '' },
+  /** 'chart' | 'table' (static) | 'data' (interactive table — the card's View more modal). */
   view: { type: String, default: 'chart' },
   retryable: { type: Boolean, default: true },
 })
@@ -159,7 +160,7 @@ function onBlur() { kb.value = -1; tip.value = { ...tip.value, visible: false } 
       @retry="emit('retry')"
     />
     <ds-chart-data-table
-      v-else-if="view === 'table'" :labels="tableLabels" :series="tableSeries"
+      v-else-if="view === 'table' || view === 'data'" :interactive="view === 'data'" :labels="tableLabels" :series="tableSeries"
       :value-format="valueFormat" :currency="currency" category-header="Segment"
     />
     <div v-else class="dsdonut__layout" :class="`dsdonut__layout--${legendPosition}`">

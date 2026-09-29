@@ -34,7 +34,7 @@ export default {
 | \`showLegend\` / \`showGrid\` / \`beginAtZero\` | \`boolean\` | Legend renders for 2+ series only. |
 | \`hiddenSeries\` | \`string[]\` | \`v-model:hidden-series\`. The legend toggles it; the last visible series cannot be hidden. |
 | \`loading\` / \`error\` / \`emptyText\` | | State props. \`@retry\` fires from the error state. |
-| \`view\` | \`chart · table\` | Table view is the accessible alternative (the card's toggle drives it). |
+| \`view\` | \`chart · table · data\` | The table is the accessible alternative; \`data\` makes it interactive (search, sort, series columns) — the Chart Card's **View more** modal renders the chart with it. |
 | \`ariaLabel\` | \`string\` | Accessible summary; auto-generated from the data when omitted. |
 
 ## Usage
@@ -86,7 +86,7 @@ const bound = (args, width) => ({
 export const Default = { render: (args) => bound(args) }
 
 /** The standard composition: the chart inside DsChartCard with a period filter
- *  and the Chart / Table toggle. Current year vs. the previous year. */
+ *  and the View more data modal. Current year vs. the previous year. */
 export const RevenueOverTime = {
   name: 'Revenue Over Time',
   render: (args) => ({

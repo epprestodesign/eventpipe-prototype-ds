@@ -25,6 +25,8 @@
 import { ref, computed } from 'vue'
 import { epPage, epCard, epHeader, statusChip, EP_CAPTION, EP_H2, EP_PAGE } from './_eppay'
 import DsSearch from '../../components/DsSearch.vue'
+import DsChartCard from '../../components/charts/DsChartCard.vue'
+import DsStackedBarChart from '../../components/charts/DsStackedBarChart.vue'
 
 export default {
   title: 'EP Pay/Screens/06 · Developer',
@@ -74,6 +76,18 @@ const EVENTS = [
 ]
 /** The log is paged; the account's full count is what the footer reports. */
 const EVENT_TOTAL = 34
+
+/** CHART CONCEPT — the same 34 deliveries, per day. Aug 20 is exactly the
+ *  eight Aug 20 rows in EVENTS (six succeeded, the two 500s); the earlier days
+ *  hold the other 26 the log pages through. Counts, not strings: the chart
+ *  formats them. */
+const DELIVERY_HEALTH = {
+  labels: ['2026-08-14', '2026-08-15', '2026-08-16', '2026-08-17', '2026-08-18', '2026-08-19', '2026-08-20'],
+  series: [
+    { key: 'succeeded', label: 'Succeeded', data: [4, 5, 3, 5, 4, 5, 6] },
+    { key: 'failed', label: 'Failed', data: [0, 0, 0, 0, 0, 0, 2] },
+  ],
+}
 
 const ALLOWED = [
   { address: '203.0.113.24', description: 'Production server', added: 'Mar 3, 2026' },
@@ -176,10 +190,17 @@ const keysPanel = `
         </template>
         <template #body-cell-actions="props">
           <q-td :props="props" style="white-space:nowrap;">
-            <q-btn v-if="props.row.secret" outline no-caps color="grey-9" class="q-mr-sm" style="font-weight:700;"
-              :label="revealed ? 'Hide' : 'Reveal'" @click="revealed = !revealed" />
-            <q-btn outline no-caps color="grey-9" label="Copy" class="q-mr-sm" style="font-weight:700;" />
-            <q-btn v-if="props.row.secret" outline no-caps color="negative" label="Roll Key" style="font-weight:700;" />
+            <!-- Spacing lives BETWEEN the buttons (flex gap), not after each one.
+                 With a trailing margin on every button, the publishable row's
+                 last button (Copy) kept its 8px margin and sat inset from the
+                 secret row's Roll Key; with a gap, every row's last button ends
+                 on the same right edge. -->
+            <div class="row no-wrap justify-end items-center" style="gap:8px;">
+              <q-btn v-if="props.row.secret" outline no-caps color="grey-9" style="font-weight:700;"
+                :label="revealed ? 'Hide' : 'Reveal'" @click="revealed = !revealed" />
+              <q-btn outline no-caps color="grey-9" label="Copy" style="font-weight:700;" />
+              <q-btn v-if="props.row.secret" outline no-caps color="negative" label="Roll Key" style="font-weight:700;" />
+            </div>
           </q-td>
         </template>
       </q-table>`)}
@@ -218,7 +239,12 @@ const webhooksPanel = `
         </template>
         <template #body-cell-actions="props">
           <q-td :props="props">
-            <q-btn outline dense color="grey-6" icon="more_vert" size="sm" aria-label="Endpoint actions" />
+            <ds-action-menu label="Endpoint actions" :items="[
+              { label: 'Edit endpoint', icon: 'edit' },
+              { label: 'Send test event', icon: 'send' },
+              { label: 'Disable endpoint', icon: 'pause_circle', confirm: { title: 'Disable this endpoint?', message: 'Events stop being delivered until you enable it again.', okLabel: 'Disable' } },
+              { label: 'Delete endpoint', icon: 'delete', danger: true, dividerBefore: true, confirm: { title: 'Delete this endpoint?', message: 'This can’t be undone.', okLabel: 'Delete' } },
+            ]" />
           </q-td>
         </template>
       </q-table>`)}
@@ -264,12 +290,10 @@ const logsPanel = `
         </template>
       </q-table>
 
-      <div class="row items-center q-pt-md">
-        <div style="${EP_CAPTION}">{{ logFooter }}</div>
-        <q-space />
-        <q-btn flat no-caps color="grey-6" label="Previous" disable class="q-mr-sm" />
-        <q-btn outline no-caps color="primary" label="Next" />
-      </div>`)}
+      <!-- The design system's pager (DsPagination). Unfiltered it is page 1 of
+           the full log; filtered, the matches fit one page and only the count
+           shows. -->
+      <ds-pagination class="q-pt-md" :total="logTotal" :page-size="logPageSize" noun="events" />`)}
   </div>`
 
 const ipsPanel = `
@@ -302,18 +326,41 @@ const ipsPanel = `
         </template>
         <template #body-cell-actions="props">
           <q-td :props="props">
-            <q-btn flat dense color="negative" icon="delete_outline" size="sm"
-              :aria-label="'Remove ' + props.row.address" @click="removeAddress(props.row)" />
+            <!-- Same 40×40 frame as the table's other row buttons (DsActionMenu),
+                 so row actions are one size everywhere; red icon = destructive. -->
+            <q-btn flat padding="0" :aria-label="'Remove ' + props.row.address" @click="removeAddress(props.row)"
+              style="width:40px; height:40px; min-width:40px; min-height:40px; border:1px solid var(--ds-color-border-container);
+                     border-radius:var(--ds-radius-md); background:var(--ds-color-surface); color:var(--ds-color-text-danger);">
+              <q-icon name="delete_outline" size="22px" />
+              <q-tooltip :delay="400">Remove</q-tooltip>
+            </q-btn>
           </q-td>
         </template>
       </q-table>`)}
   </div>`
 
-const SLOT = `
+/** CHART CONCEPT — delivery health, above the Event Logs card. Only the
+ *  concept story renders it; see ChartConceptDeliveryHealth. */
+const deliveryHealth = `
+  <div v-if="tab === 'logs'" style="margin-bottom:20px;">
+    <ds-chart-card title="Delivery health" subtitle="Webhook deliveries per day · Aug 14 – 20, 2026" table-toggle>
+      <template #default="{ view }">
+        <ds-stacked-bar-chart :labels="health.labels" :series="health.series" label-format="day"
+          :height="200" :view="view" />
+      </template>
+      <template #footer>2 of 8 deliveries failed today, both “500 Server error” — the first failures in 7 days.</template>
+    </ds-chart-card>
+  </div>`
+
+const slot = ({ concept = false } = {}) => `
   <div style="${EP_PAGE}">
-    ${epHeader('Developer', { tabs: TAB_BAR })}
+    ${epHeader('Developer', {
+      tabs: TAB_BAR,
+      ...(concept ? { badge: 'Chart concept — for approval', badgeColor: 'ds-warning text-ds-warning' } : {}),
+    })}
     ${keysPanel}
     ${webhooksPanel}
+    ${concept ? deliveryHealth : ''}
     ${logsPanel}
     ${ipsPanel}
   </div>`
@@ -353,6 +400,7 @@ function state(initialTab) {
     endpointColumns: ENDPOINT_COLUMNS,
     eventColumns: EVENT_COLUMNS,
     allowedColumns: ALLOWED_COLUMNS,
+    health: DELIVERY_HEALTH,
 
     segStyle: (on) => [
       'padding:8px 18px; border:0; cursor:pointer; border-radius:var(--ds-radius-sm); font-size:0.9375rem; font-weight:500;',
@@ -369,9 +417,8 @@ function state(initialTab) {
       ? `${k.token.slice(0, 8)}${'•'.repeat(12)}${k.token.slice(-4)}`
       : k.token),
 
-    logFooter: computed(() => (filtering.value
-      ? `Showing ${events.value.length} of ${EVENT_TOTAL} events`
-      : `Showing 1–${events.value.length} of ${EVENT_TOTAL} events`)),
+    logTotal: computed(() => (filtering.value ? events.value.length : EVENT_TOTAL)),
+    logPageSize: computed(() => Math.max(1, events.value.length)),
 
     suggestions: computed(() => events.value.slice(0, 6)
       .map((e) => ({ id: e.id, label: e.event, sublabel: `${e.id} · ${e.code}` }))),
@@ -392,11 +439,11 @@ function state(initialTab) {
   }
 }
 
-const screen = (tab) => epPage({
+const screen = (tab, opts = {}) => epPage({
   active: 'developer',
-  components: { DsSearch },
+  components: { DsSearch, DsChartCard, DsStackedBarChart },
   setup: () => state(tab),
-  slot: SLOT,
+  slot: slot(opts),
 })
 
 /** The publishable and secret keys. **Reveal** unmasks the secret. */
@@ -413,3 +460,24 @@ EventLogs.storyName = 'Event Logs'
 /** The addresses allowed to use the secret key. Add and remove both work. */
 export const IpAllowlist = screen('ips')
 IpAllowlist.storyName = 'IP Allowlist'
+
+/** **Chart concept — for approval.** Event Logs with a delivery-health chart
+ *  above the log.
+ *
+ *  *Question it answers:* "Is my webhook endpoint healthy, and if not, since
+ *  when?" Today a merchant has to page through the log counting red chips; a
+ *  day-by-day view shows at a glance that the only failures are today's two
+ *  500s — something just broke on their server, it is not a chronic problem.
+ *
+ *  *Why a stacked bar:* the Charts Overview puts "composition per category"
+ *  on Stacked Bar — here each day's deliveries split into succeeded and failed,
+ *  so the bar's height is volume and its top segment is the failures. A line
+ *  with a separate failure-rate series was considered and rejected: rate and
+ *  count are two measures of different scale, and the Overview's "one value
+ *  axis" rule says that would be two charts. At 34 deliveries a week, a rate
+ *  also swings wildly on one failure.
+ *
+ *  *Adds:* a chart card above the Recent Events card, on the Event Logs tab
+ *  only. The table and the Succeeded / Failed filter are unchanged. */
+export const ChartConceptDeliveryHealth = screen('logs', { concept: true })
+ChartConceptDeliveryHealth.storyName = 'Chart concept · Delivery health'

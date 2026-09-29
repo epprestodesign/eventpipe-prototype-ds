@@ -109,6 +109,14 @@ const fatalTemplate = `
  *  'depth' | 'liquid' | 'wave'); 'liquid' is the default. `ground`, if given,
  *  is template markup that replaces the shader outright.
  *
+ *  `cards` (default true) shows the showcase's two frosted cards. Pass false
+ *  with a ground that already contains its own — the pre-rendered video
+ *  grounds (Av2VideoGround) in Concepts / Login Backgrounds.
+ *
+ *  `headline` (default '') overrides the showcase headline for one story —
+ *  for concepts testing new copy (e.g. "Event housing. In sync." on video
+ *  concept D). The subline and every other flow's copy are unaffected.
+ *
  *  `light` flags a ground pale enough (the 'wave' shader) that the showcase
  *  headline has to run in dark ink rather than white. It is a property of the
  *  ground's lightness, not of whether a shader is in use.
@@ -128,7 +136,7 @@ const fatalTemplate = `
  */
 export function authStep({
   components = {}, setup = () => ({}), slot = '', background = 'plain', ground = '', light = false,
-  showcase = 'platform', variant = 'liquid', forceFallback = false,
+  showcase = 'platform', variant = 'liquid', forceFallback = false, cards = true, headline = '',
 } = {}) {
   return {
     render: (args) => ({
@@ -137,7 +145,7 @@ export function authStep({
         try {
           return {
             fatal: '', account: ACCOUNT, background, light,
-            av2Shell: { showcase, variant, forceFallback, light, supportEmail: SUPPORT_EMAIL },
+            av2Shell: { showcase, variant, forceFallback, light, cards, headline, supportEmail: SUPPORT_EMAIL },
             ...setup(args),
           }
         } catch (err) {
@@ -149,7 +157,8 @@ export function authStep({
         <template v-else>
           <div class="eppay av2" :class="['av2--bg-' + background, { 'av2--light': light }]">
             <av2-split :support-email="av2Shell.supportEmail" :showcase="av2Shell.showcase"
-              :variant="av2Shell.variant" :force-fallback="av2Shell.forceFallback" :light="av2Shell.light">
+              :variant="av2Shell.variant" :force-fallback="av2Shell.forceFallback" :light="av2Shell.light"
+              :cards="av2Shell.cards" :headline="av2Shell.headline">
               ${slot}
               ${ground ? `<template #ground>${ground}</template>` : ''}
               <template #footnote>

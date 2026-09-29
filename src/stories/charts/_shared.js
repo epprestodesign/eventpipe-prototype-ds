@@ -13,7 +13,7 @@ export const cartesianArgTypes = {
   loading: { control: 'boolean' },
   error: { control: 'text', description: 'Set a message to show the error state.' },
   emptyText: { control: 'text' },
-  view: { control: 'inline-radio', options: ['chart', 'table'] },
+  view: { control: 'inline-radio', options: ['chart', 'table', 'data'], description: "'table' = static table; 'data' = interactive table (search, sort, series columns) — what the Chart Card's View more modal shows." },
   maxLabelLength: { control: { type: 'number', min: 6, max: 40 } },
   labels: { control: false },
   series: { control: false },

@@ -34,7 +34,7 @@
  *  what is being reviewed. Colour is the exception: the captures are structure
  *  only, and every colour, radius and control size here is the design system's.
  */
-import { ref } from 'vue'
+import { ref, isRef, onMounted, onBeforeUnmount } from 'vue'
 import { EP_CAPTION, EP_CARD_BODY, EP_H2 } from './_eppay'
 import DsInput from '../../components/DsInput.vue'
 import DsSelect from '../../components/DsSelect.vue'
@@ -186,13 +186,47 @@ const ERROR_PANEL = `
     Please complete the required fields marked with an asterisk.
   </div>`
 
-/** Back / forward footer. `back` is false on step 1 — there is nothing behind it. */
+/** Sample answers for each step — what Auto-fill writes. One merchant
+ *  throughout (the org every other EP Pay screen belongs to), with obviously
+ *  fake identifiers: the EIN, SSN, routing and account numbers are test
+ *  values, never real ones. A value may be a function of the current value,
+ *  which is how the agreements list gets every box ticked. */
+const ADDRESS = (prefix) => ({
+  [`${prefix}Addr1`]: '1200 Nicollet Mall', [`${prefix}Addr2`]: 'Suite 400',
+  [`${prefix}City`]: 'Minneapolis', [`${prefix}State`]: 'MN', [`${prefix}Postal`]: '55403',
+})
+const FILL = {
+  dba: {
+    dbaName: 'Team Travel Source', ...ADDRESS('dba'),
+    phone: '(612) 555-0142', website: 'https://www.teamtravelsource.com',
+  },
+  legal: {
+    sameAsDba: false, legalName: 'Team Travel Source, LLC',
+    structure: 'Limited Liability Company (LLC)', ein: '12-3456789', ...ADDRESS('legal'),
+  },
+  owner: {
+    role: 'Owner', first: 'Jeffrey', last: 'Upp',
+    ownerAddr1: '48 Linden Hills Blvd', ownerAddr2: '', ownerCity: 'Minneapolis',
+    ownerState: 'MN', ownerPostal: '55410', ssn: '123-45-6789', ssnConfirm: '123-45-6789',
+  },
+  banking: {
+    bankName: 'Chase Bank', routing: '121000248',
+    account: '000123454321', accountConfirm: '000123454321',
+    accountType: 'Checking', ownershipType: 'Business', payoutFrequency: 'Weekly',
+    agreements: (list) => list.map((a) => ({ ...a, checked: true })),
+  },
+}
+
+/** Back / forward footer. `back` is false on step 1 — there is nothing behind it.
+ *  The buttons announce `eppay:wizard` (next / back) on window. In Storybook
+ *  nothing listens and each step stays a standalone story; the standalone
+ *  prototype listens and moves between steps. */
 const footer = (next, back = true) => `
   <div class="row items-center no-wrap" style="margin-top:28px; padding-top:26px;
        border-top:1px solid var(--ds-color-border-container);">
-    ${back ? '<q-btn unelevated no-caps label="Back" color="grey-3" text-color="grey-9" style="min-width:120px;" />' : ''}
+    ${back ? '<q-btn unelevated no-caps label="Back" color="grey-3" text-color="grey-9" style="min-width:120px;" @click="wizardNav(\'back\')" />' : ''}
     <q-space />
-    <q-btn unelevated no-caps color="primary" label="${next}" style="padding:0 22px; font-weight:700;" />
+    <q-btn unelevated no-caps color="primary" label="${next}" style="padding:0 22px; font-weight:700;" @click="wizardNav('next')" />
   </div>`
 
 /* Same guard as _eppay.js: these screens are runtime-compiled template strings,
@@ -211,12 +245,12 @@ const FATAL = `
   </div>`
 
 /** The wizard surface: light canvas, Auto-fill + close above, one white card. */
-function wizardPage({ components = {}, setup = () => ({}), body = '', autofill = true }) {
+function wizardPage({ components = {}, setup = () => ({}), body = '', autofill = true, fill = null }) {
   const page = `
     <div class="eppay" style="min-height:100vh; background:var(--ds-color-surface-canvas); padding:16px 22px 48px;">
       <div style="max-width:1180px; margin:0 auto;">
         <div class="row items-center justify-end no-wrap" style="gap:12px; margin-bottom:14px;">
-          ${autofill ? '<q-btn outline no-caps color="primary" icon="bolt" label="Auto-fill" style="background:var(--ds-color-surface); font-weight:700;" />' : ''}
+          ${autofill ? '<q-btn outline no-caps color="primary" icon="bolt" label="Auto-fill" style="background:var(--ds-color-surface); font-weight:700;" @click="autofill" />' : ''}
           <q-btn round flat icon="close" color="grey-7" aria-label="Close"
             style="background:var(--ds-color-surface); border:1px solid var(--ds-color-border-container);" />
         </div>
@@ -235,7 +269,25 @@ function wizardPage({ components = {}, setup = () => ({}), body = '', autofill =
         try {
           // `logo` here rather than in each story's setup: every step of the
           // wizard renders WORDMARK, and none of them should have to remember it.
-          return { fatal: '', logo, ...setup(args) }
+          const state = { fatal: '', logo, ...setup(args) }
+
+          /* Auto-fill writes this step's FILL answers into its own refs. The
+             button above the card calls it directly; the prototype's big
+             fixed button reaches it through the `eppay:autofill` window event,
+             since it lives outside the story and can't see these refs. */
+          const autofill = () => {
+            for (const [key, value] of Object.entries(fill || {})) {
+              if (!isRef(state[key])) continue
+              state[key].value = typeof value === 'function' ? value(state[key].value) : value
+            }
+          }
+          const wizardNav = (dir) => {
+            if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('eppay:wizard', { detail: dir }))
+          }
+          onMounted(() => window.addEventListener('eppay:autofill', autofill))
+          onBeforeUnmount(() => window.removeEventListener('eppay:autofill', autofill))
+
+          return { ...state, autofill, wizardNav }
         } catch (err) {
           return { fatal: 'setup() threw:\n\n' + (err && err.stack ? err.stack : String(err)) }
         }
@@ -292,6 +344,7 @@ const DBA_BODY = `
   ${footer('Enter Legal Details', false)}`
 
 export const Step1Dba = wizardPage({
+  fill: FILL.dba,
   setup: () => ({
     steps: steps(0),
     states: prompted('Select state', STATES),
@@ -365,12 +418,14 @@ const legalState = ({ error = false, menuOpen = false } = {}) => () => ({
 })
 
 export const Step2Legal = wizardPage({
+  fill: FILL.legal,
   setup: legalState(),
   body: legalBody(false),
 })
 Step2Legal.storyName = 'Step 2 · Legal'
 
 export const Step2StructureOpen = wizardPage({
+  fill: FILL.legal,
   setup: legalState({ menuOpen: true }),
   body: legalBody(false),
 })
@@ -380,6 +435,7 @@ Step2StructureOpen.storyName = 'Step 2 · Legal structure open'
  *  above the footer rather than per-field errors — that is what the capture
  *  shows, and it is why the asterisks are the only field-level cue. */
 export const ValidationError = wizardPage({
+  fill: FILL.legal,
   setup: legalState({ error: true }),
   body: legalBody(true),
 })
@@ -423,6 +479,7 @@ const OWNER_BODY = `
   ${footer('Enter Banking Details')}`
 
 export const Step3Owner = wizardPage({
+  fill: FILL.owner,
   setup: () => ({
     steps: steps(2),
     states: prompted('Select state', STATES),
@@ -511,6 +568,7 @@ const AGREEMENTS = [
 ]
 
 export const Step4Banking = wizardPage({
+  fill: FILL.banking,
   setup: () => ({
     steps: steps(3),
     bankName: ref(''), routing: ref(''),

@@ -51,6 +51,8 @@ import DsInput from '../../components/DsInput.vue'
 import DsSelect from '../../components/DsSelect.vue'
 import DsEmptyState from '../../components/DsEmptyState.vue'
 import DsLink from '../../components/DsLink.vue'
+import DsChartCard from '../../components/charts/DsChartCard.vue'
+import DsBarChart from '../../components/charts/DsBarChart.vue'
 
 /* ---------------------------------------------------------------------------
  * Docs
@@ -130,6 +132,38 @@ const typeTiles = `
     </q-card>
   </div>`
 
+/** CHART CONCEPT — sales by product type, computed from the catalogue rather
+ *  than typed in, so it cannot disagree with the table: each product's order
+ *  count is its "On N orders" line, times an assumed average quantity per
+ *  order, times its price (tickets, which list a price range, get an assumed
+ *  average; Trip Protection gets 7% of a ~$1,400 trip). Stays are left out —
+ *  they are sold and reported through Room Blocks — and so is the draft
+ *  banquet, which has no orders. */
+const UNITS_AND_PRICE = {
+  'PRD-0110': [2.8, 190], 'PRD-0111': [2.5, 58],
+  'PRD-0120': [1, 3368], 'PRD-0121': [1, 3154],
+  'PRD-0130': [1, 65], 'PRD-0131': [3, 42], 'PRD-0132': [3, 139], 'PRD-0133': [1, 145],
+  'PRD-0140': [3, 59],
+  'PRD-0150': [3, 28], 'PRD-0151': [1, 1850],
+  'PRD-0160': [2, 28],
+  'PRD-0170': [2, 120], 'PRD-0171': [1, 45],
+  'PRD-0180': [1, 98], 'PRD-0181': [1, 25], 'PRD-0182': [1, 75],
+}
+const SALES_BY_TYPE = (() => {
+  const byType = {}
+  PRODUCTS.forEach((p) => {
+    const orders = Number((/On (\d+) orders/.exec(p.used) || [])[1])
+    const up = UNITS_AND_PRICE[p.id]
+    if (!orders || !up) return
+    byType[p.type] = Math.round(((byType[p.type] || 0) + orders * up[0] * up[1]) * 100) / 100
+  })
+  const rows = PRODUCT_TYPES.filter((t) => byType[t.key] != null).sort((a, b) => byType[b.key] - byType[a.key])
+  return {
+    labels: rows.map((t) => t.label),
+    series: [{ key: 'sales', label: 'Sales', data: rows.map((t) => byType[t.key]) }],
+  }
+})()
+
 const COLUMNS = [
   { name: 'status', label: 'Status & Usage', field: 'status', align: 'left' },
   { name: 'product', label: 'Product & Type', field: 'name', align: 'left' },
@@ -188,8 +222,11 @@ const table = `
           style="border:1px solid var(--ds-color-border-container); border-radius:var(--ds-radius-sm); color:var(--ds-color-icon-subtle);">
           <q-tooltip>Managed in Room Blocks</q-tooltip>
         </q-btn>
-        <q-btn v-else flat dense icon="more_vert" :aria-label="'Actions for ' + props.row.name"
-          style="border:1px solid var(--ds-color-border-container); border-radius:var(--ds-radius-sm); color:var(--ds-color-icon-subtle);" />
+        <ds-action-menu v-else :label="'Actions for ' + props.row.name" :items="[
+          { label: 'Edit product', icon: 'edit' },
+          { label: 'Duplicate', icon: 'content_copy' },
+          { label: 'Archive product', icon: 'archive', danger: true, dividerBefore: true, confirm: { title: 'Archive ' + props.row.name + '?', message: 'It stops appearing on new payment links and invoices. Existing ones are unchanged.', okLabel: 'Archive' } },
+        ]" />
       </q-td>
     </template>
 
@@ -218,10 +255,13 @@ const emptyBody = `
 const typeStep = `
   <div v-if="step === 'type'">
     <div style="${EP_CAPTION} margin-bottom:14px;">Each type has its own unit and rules. Tickets, packages, add-ons and merchandise have a guided form; the rest share one.</div>
-    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
+    <!-- Every card the same size: minmax(0, 1fr) stops a long label or example
+         widening its column, and grid-auto-rows: 1fr makes every row as tall
+         as the tallest card, so all nine match. -->
+    <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); grid-auto-rows:1fr; gap:12px;">
       <a v-for="t in types" :key="t.key" href="#" @click.prevent="t.form && (chosen = t.key)"
         :aria-disabled="!t.form"
-        :style="'display:block; border-radius:var(--ds-radius-lg); text-decoration:none; color:inherit; ' +
+        :style="'display:flex; flex-direction:column; box-sizing:border-box; min-width:0; border-radius:var(--ds-radius-lg); text-decoration:none; color:inherit; ' +
                 (t.form ? pick(chosen === t.key) + ' cursor:pointer;' : pick(false) + ' background:var(--ds-color-surface-sunken); cursor:not-allowed;')">
         <div style="display:flex; align-items:center; gap:10px;">
           <q-icon :name="t.icon" size="22px" :style="'color:' + (t.form ? 'var(--ds-color-text-brand)' : 'var(--ds-color-icon-subtle)')" />
@@ -558,9 +598,21 @@ const createDialog = `
     </template>
   </ds-modal>`
 
-const SLOT = (empty) => `
+/** CHART CONCEPT — see ChartConceptSalesByType. */
+const salesChart = `
+  <div style="margin-bottom:20px;">
+    <ds-chart-card title="Sales by product type" subtitle="Both events, to date · stays are reported in Room Blocks" table-toggle>
+      <template #default="{ view }">
+        <ds-bar-chart horizontal :labels="sales.labels" :series="sales.series" value-format="currency"
+          :height="300" :max-label-length="20" :view="view" />
+      </template>
+    </ds-chart-card>
+  </div>`
+
+const SLOT = (empty, chart = false) => `
   <div style="${EP_PAGE}">
     ${conceptHeader('Products', { actions: ADD_BTN })}
+    ${chart ? salesChart : ''}
     ${epCard(empty ? emptyBody : `${typeTiles}${stayNote}${listToolbar('Search products')}${table}`)}
   </div>
   ${createDialog}`
@@ -636,6 +688,7 @@ function state({ open = false, step = 'type', chosen = null } = {}) {
   return {
     tiles: TILES,
     columns: COLUMNS,
+    sales: SALES_BY_TYPE,
     active,
     current: computed(() => {
       const count = active.value === 'all' ? PRODUCTS.length : PRODUCTS.filter((p) => p.type === active.value).length
@@ -680,7 +733,7 @@ function state({ open = false, step = 'type', chosen = null } = {}) {
 
 const story = (opts = {}) => epPage({
   active: 'products',
-  components: { DsSearch, DsModal, DsInput, DsSelect, DsEmptyState, DsLink },
+  components: { DsSearch, DsModal, DsInput, DsSelect, DsEmptyState, DsLink, DsChartCard, DsBarChart },
   setup: () => {
     const s = state(opts)
     // openCreate also has to open the dialog; kept here so `state()` stays a
@@ -689,7 +742,7 @@ const story = (opts = {}) => epPage({
     s.openCreate = () => { open(); s.createOpen.value = true }
     return s
   },
-  slot: SLOT(!!opts.empty),
+  slot: SLOT(!!opts.empty, !!opts.chart),
 })
 
 /* ---------------------------------------------------------------------------
@@ -731,3 +784,22 @@ CreateGeneric.storyName = 'Create · Generic form (meal)'
 /** First run — nothing created yet. */
 export const Empty = story({ empty: true })
 Empty.storyName = 'Empty · first run'
+
+/** **Chart concept · Sales by product type** — the List with a ranked sales
+ *  chart above the type tiles.
+ *
+ *  *Question it answers:* "Beyond the room, what actually earns?" — which
+ *  product types are worth building out for the next event and which are
+ *  shelf-fillers. The tiles count *products* per type, which says nothing
+ *  about money: Add-ons has the most rows, Packages has two and out-earns it.
+ *
+ *  *Why a horizontal bar, not a donut:* there are eight types. The Charts
+ *  Overview limits Donut to 2–5 parts (beyond that it folds the rest into
+ *  "Other", which would hide exactly the small types this is meant to judge)
+ *  and prefers horizontal Bar for many categories with long labels. Sorted
+ *  largest first so the ranking reads top-down.
+ *
+ *  *Adds:* one chart card between the header and the catalogue; the catalogue
+ *  is unchanged. */
+export const ChartConceptSalesByType = story({ chart: true })
+ChartConceptSalesByType.storyName = 'Chart concept · Sales by product type'

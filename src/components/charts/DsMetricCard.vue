@@ -10,8 +10,8 @@
 // Whether "up" is good depends on the metric (revenue vs. disputes), so the
 // colour comes from `polarity`, not from the direction.
 //
-// Note: EP Pay's EpPayStatCard (uncommitted, src/stories/eppay/components) is
-// a hand-rolled precursor of this card and should migrate onto it.
+// EP Pay's Dashboard metric tiles use this card (they replaced the hand-rolled
+// EpPayStatCard, which was deleted on 2026-09-29).
 import { computed } from 'vue'
 import DsCard from '../DsCard.vue'
 import DsStat from '../DsStat.vue'

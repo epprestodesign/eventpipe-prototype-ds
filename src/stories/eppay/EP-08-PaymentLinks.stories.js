@@ -33,6 +33,8 @@ import DsInput from '../../components/DsInput.vue'
 import DsSelect from '../../components/DsSelect.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
 import DsEmptyState from '../../components/DsEmptyState.vue'
+import DsChartCard from '../../components/charts/DsChartCard.vue'
+import DsBarChart from '../../components/charts/DsBarChart.vue'
 
 export default {
   title: 'EP Pay/Screens/08 · Unbuilt Areas/Payment Links',
@@ -86,6 +88,16 @@ const FILTERS = [
   { key: 'completed', label: 'Completed', count: 24, total: '$38,114.80 collected', pages: 3, match: (l) => l.status === 'Completed' },
   { key: 'ended', label: 'Expired or Off', count: 3, total: '$6,020.45 not paid', pages: 1, match: (l) => l.status === 'Expired' || l.status === 'Deactivated' },
 ]
+
+/** CHART CONCEPT — how long the 24 Completed links (the Completed tile) took
+ *  to be paid, from creation. The three fixture rows agree: Sep 10 → 11,
+ *  Aug 18 → 19, Aug 17 → 18 are all "Next day". The 3 links that ended unpaid
+ *  are the "Expired or Off" tile and are named in the chart's footer, not
+ *  plotted as a bucket — never-paid is not a duration. */
+const TIME_TO_PAY = {
+  labels: ['Same day', 'Next day', '2–3 days', '4–7 days', '8+ days'],
+  series: [{ key: 'links', label: 'Links paid', data: [7, 10, 4, 2, 1] }],
+}
 
 const COLUMNS = [
   { name: 'status', label: 'Status & Dates', field: 'status', align: 'left' },
@@ -159,7 +171,7 @@ const table = `
       </q-td>
     </template>
 
-    ${rowMenu('props.row.id')}
+    ${rowMenu('props.row.id', "[{ label: 'View link', icon: 'visibility', to: 'payment-links/detail' }, { label: 'Copy link', icon: 'content_copy', copy: 'https://' + props.row.url }, { label: 'Deactivate link', icon: 'link_off', danger: true, dividerBefore: true, confirm: { title: 'Deactivate this link?', message: 'Anyone who opens it will see that it is no longer active.', okLabel: 'Deactivate' } }]")}
     ${pager('payment links')}
   </q-table>`
 
@@ -219,9 +231,21 @@ const createDialog = `
     </template>
   </ds-modal>`
 
-const LIST_SLOT = (empty) => `
+/** CHART CONCEPT — see ChartConceptTimeToPay. */
+const timeToPayChart = `
+  <div style="margin-bottom:20px;">
+    <ds-chart-card title="Time to pay" subtitle="Completed links by days from creation to payment · year to date" table-toggle>
+      <template #default="{ view }">
+        <ds-bar-chart :labels="timeToPay.labels" :series="timeToPay.series" :height="200" :view="view" />
+      </template>
+      <template #footer>21 of 24 were paid within 3 days. 3 more links expired or were turned off before anyone paid.</template>
+    </ds-chart-card>
+  </div>`
+
+const LIST_SLOT = (empty, chart = false) => `
   <div style="${EP_PAGE}">
     ${conceptHeader('Payment Links', { actions: CREATE_BTN })}
+    ${chart ? timeToPayChart : ''}
     ${epCard(empty ? emptyBody : `${filterTiles(4)}${listToolbar('Search links, customers or reservations')}${table}`)}
   </div>
   ${createDialog}`
@@ -252,16 +276,17 @@ function listState({ createOpen = false, filled = false } = {}) {
     pick,
     chipFor: conceptChip,
     canCreate: computed(() => !!(form.value.description && form.value.event && (form.value.mode === 'open' || form.value.amount))),
+    timeToPay: TIME_TO_PAY,
   }
 }
 
-const COMPONENTS = { DsSearch, DsStat, DsModal, DsInput, DsSelect, DsInfoGrid, DsEmptyState }
+const COMPONENTS = { DsSearch, DsStat, DsModal, DsInput, DsSelect, DsInfoGrid, DsEmptyState, DsChartCard, DsBarChart }
 
 const listStory = (opts = {}) => epPage({
   active: 'payment-links',
   components: COMPONENTS,
   setup: () => listState(opts),
-  slot: LIST_SLOT(!!opts.empty),
+  slot: LIST_SLOT(!!opts.empty, !!opts.chart),
 })
 
 /* ---------------------------------------------------------------------------
@@ -330,7 +355,7 @@ const DETAIL_SLOT = `
             </div>
           </q-td>
         </template>
-        ${rowMenu('props.row.id')}
+        ${rowMenu('props.row.id', "[{ label: 'View transaction', icon: 'visibility', to: 'transactions' }, { label: 'Copy transaction ID', icon: 'content_copy', copy: props.row.id }, { label: 'Refund payment', icon: 'undo', danger: true, dividerBefore: true, confirm: { title: 'Refund ' + props.row.id + '?', message: 'The customer is refunded to the original payment method. This can’t be undone.', okLabel: 'Refund' } }]")}
       </q-table>`)}
   </div>`
 
@@ -379,3 +404,22 @@ Create.storyName = 'Create · Payment Link'
 /** First run — no links created yet. */
 export const Empty = listStory({ empty: true })
 Empty.storyName = 'Empty · first run'
+
+/** **Chart concept · Time to pay** — the List with a days-to-payment chart
+ *  above the tiles.
+ *
+ *  *Question it answers:* "How long do people take to pay a link — and so how
+ *  long should a link live?" That is the one setting a merchant chooses on
+ *  every link (Expires), and today they choose it blind. Here most links are
+ *  paid within a day, so a 7-day default expiry loses almost nothing.
+ *
+ *  *Why a bar chart:* the Charts Overview's Bar is for "comparing
+ *  categories"; the buckets are ordered categories and the question is which
+ *  is biggest. One series, so no legend.
+ *
+ *  *Adds:* one chart card between the header and the list; the list is
+ *  unchanged. *Considered and not proposed:* a per-link payments sparkline in
+ *  the table (most links are single use — one payment is a dot, not a trend)
+ *  and revenue by link (the Amount column already says it, exactly). */
+export const ChartConceptTimeToPay = listStory({ chart: true })
+ChartConceptTimeToPay.storyName = 'Chart concept · Time to pay'

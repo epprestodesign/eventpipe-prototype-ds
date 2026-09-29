@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatValue, formatLabel, formatDelta, truncateLabel, formatAxisValue, MISSING } from '../chartFormat.js'
+import { formatValue, formatLabel, formatDelta, truncateLabel, formatAxisValue, percentAxisDecimals, MISSING } from '../chartFormat.js'
 import { classifyCartesian, classifySegments, seriesColorSlots, toShares, foldSegments, sumPresent } from '../chartData.js'
 
 describe('formatValue', () => {
@@ -103,5 +103,22 @@ describe('foldSegments', () => {
   })
   it('sums present values only', () => {
     expect(sumPresent([1, null, 2])).toBe(3)
+  })
+})
+
+describe('percentAxisDecimals', () => {
+  it('uses whole percents when ticks are ≥1% apart', () => {
+    expect(percentAxisDecimals(0.25)).toBe(0)
+    expect(percentAxisDecimals(0.01)).toBe(0)
+  })
+  it('adds just enough places to separate sub-percent ticks', () => {
+    expect(percentAxisDecimals(0.005)).toBe(1) // 0.5% steps
+    expect(percentAxisDecimals(0.002)).toBe(1)
+    expect(percentAxisDecimals(0.0005)).toBe(2)
+    expect(percentAxisDecimals(0.00001)).toBe(2) // capped
+  })
+  it('falls back to whole percents without a step', () => {
+    expect(percentAxisDecimals(0)).toBe(0)
+    expect(percentAxisDecimals(undefined)).toBe(0)
   })
 })

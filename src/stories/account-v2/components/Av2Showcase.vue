@@ -26,9 +26,26 @@
  * like any mock screenshot — not claims.
  *
  * The `ground` slot replaces the default shader (authStep's `ground` option).
+ * The default shader is aria-hidden by its wrapper; a slotted ground owns its
+ * own semantics, because Av2VideoGround puts a Pause/Play control beside its
+ * (aria-hidden) media and that control must not sit inside aria-hidden.
+ *
+ * `cards: false` drops the frosted card cluster (the stage stays, so the
+ * headline keeps its place). Used by the pre-rendered video grounds, which
+ * already carry their own cards. Defaults to true.
  */
+import { inject } from 'vue'
 import Av2ShaderGround from './Av2ShaderGround.vue'
+import Av2VideoGround from './Av2VideoGround.vue'
 import DsStat from '../../../components/DsStat.vue'
+
+/* App-level ground override. An app can provide('av2ShowcaseGround',
+   { poster, webm, mp4 }) to swap every showcase's shader for that pre-rendered
+   video ground, with the frosted cards hidden (the video brings its own). The
+   standalone EP Pay prototype does this with video concept C — the shader
+   package is evaluation-licensed and must not ship there. Storybook never
+   provides it, so every story renders exactly as before. */
+const groundOverride = inject('av2ShowcaseGround', null)
 
 defineProps({
   showcase: {
@@ -40,6 +57,11 @@ defineProps({
   forceFallback: { type: Boolean, default: false },
   /** Pale ground (the 'wave' shader): headline in dark ink. */
   light: { type: Boolean, default: false },
+  /** Render the frosted card cluster. Off for grounds that bring their own. */
+  cards: { type: Boolean, default: true },
+  /** Story-level headline override (a concept testing new copy). Empty keeps
+   *  the showcase's own headline; the subline is never overridden. */
+  headline: { type: String, default: '' },
 })
 
 const COPY = {
@@ -63,13 +85,15 @@ const COPY = {
 
 <template>
   <section class="av2sc" :class="{ 'av2sc--light': light }" :aria-label="COPY[showcase].label">
-    <div class="av2sc__ground" aria-hidden="true">
-      <slot name="ground">
+    <div class="av2sc__ground" :aria-hidden="$slots.ground || groundOverride ? undefined : 'true'">
+      <Av2VideoGround v-if="groundOverride" v-bind="groundOverride" />
+      <slot v-else name="ground">
         <Av2ShaderGround :variant="variant" :force-fallback="forceFallback" />
       </slot>
     </div>
 
     <div class="av2sc__stage" aria-hidden="true">
+      <template v-if="cards && !groundOverride">
       <!-- platform: an event's room count behind this weekend's pickup. -->
       <div v-if="showcase === 'platform'" class="av2sc__cluster">
         <div class="av2sc__glass av2sc__rear">
@@ -149,10 +173,11 @@ const COPY = {
           <div class="av2sc__line">Other sessions signed out</div>
         </div>
       </div>
+      </template>
     </div>
 
     <div class="av2sc__copy">
-      <h2 class="av2sc__headline">{{ COPY[showcase].headline }}</h2>
+      <h2 class="av2sc__headline">{{ headline || COPY[showcase].headline }}</h2>
       <p class="av2sc__sub">{{ COPY[showcase].sub }}</p>
     </div>
   </section>
