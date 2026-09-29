@@ -213,6 +213,13 @@ const preview = {
           // launch scope, one per ticket; authenticator apps are scheduled for
           // later (ENG-3033) and kept in their own group so they never read as
           // launch scope. The admin platform's older Account section is untouched.
+          'Account V1', [
+            'Scope & decisions',
+            'Account access',
+            'Phase 1 · Login migration',
+            'Phase 2 · MFA',
+            'Components',
+          ],
           'Account V2', [
             'Flows', [
               '01 · Sign in',

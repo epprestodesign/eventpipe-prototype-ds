@@ -1,0 +1,83 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Account V1/Scope & decisions" />
+
+# Account V1 · Rob’s September 29 feedback
+
+Source: the supplied transcript, **EventPipe Pay login redesign and multi-factor authentication**, September 29. The user identifies the speaker as Rob. This page records the agreed direction and separates it from proposed design details; the conversation was not a complete implementation specification.
+
+## Confirmed direction
+
+| Decision | Storybook coverage |
+| --- | --- |
+| Phase 1: migrate the existing EventPipe login and reset-password pages to the new technology. Visual refinement is welcome; retaining the existing flow is acceptable. | Phase 1 · Login migration / Layouts |
+| Phase 2: add multi-factor authentication after that migration. | Phase 2 · MFA / Layouts |
+| Support email and authenticator verification, with an alternative such as “Try another way” or email fallback from the authenticator screen. | Authenticator, Email verification, Choose another method, Full flow |
+| EventPipe Pay is a separate application with separate account access. No merchant application switch belongs in this EventPipe login. | All Account V1 layouts |
+| No Google sign-in or SSO button was requested; SSO is not on the stated roadmap. | Email/password login only |
+| Product news for existing customers is useful in the side panel. Rob supported the idea of product managers supplying formatted text. | With Product Update; Components / Product Update |
+
+## Phase 1 specification
+
+Keep the recognizable split composition: EventPipe branding at left, credentials or reset request at right. Use the existing logo, design tokens, field wrapper, inputs, buttons, links and typography. Keep the original two screenshot-based stories under **Account access** as the baseline.
+
+The improved login asks for email and password, with Log in and Forgot your password. The reset request asks for email, with Cancel and Reset Password. Cancel returns to login and keeps the entered email. The password is cleared on navigation. The proposed refinements add clearer reset copy, accessible show/hide password, validation messages and focus movement when changing screens.
+
+**Proposed supporting states, not explicit Rob requirements:** invalid or missing input, incorrect credentials, submitting, service unavailable, session expired, reset submission failure and reset-request confirmation. The confirmation uses the same wording whether an account exists or not. These are reviewable UI states, not a backend authentication implementation.
+
+## Phase 2 specification
+
+Four milestone stories keep the sidebar compact. Each has a **Preview state** selector and **Restart preview** button above the product screen; these are review controls only.
+
+| Milestone | States available inside the story |
+| --- | --- |
+| Authenticator | Enter code, incorrect code, expired code, verifying, session expired |
+| Email verification | Enter code/countdown, incorrect code, expired code, resend available, code resent, resend failed, verifying, session expired |
+| Choose another method | Both methods, email only, authenticator only, no available method |
+| Full flow | Start at login, authenticator, or email; continue through verification to completion |
+
+Changing the selected state resets entered data and timers. The existing main milestone URLs are preserved; the former individual edge-case stories are now reviewed using these selectors.
+
+After credentials are accepted and the server requires MFA, show the account’s eligible challenge. Authenticator users can choose **Try another way**, then email where available. Email users can resend a code or choose another eligible method. Returning to login clears the challenge form.
+
+**Proposed supporting states:** invalid code, expired email code, verifying, resend success/failure, verification-session expiry, one available method and no available method. In the last state the preview directs users to their account administrator; the actual recovery/support destination needs confirmation.
+
+The code entry and resend line reuse Account V2’s existing six-box interaction, including paste, numeric input, autofill and error styling. The email resend countdown starts at an illustrative 0:42 and ticks down; expired email codes require a resend, while expired authenticator codes can be replaced with the latest app code. This preview timing is not a backend policy decision. The masked sample email and preview success behavior are illustrative. The prototype accepts any six digits, never contacts an authentication service and never sends email. The loading stories remain loading so they can be reviewed. The interactive story connects credentials → authenticator → method selection → email → completion.
+
+## Product-update surface
+
+Use an optional card made from existing GUI components, plain title/body text and an optional destination link. Empty content leaves the brand-only panel. Long content wraps; on small screens the announcement follows the form. Copy shown in these stories is a sample, not an announcement that a feature shipped.
+
+Rob supported this direction, but did not commit it to the first migration release. A CMS, rich-text editor, permissions, publishing workflow, scheduling and analytics were not specified and are not built here. Stored content is rendered as text rather than raw HTML.
+
+## Decisions still needed
+
+- Rob will confirm whether additional account creation/invitation pages exist and need migration.
+- Engineering must confirm reset-link completion screens and their existing contracts; the discussion identifies the reset request page, not a new password-policy specification.
+- Confirm MFA rollout, eligible methods, enrollment, default method and whether email fallback is permitted for each account.
+- Confirm code format, expiry, resend cooldown, attempt limits, lockout policy and session duration. These must come from the backend; the stories do not invent policy values.
+- Confirm the support/recovery path when no verification method is accessible.
+- Confirm product-update content ownership, publishing source, destination links and release phase.
+- Scott and Josh were named as reviewers. No review approval is recorded in the transcript.
+
+Account V2 and EP Pay remain separate existing explorations. Their earlier implementation assumptions are not treated as decisions from this meeting.
+
+## Phase 2 left-panel concepts
+
+**Phase 2 · MFA / Product update concepts** contains five reusable treatments. Each can be reviewed beside email/authenticator verification or on its own with **Component only**. **Read more link** turns the optional action on/off; **Image unavailable** checks the image treatment’s fallback.
+
+| Concept | Intended use |
+| --- | --- |
+| Featured Article | One editorial headline directly on the navy panel; minimal visual clutter |
+| Release Highlights | A compact digest of several improvements from one product roundup |
+| Rotating Spotlight | Three articles with manual previous/next controls; no automatic motion during MFA |
+| Product Tip | One practical workflow reminder in the existing banner component |
+| Image Announcement | Blog artwork and a short announcement in the existing card surface |
+
+Content is summarized from EventPipe’s public blog, with original publication dates shown. These are editorial layout concepts, not newly shipped feature announcements or a live content feed. External links preserve the login page by opening the article separately.
+
+Sources verified September 29, 2026:
+
+- [Introducing Presto: Live Hotel Inventory Booking Software](https://www.eventpipe.com/blog/presto-live-hotel-inventory-software), September 25, 2025. The image treatment uses this post’s public article artwork.
+- [Introducing Upfront Markup](https://www.eventpipe.com/blog/upfront-markup-is-a-game-changer-for-sports-housing-companies-and-hotel-users), September 12, 2024.
+- [EventPipe Product Breakthroughs](https://www.eventpipe.com/blog/eventpipe-product-breakthroughs), October 16, 2024.

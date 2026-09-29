@@ -26,6 +26,8 @@ const props = defineProps({
   wait: { type: String, default: '1:00' },
 })
 
+const emit = defineEmits(['resend'])
+
 const seconds = computed(() => {
   const [m, s] = props.wait.split(':').map(Number)
   return (m || 0) * 60 + (s || 0)
@@ -46,7 +48,7 @@ const seconds = computed(() => {
       Resend code in <span class="av2cr__time">{{ wait }}</span>
     </q-btn>
     <q-btn v-else-if="state === 'ready'" flat dense no-caps color="primary"
-      class="av2cr__btn" label="Resend code" />
+      class="av2cr__btn" label="Resend code" @click="emit('resend')" />
     <q-btn v-else flat dense no-caps disable class="av2cr__btn av2cr__btn--wait"
       label="Resend code" />
   </p>
