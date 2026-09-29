@@ -81,7 +81,7 @@ const log = (rows) => ({
       <q-card-section style="padding:26px 30px;">
         <div style="${H2}">Communications Log</div>
         <q-table class="ds-table" :rows="logRows" :columns="logColumns" row-key="key"
-          flat bordered hide-bottom :pagination="{ rowsPerPage: 0 }"
+          flat bordered :hide-bottom="logRows.length > 0" :pagination="{ rowsPerPage: 0 }"
           no-data-label="No communications have been sent to this team yet.">
           <template #body-cell-recipients="props">
             <q-td :props="props">

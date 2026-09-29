@@ -208,6 +208,29 @@ const preview = {
           // Experimental workspaces — pinned to the very bottom (after the wildcard).
           'Event Producer Portal',
           'Eventpipe Labs',
+          // EP Pay — a separate product rather than a Labs experiment, so it
+          // gets its own section, below Labs.
+          'EP Pay', [
+            'Screens', [
+              '01 · Login',
+              '02 · Dashboard',
+              '03 · Balances',
+              '04 · Transactions',
+              '05 · Disputes',
+              '06 · Developer',
+              '07 · Merchant Application',
+              // Concepts, not specified product — no requirements exist for
+              // these five areas anywhere in Linear (checked 2026-09-29).
+              '08 · Unbuilt Areas', [
+                'Customers',
+                'Payment Links',
+                'Products',
+                'Subscriptions',
+                'Invoicing',
+              ],
+            ],
+            'Components',
+          ],
         ],
       },
     },

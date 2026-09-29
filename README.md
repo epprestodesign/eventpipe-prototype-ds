@@ -84,6 +84,19 @@ The sidebar is ordered the way product & design think (set in `.storybook/previe
 - **Design Requests** — ticket-scoped design work: Teams Mgmt Comms (Phase 1 &
   2), Aug 19, DES-95 Customized Page Revamp, Multiple Secondary Fees
   (DES-451/452/456), and GB Reminder Controls (PP-42/43/44).
+- **EP Pay** — the payments product: dashboard, balances, transactions,
+  disputes, developer tools and the merchant application wizard, plus concept
+  designs for five areas with no requirements yet (Customers, Payment Links,
+  Products, Subscriptions, Invoicing). A clickable prototype is published at
+  `/ep-pay/` (`pnpm dev:ep-pay` locally, port 6009).
+
+> **EP Pay is built on Teams Mgmt Comms Phase 2.** That folder is the reference
+> implementation for an EventPipe product screen, and the three pieces it is
+> made of are the three EP Pay is made of: `AppShell` for the chrome,
+> `DsPageHeader` for the title row, and `q-card flat bordered` +
+> `q-table.ds-table` for the body. The 09/28 reference captures set the
+> *structure* of each screen and nothing else; colour, type, spacing and
+> components come from the design system.
 
 > A story's sidebar placement comes from its `title` (e.g. `Components/Forms/Input`),
 > not its source folder.

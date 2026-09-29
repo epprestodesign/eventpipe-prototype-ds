@@ -1,0 +1,24 @@
+// =============================================================
+// EP PAY — structural helpers only. No colour of its own.
+//
+// An earlier version of this file carried a teal reskin sampled from the
+// 09/28 reference screenshots. That is gone. EP Pay renders in the EventPipe
+// design system as-is: Azure #2561FA brand, the #01113E navy chrome, Graphite
+// neutrals, Product Sans, 4px radius, 40px controls.
+//
+// The screenshots are now a reference for STRUCTURE — what is on each screen
+// and how it is arranged — not for colour. Where the capture and the design
+// system disagree, the design system wins: the capture's navy table header
+// becomes the DS `.ds-table` Azure header, its teal buttons become Azure
+// primaries, its bespoke greens become the semantic success tokens.
+//
+// What remains here is the handful of structural classes EP Pay needs that the
+// library does not already provide, each built from DS tokens.
+// =============================================================
+
+.eppay {
+  // In-table links are navigation, not actions, so they use the DS link token
+  // rather than the brand colour a primary button carries.
+  .eppay-link { color: var(--ds-color-link); text-decoration: none; font-weight: 500; }
+  .eppay-link:hover { text-decoration: underline; }
+}
