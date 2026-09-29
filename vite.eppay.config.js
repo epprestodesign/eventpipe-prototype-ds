@@ -24,6 +24,8 @@ export default defineConfig(({ command }) => ({
       // comes up with its chrome and no screen inside it. Point at the bundler
       // build, which ships the compiler.
       vue: 'vue/dist/vue.esm-bundler.js',
+      // Keep the evaluation-licensed `shaders` package out of the hosted build.
+      'shaders/vue': fileURLToPath(new URL('./prototype-eppay/shaders-stub.js', import.meta.url)),
     },
   },
   envDir: fileURLToPath(new URL('.', import.meta.url)),

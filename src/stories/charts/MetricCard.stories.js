@@ -32,7 +32,7 @@ export default {
 The delta badge states direction with an icon **and** text, and exposes a full sentence ("Up 14.2% vs. previous period, from $42,210.00") to screen readers. Colour is never the only signal.
 
 ## Migration note
-EP Pay's \`EpPayStatCard\` is a hand-rolled precursor (inline SVG sparkline, hard-coded "trending_up" badge). It should move onto this component; not done here.
+EP Pay's Dashboard metric tiles are built on this component (they replaced the hand-rolled \`EpPayStatCard\`, now deleted).
 `,
       },
     },

@@ -26,6 +26,10 @@ const props = defineProps({
   horizontal: { type: Boolean, default: false },
   /** Stacked bars normalised to 100% per category. */
   percent: { type: Boolean, default: false },
+  /** No axes, no grid, bar fills the height — the compact single-row share
+   *  bar (e.g. EP Pay's balance and dispute breakdowns). Tooltip, legend and
+   *  the hidden data table still carry the numbers. */
+  bare: { type: Boolean, default: false },
 })
 const emit = defineEmits(['update:hiddenSeries', 'retry'])
 
@@ -149,9 +153,9 @@ function buildConfig(t) {
         borderWidth: stacked ? 1 : 0,
         borderRadius: stacked ? 0 : 4,
         borderSkipped: 'start',
-        maxBarThickness: props.horizontal ? 22 : 36,
-        categoryPercentage: 0.72,
-        barPercentage: plotted.value.length > 1 && !stacked ? 0.92 : 1,
+        maxBarThickness: props.bare ? undefined : props.horizontal ? 22 : 36,
+        categoryPercentage: props.bare ? 1 : 0.72,
+        barPercentage: props.bare || (plotted.value.length > 1 && !stacked) ? (props.bare ? 1 : 0.92) : 1,
         stack: stacked ? 'total' : undefined,
       }
     }
@@ -210,7 +214,10 @@ function buildConfig(t) {
     border: { display: false },
     ticks: {
       color: t.textSubtle, font, padding: 8, maxTicksLimit: 6,
-      callback: (v) => formatAxisValue(v, plotFormat.value, { currency: props.currency }),
+      callback: (v, _i, ticks) => formatAxisValue(v, plotFormat.value, {
+        currency: props.currency,
+        step: ticks.length > 1 ? Math.abs(ticks[1].value - ticks[0].value) : 0,
+      }),
     },
   }
   if (props.percent) Object.assign(valAxis, { min: 0, max: 1 })
@@ -230,9 +237,13 @@ function buildConfig(t) {
       maintainAspectRatio: false,
       animation: false,
       indexAxis: props.horizontal ? 'y' : 'x',
-      layout: { padding: { top: 6, right: 8 } },
+      layout: { padding: props.bare ? 0 : { top: 6, right: 8 } },
       interaction: { mode: 'index', intersect: false, axis: props.horizontal ? 'y' : 'x' },
-      scales: props.horizontal ? { y: catAxis, x: valAxis } : { x: catAxis, y: valAxis },
+      scales: props.bare
+        ? (props.horizontal
+          ? { y: { ...catAxis, display: false }, x: { ...valAxis, display: false } }
+          : { x: { ...catAxis, display: false }, y: { ...valAxis, display: false } })
+        : (props.horizontal ? { y: catAxis, x: valAxis } : { x: catAxis, y: valAxis }),
       plugins: { tooltip: { enabled: false, external: externalTooltip }, legend: { display: false } },
     },
   }
@@ -289,10 +300,16 @@ function onBlur() { kbIndex.value = -1; if (chart.value) clearActive(chart.value
       @retry="emit('retry')"
     />
 
-    <template v-else-if="view === 'table'">
+    <!-- The table view is not capped to the chart's height: squeezing every
+         row into the plot's 260px made the reader scroll a tiny box inside the
+         page. The table takes its natural height and the card grows with it. -->
+    <!-- 'data' is the same table made interactive (search / sort / series
+         columns) for DsChartCard's View more modal; 'table' stays static. -->
+    <template v-else-if="view === 'table' || view === 'data'">
       <ds-chart-data-table
+        :interactive="view === 'data'" :legend-items="legendItems"
         :labels="labels" :series="series" :label-format="labelFormat"
-        :value-format="valueFormat" :currency="currency" :max-height="height"
+        :value-format="valueFormat" :currency="currency"
         :category-header="labelFormat === 'category' ? 'Category' : 'Date'"
       />
     </template>

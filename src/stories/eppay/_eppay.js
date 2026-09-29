@@ -20,11 +20,20 @@
  *  that has to be made twice.
  */
 
+import { computed, inject } from 'vue'
 import AppShell from '../../components/AppShell.vue'
 import DsPageHeader from '../../components/DsPageHeader.vue'
+import DsPagination from '../../components/DsPagination.vue'
+import DsActionMenu from '../../components/DsActionMenu.vue'
+import { Notify } from 'quasar'
 
 export const ORG = 'Team Travel Source'
 export const USER = 'Mike Addesa'
+
+/** Every place the signed-in user can be — the same list, in the same order,
+ *  as the sign-in "Where to?" picker (Account V2 › Concepts › Passwordless ·
+ *  Choose view), so the top-bar switcher and the picker never disagree. */
+export const EP_ORGS = ['Team Travel Source', 'Summit Events Co.', 'Global Sports Group', 'EventPipe view']
 
 /** Product nav, in the order the captures show it. */
 export const EP_NAV = [
@@ -119,18 +128,42 @@ const fatalTemplate = `
  *  on the elevated panel. */
 export function epPage({ active = 'dashboard', org = ORG, user = USER, components = {}, setup = () => ({}), slot = '' }) {
   const pageTemplate = `
-    <div class="eppay" style="height:100vh">
+    <div class="eppay" style="height:100vh" @ds-action-select="onActionSelect">
       <app-shell :items="nav" :footer-item="footerItem" active="${active}"
-        org="${org}" user="${user}" bleed @navigate="onNavigate">
+        :org="shellOrg" :user="shellUser" :orgs="orgs" @update:org="onOrgChange"
+        bleed @navigate="onNavigate">
         ${slot}
       </app-shell>
     </div>`
   return {
     render: (args) => ({
-      components: { AppShell, DsPageHeader, ...components },
+      // DsPagination is registered for every EP Pay screen: all paged tables
+      // use the one design-system pager (Components › Navigation › Pagination).
+      components: { AppShell, DsPageHeader, DsPagination, DsActionMenu, ...components },
       setup: () => {
         try {
-          return { fatal: '', nav: EP_NAV, footerItem: EP_FOOTER_ITEM, onNavigate, ...setup(args) }
+          /* An app can provide('eppaySession', { org: Ref, user: Ref }) — the
+             standalone prototype does, so the org picked at sign-in shows in
+             every screen's top bar and switching it there sticks. Storybook
+             provides nothing, so each story keeps its fixed org and user. */
+          const session = inject('eppaySession', null)
+          const shellOrg = computed(() => session?.org?.value || org)
+          const shellUser = computed(() => session?.user?.value || user)
+          const onOrgChange = (v) => { if (session?.org) session.org.value = v }
+          /* Every DsActionMenu on the page reports here. An item with `to`
+             opens that screen (in the prototype; in Storybook each screen
+             stands alone, so it says where it would go). Copy and confirmed
+             items were already handled by the menu; the rest have no screen
+             yet and say so briefly. */
+          const onActionSelect = (e) => {
+            const item = e.detail || {}
+            if (item.handled === 'copy') return
+            if (item.to && session) return onNavigate(item.to)
+            const message = item.to ? `Opens ${item.label.toLowerCase()}`
+              : item.handled === 'confirm' ? `${item.label} — done (prototype)` : `Prototype: ${item.label}`
+            Notify.create({ message, timeout: 1600 })
+          }
+          return { fatal: '', nav: EP_NAV, footerItem: EP_FOOTER_ITEM, onNavigate, orgs: EP_ORGS, shellOrg, shellUser, onOrgChange, onActionSelect, ...setup(args) }
         } catch (err) {
           return { fatal: 'setup() threw:\n\n' + (err && err.stack ? err.stack : String(err)) }
         }
@@ -176,22 +209,33 @@ export function epAuthPage({ components = {}, setup = () => ({}), slot = '' }) {
  * product reads as one account rather than a set of unrelated mockups.
  * ------------------------------------------------------------------------- */
 
+/* `value`/`prev`/`delta`/`spark` are the original display strings; the numeric
+   `amount`/`previousAmount`/`trend`/`trendPrevious` (10 buckets across the day,
+   Aug 20, 2026 vs Aug 20, 2025) are what DsMetricCard formats and compares. */
 export const DASHBOARD_STATS = [
-  { key: 'gross', label: 'Gross Volume', value: '$2,089.00', unit: 'USD', prev: '$1,829.25 previous year', delta: '14.2%', spark: [0, 0, 0, 0, 3, 0, 9, 0, 0, 0] },
-  { key: 'success', label: 'Successful Transactions', value: '2', prev: '2 previous year', delta: '13.7%', spark: [0, 0, 0, 6, 0, 0, 8, 0, 0, 0] },
-  { key: 'payouts', label: 'Payouts', value: '$2,028.42', unit: 'USD', prev: '$1,798.24 previous year', delta: '12.8%', spark: [0, 0, 0, 0, 4, 0, 9, 0, 0, 0] },
-  { key: 'avgspend', label: 'Average Customer Spend', value: '$1,044.50', unit: 'USD', prev: '$1,038.27 previous year', delta: '0.6%', spark: [0, 0, 0, 0, 5, 0, 9, 0, 0, 0] },
-  { key: 'dispvol', label: 'Dispute Volume', value: '$0.00', unit: 'USD', prev: '$0.00 previous year', delta: '0.0%', spark: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
-  { key: 'dispcount', label: 'Dispute Count', value: '0', prev: '0 previous year', delta: '0.0%', spark: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { key: 'gross', label: 'Gross Volume', value: '$2,089.00', unit: 'USD', prev: '$1,829.25 previous year', delta: '14.2%', spark: [0, 0, 0, 0, 3, 0, 9, 0, 0, 0],
+    amount: 2089.00, previousAmount: 1829.25, trend: [0, 0, 0, 0, 489.00, 0, 1600.00, 0, 0, 0], trendPrevious: [0, 0, 0, 640.25, 0, 0, 0, 1189.00, 0, 0] },
+  { key: 'success', label: 'Successful Transactions', value: '2', prev: '2 previous year', delta: '13.7%', spark: [0, 0, 0, 6, 0, 0, 8, 0, 0, 0],
+    amount: 2, previousAmount: 2, trend: [0, 0, 0, 0, 1, 0, 1, 0, 0, 0], trendPrevious: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0] },
+  { key: 'payouts', label: 'Payouts', value: '$2,028.42', unit: 'USD', prev: '$1,798.24 previous year', delta: '12.8%', spark: [0, 0, 0, 0, 4, 0, 9, 0, 0, 0],
+    amount: 2028.42, previousAmount: 1798.24, trend: [0, 0, 0, 0, 474.82, 0, 1553.60, 0, 0, 0], trendPrevious: [0, 0, 0, 622.70, 0, 0, 0, 1175.54, 0, 0] },
+  { key: 'avgspend', label: 'Average Customer Spend', value: '$1,044.50', unit: 'USD', prev: '$1,038.27 previous year', delta: '0.6%', spark: [0, 0, 0, 0, 5, 0, 9, 0, 0, 0],
+    // Running average: null until the first sale — no customers yet is "no average", not $0.
+    amount: 1044.50, previousAmount: 1038.27, trend: [null, null, null, null, 489.00, 489.00, 1044.50, 1044.50, 1044.50, 1044.50], trendPrevious: [null, null, null, 1012.40, 1012.40, 1012.40, 1012.40, 1038.27, 1038.27, 1038.27] },
+  { key: 'dispvol', label: 'Dispute Volume', value: '$0.00', unit: 'USD', prev: '$0.00 previous year', delta: '0.0%', spark: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    amount: 0, previousAmount: 0, trend: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], trendPrevious: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { key: 'dispcount', label: 'Dispute Count', value: '0', prev: '0 previous year', delta: '0.0%', spark: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    amount: 0, previousAmount: 0, trend: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], trendPrevious: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
 ]
 
 export const BALANCE_SUMMARY = {
   total: '$2,389.12',
+  totalAmount: 2389.12,
   items: 9,
   rows: [
-    { key: 'available', label: 'Available', items: 4, amount: '$1,204.55', tone: 'positive', icon: 'check_circle' },
-    { key: 'soon', label: 'Available Soon', items: 3, amount: '$842.30', tone: 'warning', icon: 'schedule' },
-    { key: 'held', label: 'Held', items: 2, amount: '$342.27', tone: 'negative', icon: 'lock' },
+    { key: 'available', label: 'Available', items: 4, amount: '$1,204.55', value: 1204.55, tone: 'positive', icon: 'check_circle' },
+    { key: 'soon', label: 'Available Soon', items: 3, amount: '$842.30', value: 842.30, tone: 'warning', icon: 'schedule' },
+    { key: 'held', label: 'Held', items: 2, amount: '$342.27', value: 342.27, tone: 'negative', icon: 'lock' },
   ],
 }
 

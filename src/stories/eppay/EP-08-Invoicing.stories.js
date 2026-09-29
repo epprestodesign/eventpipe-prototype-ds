@@ -39,6 +39,8 @@ import DsInput from '../../components/DsInput.vue'
 import DsSelect from '../../components/DsSelect.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
 import DsEmptyState from '../../components/DsEmptyState.vue'
+import DsChartCard from '../../components/charts/DsChartCard.vue'
+import DsBarChart from '../../components/charts/DsBarChart.vue'
 
 export default {
   title: 'EP Pay/Screens/08 · Unbuilt Areas/Invoicing',
@@ -92,6 +94,17 @@ const FILTERS = [
   { key: 'pastdue', label: 'Past Due', count: 3, total: '$4,117.00 due', pages: 1, match: (i) => i.status === 'Past Due' },
   { key: 'paid', label: 'Paid', count: 86, total: '$163,297.00 collected', pages: 9, match: (i) => i.status === 'Paid' },
 ]
+
+/** CHART CONCEPT — what is overdue, by how far past its due date, as of
+ *  Sep 29, 2026. The buckets add to the Past Due tile ($4,117.00, 3 invoices)
+ *  — Jordan Alvarez's $1,608.00 (due Sep 15) is in 1–30. Not-yet-due money
+ *  (the Open tile, $28,406.00) is left out of the plot on purpose: at 87% of
+ *  the total it flattened the overdue bars to slivers, and the footer states
+ *  it. Nothing is over 60 days: real zeros, not missing values. */
+const AGING = {
+  labels: ['1–30 days', '31–60 days', '61–90 days', '90+ days'],
+  series: [{ key: 'owed', label: 'Amount past due', data: [2872, 1245, 0, 0] }],
+}
 
 const COLUMNS = [
   { name: 'status', label: 'Status & Due', field: 'status', align: 'left' },
@@ -164,7 +177,7 @@ const table = `
       </q-td>
     </template>
 
-    ${rowMenu('props.row.id')}
+    ${rowMenu('props.row.id', "[{ label: 'View invoice', icon: 'visibility', to: 'invoicing/detail' }, { label: 'Send reminder', icon: 'notifications' }, { label: 'Download PDF', icon: 'file_download' }, { label: 'Copy invoice number', icon: 'content_copy', copy: props.row.id }, { label: 'Void invoice', icon: 'block', danger: true, dividerBefore: true, confirm: { title: 'Void ' + props.row.id + '?', message: 'The customer can no longer pay it. This can’t be undone.', okLabel: 'Void invoice' } }]")}
     ${pager('invoices')}
   </q-table>`
 
@@ -174,9 +187,22 @@ const emptyBody = `
     <template #action>${CREATE_BTN}</template>
   </ds-empty-state>`
 
-const LIST_SLOT = (empty) => `
+/** CHART CONCEPT — see ChartConceptAging. */
+const agingChart = `
+  <div style="margin-bottom:20px;">
+    <ds-chart-card title="Past-due aging" subtitle="Overdue invoices by days past due · as of Sep 29, 2026" table-toggle>
+      <template #default="{ view }">
+        <ds-bar-chart :labels="aging.labels" :series="aging.series" value-format="currency"
+          :height="200" :view="view" />
+      </template>
+      <template #footer>$4,117.00 across 3 invoices is past due, none older than 60 days. Another $28,406.00 on 12 open invoices is not due yet.</template>
+    </ds-chart-card>
+  </div>`
+
+const LIST_SLOT = (empty, chart = false) => `
   <div style="${EP_PAGE}">
     ${conceptHeader('Invoicing', { actions: CREATE_BTN })}
+    ${chart ? agingChart : ''}
     ${epCard(empty ? emptyBody : `${filterTiles(5)}${listToolbar('Search invoices, customers or reservations')}${table}`)}
   </div>`
 
@@ -191,16 +217,17 @@ function listState() {
     visible: computed(() => (current.value.match ? INVOICES.filter(current.value.match) : INVOICES)),
     query: ref(''),
     chipFor: conceptChip,
+    aging: AGING,
   }
 }
 
-const COMPONENTS = { DsSearch, DsStat, DsInput, DsSelect, DsInfoGrid, DsEmptyState }
+const COMPONENTS = { DsSearch, DsStat, DsInput, DsSelect, DsInfoGrid, DsEmptyState, DsChartCard, DsBarChart }
 
-const listStory = (empty = false) => epPage({
+const listStory = (empty = false, chart = false) => epPage({
   active: 'invoicing',
   components: COMPONENTS,
   setup: listState,
-  slot: LIST_SLOT(empty),
+  slot: LIST_SLOT(empty, chart),
 })
 
 /* ---------------------------------------------------------------------------
@@ -233,8 +260,11 @@ const DETAIL_SLOT = `
       actions: `
         <q-btn outline no-caps color="primary" icon="file_download" label="Download PDF" style="padding:0 16px;" />
         <q-btn outline no-caps color="primary" icon="notifications" label="Send Reminder" style="padding:0 16px;" />
-        <q-btn flat dense icon="more_vert" aria-label="More invoice actions"
-          style="border:1px solid var(--ds-color-border-container); border-radius:var(--ds-radius-sm); color:var(--ds-color-icon-subtle);" />`,
+        <ds-action-menu label="More invoice actions" :items="[
+          { label: 'Duplicate invoice', icon: 'content_copy' },
+          { label: 'Copy invoice number', icon: 'tag', copy: 'INV-2026-0406' },
+          { label: 'Void invoice', icon: 'block', danger: true, dividerBefore: true, confirm: { title: 'Void this invoice?', message: 'The customer can no longer pay it. This can’t be undone.', okLabel: 'Void invoice' } },
+        ]" />`,
     })}
 
     <div style="display:flex; gap:20px; align-items:flex-start;">
@@ -457,3 +487,25 @@ Create.storyName = 'Create · New invoice'
 /** First run — no invoices yet. Says which "invoicing" this is. */
 export const Empty = listStory(true)
 Empty.storyName = 'Empty · first run'
+
+/** **Chart concept · Past-due aging** — the List with an aging chart above
+ *  the tiles.
+ *
+ *  *Question it answers:* "How much am I owed, and how late is it?" The
+ *  Past Due tile says $4,117.00 is overdue but not whether that is last week's
+ *  invoice or one from the spring — and the older it is, the less likely it
+ *  is ever collected. Aging buckets are the standard way finance teams read
+ *  receivables.
+ *
+ *  *Why a bar chart, not a single-row share bar:* the Charts Overview's Bar is
+ *  for "comparing categories", and the buckets are ordered categories whose
+ *  sizes are compared directly. A 100% share bar gives a $0 bucket no segment
+ *  at all; here 61–90 and 90+ keep their place on the axis and read "$0.00" in
+ *  the tooltip and table. The classic aging report also has a "Current"
+ *  column; it was plotted first and dropped, because at 87% of what is owed
+ *  it shrank every overdue bar to a sliver — the footer carries it instead.
+ *
+ *  *Adds:* one chart card between the header and the list; the list is
+ *  unchanged. */
+export const ChartConceptAging = listStory(false, true)
+ChartConceptAging.storyName = 'Chart concept · Past-due aging'

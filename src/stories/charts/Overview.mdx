@@ -13,6 +13,7 @@ The EventPipe chart catalog: Vue components on the DS tokens, one prop API for e
 | **Line** | Change over time, 1–5 series; current vs. previous period | `DsLineChart` | [Line](?path=/docs/components-charts-line--docs) |
 | **Area** | Volume or cumulative growth over time; stacked composition over time | `DsAreaChart` | [Area](?path=/docs/components-charts-area--docs) |
 | **Bar** | Comparing categories; grouped periods; horizontal for long labels | `DsBarChart` | [Bar](?path=/docs/components-charts-bar--docs) |
+| **Bar List** | Ranked top-N breakdown with long labels (hotels, customers) — a bar, a label and a value per row, no axis | `DsBarList` | [Bar List](?path=/docs/components-charts-bar-list--docs) |
 | **Stacked Bar** | Composition per category; 100% breakdown; single-row share bar | `DsStackedBarChart` | [Stacked Bar](?path=/docs/components-charts-stacked-bar--docs) |
 | **Donut** | Part-to-whole for 2–5 parts, with a centre metric | `DsDonutChart` | [Donut](?path=/docs/components-charts-donut--docs) |
 | **Sparkline** | A word-sized trend beside a number or in a table row | `DsSparkline` | [Sparkline](?path=/docs/components-charts-sparkline--docs) |
@@ -26,7 +27,7 @@ Not a chart? A single number with no trend is a [Stat](?path=/docs/components-la
 
 | Status | What |
 | --- | --- |
-| **Catalog** | Everything under Line, Area, Bar, Stacked Bar, Donut, Sparkline, Metric Card and Shared Elements. These are the real components in `src/components/charts/`. |
+| **Catalog** | Everything under Line, Area, Bar, Bar List, Stacked Bar, Donut, Sparkline, Metric Card and Shared Elements. These are the real components in `src/components/charts/`. |
 | **Experimental** | [Research → Renderer Comparison](?path=/docs/components-charts-research-renderer-comparison--docs). Unovis prototypes for evaluation only — devDependency, imported only from `src/stories/charts/research/`. |
 
 The catalog renders with **Chart.js 4** behind a renderer-agnostic prop API. The renderer lives only in `src/components/charts/internal/`; no Chart.js configuration object is part of any public prop. Changing renderer later touches internals only.
@@ -89,7 +90,7 @@ Plus **Loading** (skeleton at plot height) and **Error** (message + Retry, `@ret
 
 ## Accessibility
 
-- Every chart has an accessible summary (`aria-label`, auto-generated from the data or set with `ariaLabel`) and a **visually hidden data table** with the exact values. The Chart Card's **Chart / Table** toggle shows that table to everyone.
+- Every chart has an accessible summary (`aria-label`, auto-generated from the data or set with `ariaLabel`) and a **visually hidden data table** with the exact values. That hidden table always stays. The visible table now lives behind the Chart Card's **View more** button: a modal (focus moves to its row search and returns to View more on close) with the same values as an interactive table — search rows by label or value, sort any column (`aria-sort`; missing values sort last), show / hide series columns, and a live "Showing N of M rows" count.
 - Charts are keyboard-operable: Tab to the plot, **← / →** (↑ / ↓ for horizontal bars; arrows for donut slices) to move the tooltip, **Home / End**, **Esc**.
 - Legend items are toggle buttons with `aria-pressed`. The last visible series cannot be hidden.
 - Identity is never colour-only: ≥2 series always have a legend; comparison series are also dashed; Metric Card deltas carry an icon and text.
@@ -103,7 +104,7 @@ Decisions needed before any production migration:
 1. **Adopt the dark tokens** in `ds-theme-dark.scss` as a DS-wide decision (or replace them), and audit non-chart components.
 2. **Confirm Chart.js** as the renderer (see Research recommendation) and move `chart.js` from this repo's catalog into the product app's dependencies.
 3. **Adopt the categorical order** (`--ds-color-chart-1…5`) as the DS data-viz palette.
-4. **Migrate EP Pay's hand-drawn charts** (EpPayStatCard sparkline, Disputes bar/line, share bars) onto `DsMetricCard`, `DsBarChart` / `DsLineChart` and `DsStackedBarChart`.
+4. ~~Migrate EP Pay's hand-drawn charts~~ — **done 2026-09-29.** Dashboard tiles are `DsMetricCard`; Disputes uses `DsBarChart` / `DsLineChart`; the Balances and Dispute By share bars are `DsStackedBarChart` (`bare`). EP Pay's chart *concepts* (new charts awaiting approval) are the stories named "Chart concept · …".
 
 ## Deferred chart types
 

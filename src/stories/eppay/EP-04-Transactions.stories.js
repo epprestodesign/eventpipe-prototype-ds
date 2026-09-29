@@ -6,35 +6,52 @@
  *  selected pair (brand edge, palest brand wash). Clicking one narrows the
  *  table, so the screen demonstrates the interaction rather than describing it.
  *
- *  Three things worth stating:
+ *  The screen is live. It runs on `_transactions-data.js` — a deterministic
+ *  ledger, Jan 1 → Sep 29, 2026, that contains every transaction another EP
+ *  Pay screen names by id — and everything on it is computed from that:
  *
- *  1. The card counts (463 / 384 / 36 / 16 / 27) are account-wide totals for
- *     the selected period, while the table shows one page. So the footer reads
- *     "Showing 1–N of <that filter's total>" — N is what is on screen, the
- *     total is what the card claims, and the two are deliberately different.
+ *  1. The **date range** (DsDateRangePicker in the header, replacing the dead
+ *     "Year to Date" dropdown) scopes the whole page. It defaults to **This
+ *     month**: the period a merchant reconciles payouts and statements
+ *     against, and a preset — so the rail shows what is applied. "Last 30
+ *     days" is not in the rail, and year-to-date opened on 78 pages.
+ *  2. The **cards** count and total the range, by status. They ignore the
+ *     search and their own selection — they describe the period, the table
+ *     is what is being narrowed.
+ *  3. The **table** is range ∩ selected card ∩ search (name, id or event),
+ *     ten rows a page through DsPagination (the DS pager every EP Pay table
+ *     uses), whose "Showing x–y of z" is the real slice. A range with nothing
+ *     in it shows the table's no-data state.
  *
- *  2. Card brands are neutral text chips, not logo images and not each brand's
- *     own colour. Shipping real Visa/Amex/Klarna artwork into the design system
- *     is a trademark question, and painting the chips in brand colours spends
- *     six colours we do not own on a column that carries no status — next to
- *     the status chips, which do.
- *
- *  3. The rows live here rather than in `_eppay.js`. They are used by this
- *     screen only, and the shared scaffold is worth keeping small.
+ *  Card brands are neutral text chips, not logo images and not each brand's
+ *  own colour. Shipping real Visa/Amex/Klarna artwork into the design system
+ *  is a trademark question, and painting the chips in brand colours spends six
+ *  colours we do not own on a column that carries no status — next to the
+ *  status chips, which do.
  */
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { epPage, epHeader, epCard, statusChip, BRAND_CHIP, EP_CAPTION, EP_PAGE } from './_eppay'
+import { LEDGER, DATA_START, DATA_END, inRange, searchRows, tileTotals, trendBuckets, STATUS_FILTERS } from './_transactions-data'
+import { presetRange, formatLong } from '../../components/dateRangeMath.js'
 import DsSearch from '../../components/DsSearch.vue'
 import DsStat from '../../components/DsStat.vue'
+import DsEmptyState from '../../components/DsEmptyState.vue'
+import DsDateRangePicker from '../../components/DsDateRangePicker.vue'
+import DsSparkline from '../../components/charts/DsSparkline.vue'
+import DsPagination from '../../components/DsPagination.vue'
 
 export default {
   title: 'EP Pay/Screens/04 · Transactions',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
-    docs: { description: { component: 'The transaction ledger with its five filter stat cards. Click a card to narrow the table; the footer count follows the filter.' } },
+    docs: { description: { component: 'The transaction ledger with its five filter stat cards. Pick a date range in the header; the cards count and total that range, clicking a card narrows the table, the search narrows it further, and the footer pages through the real result.' } },
   },
 }
+
+/** The prototype's "now". Pinned, so the screen reads the same on every run. */
+const TODAY = DATA_END
+const PAGE_SIZE = 10
 
 /** How each brand key prints. The chip itself is the shared neutral one — the
  *  brand is identified by its name, not by a colour we would be borrowing. */
@@ -46,30 +63,6 @@ const BRAND_LABEL = {
   paypal: 'PayPal',
   klarna: 'Klarna',
 }
-
-/** Page 1 of the ledger, as the capture shows it. */
-const TRANSACTIONS = [
-  { id: 'TXN-2026-16006', status: 'Success', when: 'Aug 20, 2026 · 2:51 PM', amount: '$1,359.00', type: 'Sale', who: 'Elena Fischer', brand: 'visa', last4: '••••8821', event: 'Automated Playwright Live Event 340366', res: 'Hyatt Regency Seattle RES-5381879' },
-  { id: 'TXN-2026-15993', status: 'Disputed', when: 'Aug 20, 2026 · 8:10 AM', amount: '$730.00', type: 'Sale', who: 'Noah Klein', brand: 'klarna', last4: '••••2914', event: 'Pricing Event 539073', res: 'Marriott Tempe at The Buttes RES-5379550' },
-  { id: 'TXN-2026-15980', status: 'Success', when: 'Aug 19, 2026 · 10:36 AM', amount: '$804.00', type: 'Sale', who: 'Jordan Alvarez', brand: 'discover', last4: '••••6011', event: 'Automated Playwright Live Event 340366', res: 'Hyatt Regency Seattle RES-5379824' },
-  { id: 'TXN-2026-15967', status: 'Success', when: 'Aug 19, 2026 · 3:55 PM', amount: '$2,575.00', type: 'Sale', who: 'Hannah Reyes', brand: 'paypal', last4: '••••7730', event: 'Pricing Event 539073', res: 'Marriott Tempe at The Buttes RES-5377495' },
-  { id: 'TXN-2026-15954', status: 'Success', when: 'Aug 19, 2026 · 9:14 AM', amount: '$1,946.00', type: 'Sale', who: 'Marcus Webb', brand: 'amex', last4: '••••1007', event: 'Pricing Event 637236', res: 'Omni Tempe Hotel at ASU RES-5375166' },
-  { id: 'TXN-2026-15941', status: 'Success', when: 'Aug 18, 2026 · 10:18 AM', amount: '$762.00', type: 'Sale', who: 'Chris Okonkwo', brand: 'mastercard', last4: '••••5309', event: 'Automated Playwright Live Event 340366', res: 'Hyatt Regency Seattle RES-5370782' },
-  { id: 'TXN-2026-15928', status: 'Success', when: 'Aug 17, 2026 · 5:03 PM', amount: '−$243.00', type: 'Refund', who: 'Elena Fischer', brand: 'visa', last4: '••••4242', event: 'Automated Playwright Live Event 340366', res: 'Hyatt Regency Seattle RES-5368727' },
-  { id: 'TXN-2026-15915', status: 'Success', when: 'Aug 17, 2026 · 11:22 AM', amount: '$1,978.00', type: 'Sale', who: 'Noah Klein', brand: 'mastercard', last4: '••••4508', event: 'Pricing Event 539073', res: 'Marriott Tempe at The Buttes RES-5366398' },
-  { id: 'TXN-2026-15902', status: 'Refunded: Partial', when: 'Aug 16, 2026 · 1:48 PM', amount: '$2,052.00', type: 'Sale', who: 'Jordan Alvarez', brand: 'visa', last4: '••••8821', event: 'Automated Playwright Live Event 340366', res: 'Hyatt Regency Seattle RES-5366672' },
-  { id: 'TXN-2026-15889', status: 'Success', when: 'Aug 16, 2026 · 6:07 PM', amount: '−$27.00', type: 'Adjustment', who: 'Hannah Reyes', brand: 'klarna', last4: '••••2914', event: 'Pricing Event 539073', res: 'Marriott Tempe at The Buttes RES-5364343' },
-]
-
-/** The filter cards. `match` is what each one keeps — null means "everything",
- *  which is why ALL needs no special case anywhere below. */
-const FILTERS = [
-  { key: 'all', label: 'All', count: 463, total: '$483,354.00', pages: 47, match: null },
-  { key: 'success', label: 'Success', count: 384, total: '$397,121.00', pages: 39, match: (t) => t.status === 'Success' },
-  { key: 'refunded', label: 'Refunded', count: 36, total: '$51,650.00', pages: 4, match: (t) => t.status.startsWith('Refunded') },
-  { key: 'disputed', label: 'Disputed', count: 16, total: '$19,183.00', pages: 2, match: (t) => t.status === 'Disputed' },
-  { key: 'failed', label: 'Failed', count: 27, total: '$15,400.00', pages: 3, match: (t) => t.status === 'Failed' },
-]
 
 /** The ledger's columns. Four of the five stack a value over a muted second
  *  line, which is why each one is drawn by a `#body-cell-*` slot below; `field`
@@ -96,28 +89,34 @@ const TD = 'padding:12px 16px;'
  *  `DsStat`, which is the platform's metric pair. */
 const statCards = `
   <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:16px; margin-bottom:20px;">
-    <q-card v-for="f in filters" :key="f.key" flat bordered tag="button" type="button"
-      :aria-pressed="active === f.key"
+    <q-card v-for="f in tiles" :key="f.key" flat bordered tag="button" type="button"
+      :aria-pressed="active === f.key ? 'true' : 'false'"
+      :data-testid="'tile-' + f.key"
       :style="'display:block; width:100%; padding:0; text-align:left; font:inherit; cursor:pointer; ' +
               (active === f.key
                 ? 'border:2px solid var(--ds-color-border-brand); background:var(--ds-color-background-brand-subtlest);'
                 : '')"
-      @click="active = f.key">
+      @click="setActive(f.key)">
       <q-card-section :style="active === f.key ? 'padding:17px 19px;' : 'padding:18px 20px;'">
         <div style="${MICRO}">{{ f.label }}</div>
         <ds-stat :value="f.count" :label="f.total" style="margin-top:4px;" />
+        <template v-if="trend">
+          <template v-if="trend.keys.length > 1">
+            <ds-sparkline :data="trend.series[f.key]" :height="32" area style="margin-top:12px;"
+              :aria-label="f.label + ' ' + trend.caption.toLowerCase() + ': ' + trend.series[f.key].join(', ')" />
+            <div style="${EP_CAPTION} margin-top:2px;">{{ trend.caption }}</div>
+          </template>
+          <div v-else style="${EP_CAPTION} margin-top:12px;">Pick more than one day to see a trend</div>
+        </template>
       </q-card-section>
     </q-card>
   </div>`
 
 /* The ledger is a QTable with `.ds-table`, so the Azure header bar, the zebra
-   rows and the rounded outline all come from the design system. An earlier
-   pass drew this as a grid of divs and re-painted that header by hand; the
-   header was then the same colour twice, from two places. */
+   rows and the rounded outline all come from the design system. */
 const table = `
-  <q-table class="ds-table" :rows="visible" :columns="columns" row-key="id"
-    flat bordered :pagination="{ rowsPerPage: 0 }"
-    no-data-label="No transactions on this page match that filter.">
+  <q-table class="ds-table" :rows="pageRows" :columns="columns" row-key="id"
+    flat bordered :pagination="{ rowsPerPage: 0 }">
 
     <template #header-cell-actions="props">
       <q-th :props="props">
@@ -159,55 +158,103 @@ const table = `
 
     <template #body-cell-actions="props">
       <q-td :props="props" style="${TD}">
-        <q-btn flat dense icon="more_vert" :aria-label="'Actions for ' + props.row.id"
-          style="border:1px solid var(--ds-color-border-container); border-radius:var(--ds-radius-sm); color:var(--ds-color-icon-subtle);" />
+        <ds-action-menu :label="'Actions for ' + props.row.id" :items="[
+          { label: 'View details', icon: 'visibility' },
+          { label: 'Copy transaction ID', icon: 'content_copy', copy: props.row.id },
+          { label: 'Download receipt', icon: 'receipt_long' },
+          { label: 'Refund payment', icon: 'undo', danger: true, dividerBefore: true, confirm: { title: 'Refund ' + props.row.id + '?', message: 'The customer is refunded to the original payment method. This can’t be undone.', okLabel: 'Refund' } },
+        ]" />
       </q-td>
     </template>
 
-    <template #bottom>
-      <div style="display:flex; align-items:center; gap:8px; flex:1; padding:6px 4px;">
-        <span style="${EP_CAPTION}">Showing 1–{{ visible.length }} of {{ current.count }} transactions</span>
-        <span style="flex:1;" />
-        <q-btn outline no-caps dense disable label="Previous" color="grey-7" style="height:38px; padding:0 14px;" />
-        <q-btn unelevated no-caps dense color="primary" label="1" aria-current="page" style="min-width:38px; height:38px;" />
-        <q-btn flat no-caps dense color="grey-8" label="2" style="min-width:38px; height:38px;" />
-        <span v-if="current.pages > 3" style="${EP_CAPTION} padding:0 4px;">…</span>
-        <q-btn v-if="current.pages > 2" flat no-caps dense color="grey-8" :label="String(current.pages)" style="min-width:38px; height:38px;" />
-        <q-btn outline no-caps dense label="Next" color="primary" style="height:38px; padding:0 14px;" />
+    <template #no-data>
+      <div style="width:100%;" data-testid="txn-empty">
+        <ds-empty-state icon="receipt_long" :title="empty.title" :description="empty.description">
+          <template #action>
+            <q-btn v-if="query" outline no-caps color="primary" label="Clear search" @click="query = ''" />
+          </template>
+        </ds-empty-state>
       </div>
+    </template>
+
+    <template #bottom>
+      <ds-pagination v-model="page" :total="filtered.length" :page-size="PAGE_SIZE" noun="transactions"
+        style="flex:1; padding:6px 4px;" data-testid="txn-pagination" />
     </template>
   </q-table>`
 
 const toolbar = `
   <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px;">
     <div style="width:100%; max-width:400px;">
-      <ds-search v-model="query" placeholder="Search transactions" />
+      <ds-search v-model="query" placeholder="Search by name, ID or event" />
     </div>
     <span style="flex:1;" />
     <q-btn outline no-caps color="primary" icon="filter_alt" label="Filter" style="padding:0 18px;" />
     <q-btn outline no-caps color="primary" icon="file_download" label="Export" style="padding:0 18px;" />
   </div>`
 
-const SLOT = `
+const slot = ({ badge = '' } = {}) => `
   <div style="${EP_PAGE}">
     ${epHeader('Transactions', {
-      actions: `<q-btn outline no-caps color="grey-8" icon="calendar_today" icon-right="expand_more"
-        label="Year to Date" style="padding:0 16px;" />`,
+      actions: `<ds-date-range-picker v-model="range" label="Transactions date range" align="right"
+        today="${TODAY}" min="${DATA_START}" max="${TODAY}" />`,
+      ...(badge ? { badge, badgeColor: 'ds-warning text-ds-warning' } : {}),
     })}
     ${epCard(`${statCards}${toolbar}${table}`)}
   </div>`
 
-function state ({ active = 'all' } = {}) {
+const TREND_UNIT = { day: 'Per day', week: 'Per week', month: 'Per month' }
+
+function state ({ active = 'all', trends = false, preset = 'thisMonth' } = {}) {
+  const initial = presetRange(preset, TODAY, { min: DATA_START })
+  const range = ref({ ...initial, preset })
   const activeRef = ref(active)
-  const current = computed(() => FILTERS.find((f) => f.key === activeRef.value) || FILTERS[0])
+  const query = ref('')
+  const page = ref(1)
+
+  const ranged = computed(() => inRange(LEDGER, range.value))
+  const tiles = computed(() => tileTotals(ranged.value))
+  const current = computed(() => STATUS_FILTERS.find((f) => f.key === activeRef.value) || STATUS_FILTERS[0])
+  const filtered = computed(() => {
+    const byStatus = current.value.match ? ranged.value.filter(current.value.match) : ranged.value
+    return searchRows(byStatus, query.value)
+  })
+  const pageRows = computed(() => filtered.value.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE))
+
+  // Any change to what is being looked at starts again from page 1.
+  watch([range, activeRef, query], () => { page.value = 1 }, { deep: true })
+
+  const empty = computed(() => {
+    const { start, end } = range.value
+    const period = start === end ? formatLong(start) : `${formatLong(start)} – ${formatLong(end)}`
+    const when = start === end ? `on ${formatLong(start)}` : `from ${formatLong(start)} to ${formatLong(end)}`
+    if (!ranged.value.length) return { title: 'No transactions in this period', description: `Nothing was processed ${when}. Try a wider date range.` }
+    if (query.value) return { title: 'No matching transactions', description: `Nothing in ${period} matches “${query.value}”. Search by customer name, transaction ID or event.` }
+    return { title: `No ${current.value.label.toLowerCase()} transactions`, description: `None of this period's transactions are ${current.value.label.toLowerCase()}.` }
+  })
+
+  const trend = computed(() => {
+    if (!trends) return null
+    const t = trendBuckets(LEDGER, range.value)
+    const a = formatLong(range.value.start).replace(/, \d{4}$/, '')
+    const b = formatLong(range.value.end).replace(/, \d{4}$/, '')
+    return { ...t, caption: `${TREND_UNIT[t.unit]}, ${a} – ${b}` }
+  })
 
   return {
-    filters: FILTERS,
+    range,
+    tiles,
+    trend,
     columns: COLUMNS,
     active: activeRef,
+    setActive: (key) => { activeRef.value = key },
     current,
-    visible: computed(() => (current.value.match ? TRANSACTIONS.filter(current.value.match) : TRANSACTIONS)),
-    query: ref(''),
+    query,
+    page,
+    filtered,
+    pageRows,
+    PAGE_SIZE,
+    empty,
     chipFor: statusChip,
     brandLabel: (key) => BRAND_LABEL[key] || key,
     brandStyle: () => BRAND_CHIP,
@@ -216,20 +263,56 @@ function state ({ active = 'all' } = {}) {
 
 const story = (opts) => epPage({
   active: 'transactions',
-  components: { DsSearch, DsStat },
+  components: { DsSearch, DsStat, DsSparkline, DsEmptyState, DsDateRangePicker, DsPagination },
   setup: () => state(opts),
-  slot: SLOT,
+  slot: slot(opts),
 })
 
-/** The page as captured: **All**, year to date, page 1 of 47. */
+/** **All**, this month, page 1. Change the range in the header and every
+ *  number on the page follows. */
 export const Default = story()
 
 /** What a dispute review starts from — the filter the merchant reaches for
- *  first, because these are the rows with a deadline attached. */
-export const Disputed = story({ active: 'disputed' })
+ *  first, because these are the rows with a deadline attached. This year, so
+ *  every payment in the Disputes screen's fixture made in 2026 is here — same
+ *  ids, customers, cards and original amounts. */
+export const Disputed = story({ active: 'disputed', preset: 'thisYear' })
 Disputed.storyName = 'Filtered · Disputed'
 
-/** Refunds and partial refunds. Shows the third chip tone in the table, and the
- *  short pagination a small result set gets. */
-export const Refunded = story({ active: 'refunded' })
+/** Refunds and partial refunds, year to date. Shows the third chip tone in the
+ *  table, and a result set short enough for compact pagination. */
+export const Refunded = story({ active: 'refunded', preset: 'thisYear' })
 Refunded.storyName = 'Filtered · Refunded'
+
+/** **Chart concept — for approval.** The page with a trend in each filter
+ *  card, derived from the same ledger the cards count — so the line and the
+ *  number beside it can never disagree. Opens on This year (per month); the
+ *  bucket follows the range: per day up to a month, per week up to ~4 months,
+ *  per month beyond.
+ *
+ *  - **Question it answers:** "Is anything going the wrong way?" — are
+ *    failures or disputes creeping up while sales grow? The cards give totals
+ *    only, so a bad month is invisible until it moves the total, and by then
+ *    it has been bad for a while.
+ *  - **Why sparklines in the cards:** a word-sized trend beside the number
+ *    that carries the magnitude (Overview: "Sparkline — a word-sized trend
+ *    beside a number"). Each one scales to itself, so the disputes get as
+ *    much shape as the successes — which is the point: the merchant wants
+ *    each status's direction, not their relative size.
+ *  - **Considered and rejected:** a stacked bar of monthly volume by status
+ *    above the table. Success is ~80% of transactions, so disputed and failed
+ *    — the statuses a merchant acts on — would be slivers a few pixels tall,
+ *    and a stacked bar compares totals and composition, not per-status
+ *    trends. It would also push the ledger, this screen's real content, below
+ *    the fold.
+ *  - **Adds, does not replace:** the cards stay the filter; the sparkline sits
+ *    under the existing number. Brand tone throughout — the colour makes no
+ *    good/bad claim, the shape and the caption carry it.
+ *  - **Caveat for review:** self-scaling cuts both ways. Small counts (a
+ *    handful of disputes a month) swing as far as Success's steady climb, and
+ *    per-day buckets on a short range are mostly zeros. DsSparkline has no
+ *    zero-anchored option to damp that; if approved, the component needs one
+ *    (or the card needs a stated range).
+ */
+export const ChartConceptTrends = story({ trends: true, preset: 'thisYear', badge: 'Chart concept — for approval' })
+ChartConceptTrends.storyName = 'Chart concept · Status trends in filter cards'

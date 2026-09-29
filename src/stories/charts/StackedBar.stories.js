@@ -31,7 +31,7 @@ Everything in **Line** plus:
 ## Usage
 \`\`\`html
 <ds-stacked-bar-chart :labels="events" :series="[confirmed, pending, cancelled]" />
-<ds-stacked-bar-chart percent horizontal :labels="['Disputed amount']" :series="byMethod" :height="64" :show-grid="false" />
+<ds-stacked-bar-chart percent horizontal :labels="['Disputed amount']" :series="byMethod" bare :height="28" :show-grid="false" />
 \`\`\`
 
 ## Interactions
@@ -100,7 +100,7 @@ export const ShareBar = {
       <ds-chart-card title="Disputes by payment method" subtitle="Last 12 months · synthetic" table-toggle>
         <template #default="{ view }">
           <ds-stacked-bar-chart percent horizontal :labels="data.labels" :series="data.series" value-format="currency"
-            :height="72" :show-grid="false" :view="view" />
+            bare :height="28" :show-grid="false" :view="view" />
         </template>
       </ds-chart-card>`, 560),
   }),

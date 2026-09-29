@@ -38,6 +38,8 @@ import DsInput from '../../components/DsInput.vue'
 import DsSelect from '../../components/DsSelect.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
 import DsEmptyState from '../../components/DsEmptyState.vue'
+import DsChartCard from '../../components/charts/DsChartCard.vue'
+import DsStackedBarChart from '../../components/charts/DsStackedBarChart.vue'
 
 export default {
   title: 'EP Pay/Screens/08 · Unbuilt Areas/Subscriptions',
@@ -93,6 +95,20 @@ const FILTERS = [
   { key: 'all', label: 'All', count: 66, total: '$141,645.50 scheduled', pages: 7, match: null },
 ]
 
+/** CHART CONCEPT — every plan's installments by the month they fall in.
+ *  Sep carries both past-due charges (Hannah Reyes' $515 and one more — the
+ *  Past Due tile's $1,030) and Marcus Webb's $1,250 still to run on Sep 30.
+ *  Scheduled Sep–Jan sums to the Active tile's $38,420. A past month has $0
+ *  scheduled and a future one $0 collected — real zeros, not missing. */
+const COLLECTION_BY_MONTH = {
+  labels: ['2026-06-01', '2026-07-01', '2026-08-01', '2026-09-01', '2026-10-01', '2026-11-01', '2026-12-01', '2027-01-01'],
+  series: [
+    { key: 'collected', label: 'Collected', data: [9860, 14215, 16930, 13405, 0, 0, 0, 0] },
+    { key: 'pastdue', label: 'Past due', data: [0, 0, 0, 1030, 0, 0, 0, 0] },
+    { key: 'scheduled', label: 'Scheduled', color: 'comparison', data: [0, 0, 0, 1250, 12480, 11215, 8640, 4835] },
+  ],
+}
+
 const COLUMNS = [
   { name: 'status', label: 'Status & Next Charge', field: 'status', align: 'left' },
   { name: 'amount', label: 'Installments', field: 'amount', align: 'left' },
@@ -118,7 +134,14 @@ const SCHEDULE_COLUMNS = [
   { name: 'note', label: 'Transaction', field: 'note', align: 'left' },
 ]
 
-/** One segment per installment, coloured the way the Balances bar is. */
+/** One segment per installment, coloured the way the Balances bar is.
+ *
+ *  Deliberately NOT a chart component. It is a discrete progress meter — "3 of
+ *  5 paid", one cell per charge, like a stepper — not a share of an amount.
+ *  DsStackedBarChart would draw continuous shares (losing the per-installment
+ *  cells), needs axis room a 140×6px table cell does not have, and its series
+ *  colours are categorical only, so Paid/Failed could not wear the success /
+ *  danger status fills they carry here. */
 const segmentsFor = (p) => Array.from({ length: p.of }, (_, i) => {
   if (i < p.paid) return 'var(--ds-color-background-success-bold)'
   if (i < p.paid + p.failed) return 'var(--ds-color-background-danger-bold)'
@@ -179,7 +202,7 @@ const table = `
       </q-td>
     </template>
 
-    ${rowMenu('props.row.id')}
+    ${rowMenu('props.row.id', "[{ label: 'View plan', icon: 'visibility', to: 'subscriptions/detail' }, { label: 'Retry failed payment', icon: 'replay', confirm: { title: 'Retry the failed installment?', message: 'The card on file is charged again now.', okLabel: 'Retry payment' } }, { label: 'Copy plan ID', icon: 'content_copy', copy: props.row.id }, { label: 'Cancel plan', icon: 'cancel', danger: true, dividerBefore: true, confirm: { title: 'Cancel this plan?', message: 'No further installments are charged. Paid installments are not refunded.', okLabel: 'Cancel plan' } }]")}
     ${pager('plans')}
   </q-table>`
 
@@ -246,9 +269,22 @@ const createDialog = `
     </template>
   </ds-modal>`
 
-const LIST_SLOT = (empty) => `
+/** CHART CONCEPT — see ChartConceptCollection. */
+const collectionChart = `
+  <div style="margin-bottom:20px;">
+    <ds-chart-card title="Installments by month" subtitle="All plans · collected, past due and still scheduled" table-toggle>
+      <template #default="{ view }">
+        <ds-stacked-bar-chart :labels="collection.labels" :series="collection.series" label-format="month-year"
+          value-format="currency" :height="240" :view="view" />
+      </template>
+      <template #footer>$38,420.00 is still scheduled across 18 active plans; the last charge runs in January 2027.</template>
+    </ds-chart-card>
+  </div>`
+
+const LIST_SLOT = (empty, chart = false) => `
   <div style="${EP_PAGE}">
     ${conceptHeader('Subscriptions', { actions: CREATE_BTN })}
+    ${chart ? collectionChart : ''}
     ${epCard(empty ? emptyBody : `${filterTiles(5)}${listToolbar('Search plans, customers or reservations')}${table}`)}
   </div>
   ${createDialog}`
@@ -300,17 +336,18 @@ function listState({ createOpen = false, filled = false } = {}) {
     pick,
     segments: segmentsFor,
     chipFor: conceptChip,
+    collection: COLLECTION_BY_MONTH,
     canCreate: computed(() => !!(form.value.customer && form.value.event && form.value.res && form.value.total && form.value.start)),
   }
 }
 
-const COMPONENTS = { DsSearch, DsStat, DsModal, DsInput, DsSelect, DsInfoGrid, DsEmptyState }
+const COMPONENTS = { DsSearch, DsStat, DsModal, DsInput, DsSelect, DsInfoGrid, DsEmptyState, DsChartCard, DsStackedBarChart }
 
 const listStory = (opts = {}) => epPage({
   active: 'subscriptions',
   components: COMPONENTS,
   setup: () => listState(opts),
-  slot: LIST_SLOT(!!opts.empty),
+  slot: LIST_SLOT(!!opts.empty, !!opts.chart),
 })
 
 /* ---------------------------------------------------------------------------
@@ -427,3 +464,23 @@ Create.storyName = 'Create · Installment plan'
 /** First run — no plans yet. */
 export const Empty = listStory({ empty: true })
 Empty.storyName = 'Empty · first run'
+
+/** **Chart concept · Installments by month** — the List with a month-by-month
+ *  view of what the plans have collected and have still to collect.
+ *
+ *  *Question it answers:* "How much cash are installment plans bringing in,
+ *  month by month — and how much has slipped?" The tiles give totals (to
+ *  collect, overdue, collected) but not *when*; a merchant planning payouts
+ *  needs the shape: October is the peak, then it tails off to January.
+ *
+ *  *Why a stacked bar:* the Charts Overview's Stacked Bar is for composition
+ *  per category where both total and split matter — each month's bar is its
+ *  installments, split into collected, past due and still scheduled.
+ *  "Scheduled" wears the neutral comparison colour because it has not
+ *  happened yet. (A plan-health chart was considered: plan status is already
+ *  five tiles with counts, so a donut of the same five numbers adds nothing.)
+ *
+ *  *Adds:* one chart card between the header and the list; the list and its
+ *  per-plan progress meters are unchanged. */
+export const ChartConceptCollection = listStory({ chart: true })
+ChartConceptCollection.storyName = 'Chart concept · Installments by month'

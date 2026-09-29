@@ -10,7 +10,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Chart title, optional subtitle, and one right-aligned row of actions (filters, view toggle). Wraps under the title on narrow widths. Used by **Chart Card**; usable alone above a chart that sits in another container.',
+        component: 'Chart title, optional subtitle, and one right-aligned row of actions (filters, the Chart Card “View more” button). Wraps under the title on narrow widths. Used by **Chart Card**; usable alone above a chart that sits in another container.',
       },
     },
   },

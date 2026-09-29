@@ -70,7 +70,7 @@ const preview = {
             // Charts: ordered by chart type, then shared building blocks, then
             // the renderer research (experimental) last.
             'Charts', [
-              'Overview', 'Line', 'Area', 'Bar', 'Stacked Bar', 'Donut', 'Sparkline', 'Metric Card',
+              'Overview', 'Line', 'Area', 'Bar', 'Bar List', 'Stacked Bar', 'Donut', 'Sparkline', 'Metric Card',
               'Shared Elements', ['Chart Card', 'Header', 'Legend', 'Tooltip', 'States', 'Data Table'],
               'Research', ['Renderer Comparison'],
             ],

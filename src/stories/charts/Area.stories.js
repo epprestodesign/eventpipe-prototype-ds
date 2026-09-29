@@ -21,7 +21,7 @@ export default {
 
 ## When not to use
 - Comparing series that overlap heavily — use **Line**; overlapping translucent fills muddy.
-- Sparse data with gaps in a stacked chart — a gap in a lower layer shifts every layer above it. Use the table view or an unstacked **Line**.
+- Sparse data with gaps in a stacked chart — a gap in a lower layer shifts every layer above it. Use the card's **View more** data table or an unstacked **Line**.
 
 ## Props
 Everything in **Line** (\`labels · series · valueFormat · labelFormat · height · showLegend · showGrid · hiddenSeries · loading · error · view · ariaLabel\`) plus:

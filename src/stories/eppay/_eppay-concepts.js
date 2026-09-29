@@ -106,19 +106,15 @@ export const listToolbar = (placeholder) => `
     <q-btn outline no-caps color="primary" icon="file_download" label="Export" style="padding:0 18px;" />
   </div>`
 
-/** The Transactions footer: "Showing 1–N of <tile count>", numbered pages. */
+/** The table footer: "Showing 1–N of <count> <noun>" plus the page control —
+ *  the design system's DsPagination (Components › Navigation › Pagination,
+ *  "Rich"), registered for every EP Pay screen by epPage(). Uncontrolled: the
+ *  concept tables show one static page of rows, so the control responds but the
+ *  rows don't page. */
 export const pager = (noun) => `
   <template #bottom>
-    <div style="display:flex; align-items:center; gap:8px; flex:1; padding:6px 4px;">
-      <span style="font-size:0.8125rem; color:var(--ds-color-text-subtle);">Showing 1–{{ visible.length }} of {{ current.count }} ${noun}</span>
-      <span style="flex:1;" />
-      <q-btn outline no-caps dense disable label="Previous" color="grey-7" style="height:38px; padding:0 14px;" />
-      <q-btn unelevated no-caps dense color="primary" label="1" aria-current="page" style="min-width:38px; height:38px;" />
-      <q-btn v-if="current.pages > 1" flat no-caps dense color="grey-8" label="2" style="min-width:38px; height:38px;" />
-      <span v-if="current.pages > 3" style="font-size:0.8125rem; color:var(--ds-color-text-subtle); padding:0 4px;">…</span>
-      <q-btn v-if="current.pages > 2" flat no-caps dense color="grey-8" :label="String(current.pages)" style="min-width:38px; height:38px;" />
-      <q-btn outline no-caps dense label="Next" color="primary" :disable="current.pages < 2" style="height:38px; padding:0 14px;" />
-    </div>
+    <ds-pagination :total="current.count" :page-size="visible.length || 10" :max="current.pages"
+      noun="${noun}" style="flex:1; padding:6px 4px;" />
   </template>`
 
 export const EDIT_COLUMNS_HEADER = `
@@ -129,11 +125,13 @@ export const EDIT_COLUMNS_HEADER = `
   </template>`
 
 /** `label` is a template expression for the row's name, for the aria-label. */
-export const rowMenu = (label) => `
+/** A row's ⋮ action menu — the design system's DsActionMenu (one 40×40 size
+ *  everywhere; registered for every EP Pay screen by epPage()). `label` and
+ *  `items` are template expressions; items with `to` open that prototype route. */
+export const rowMenu = (label, items = '[]') => `
   <template #body-cell-actions="props">
     <q-td :props="props" style="${TD}">
-      <q-btn flat dense icon="more_vert" :aria-label="'Actions for ' + ${label}"
-        style="border:1px solid var(--ds-color-border-container); border-radius:var(--ds-radius-sm); color:var(--ds-color-icon-subtle);" />
+      <ds-action-menu :label="'Actions for ' + ${label}" :items="${items}" />
     </q-td>
   </template>`
 

@@ -54,8 +54,18 @@ export function formatValue(value, format = 'number', { currency = 'USD', decima
 export function formatAxisValue(value, format = 'number', opts = {}) {
   if (format === 'currency') return formatValue(value, 'currency-compact', { ...opts, decimals: 1 })
   if (format === 'number') return formatValue(value, Math.abs(value) >= 10000 ? 'compact' : 'number', opts)
-  if (format === 'percent') return formatValue(value, 'percent', { decimals: 0 })
+  if (format === 'percent') return formatValue(value, 'percent', { decimals: percentAxisDecimals(opts.step) })
   return formatValue(value, format, opts)
+}
+
+/** Decimals a percent axis needs so neighbouring ticks never read the same.
+ *  `step` is the tick spacing as a fraction (0.005 = half a percent). Whole
+ *  percents when the ticks are ≥1% apart (the 0–100% case); otherwise just
+ *  enough places to separate them — a 0–2% axis used to read "0%, 1%, 1%, 2%".
+ *  Capped at 2. */
+export function percentAxisDecimals(step) {
+  if (!step || !Number.isFinite(step) || step * 100 >= 1) return 0
+  return Math.min(2, Math.ceil(-Math.log10(step * 100) - 1e-9))
 }
 
 /** Parse an ISO date (YYYY-MM-DD or YYYY-MM) as UTC midnight. */

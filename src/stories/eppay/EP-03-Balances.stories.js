@@ -11,16 +11,18 @@
  *
  *  Three decisions worth stating:
  *
- *  1. The three-segment bar is *computed* from BALANCE_SUMMARY.rows rather than
- *     given fixed widths. A hard-coded bar drifts the moment the fixture
- *     changes, and a balance bar that disagrees with the numbers beside it is
- *     worse than no bar at all.
+ *  1. The balance split is a DsStackedBarChart share bar (single row, 100%)
+ *     fed from BALANCE_SUMMARY.rows' numeric values, not fixed widths. A
+ *     hard-coded bar drifts the moment the fixture changes, and a balance bar
+ *     that disagrees with the numbers beside it is worse than no bar at all.
+ *     It also brings a tooltip, keyboard access and a hidden data table.
  *
- *  2. The bar's segments and the row icons beneath them are the DS status
- *     colours, not a decorative set: Available is success, Available Soon is
- *     warning, Held is danger. The colour is telling the merchant which of
- *     their money they can actually have, so it has to mean what it means
- *     everywhere else in the product.
+ *  2. The segments wear the chart palette in its fixed order (chart-1 · 2 · 3),
+ *     and each row icon beneath wears its segment's colour, so the rows double
+ *     as the bar's key. They are no longer the DS status colours: the chart
+ *     components only take categorical slots, and the Charts Overview reserves
+ *     status colour for good/bad meaning — Held money is not an error. The
+ *     row icons (check / clock / lock) still carry the meaning.
  *
  *  3. The Get My Funds dialog is `DsModal` — the design system's own centred
  *     dialog, which owns the backdrop, the header and close button, ESC and
@@ -29,7 +31,9 @@
  *     is scoped under `.eppay` and would not reach a teleported dialog.
  */
 import { ref, computed } from 'vue'
-import { epPage, epHeader, epCard, EP_CAPTION, EP_H2, EP_PAGE, BALANCE_SUMMARY, PAYOUTS, statusChip, toneChip } from './_eppay'
+import { epPage, epHeader, epCard, EP_CARD, EP_CAPTION, EP_H2, EP_PAGE, BALANCE_SUMMARY, PAYOUTS, statusChip, toneChip } from './_eppay'
+import DsStackedBarChart from '../../components/charts/DsStackedBarChart.vue'
+import DsChartCard from '../../components/charts/DsChartCard.vue'
 import DsSearch from '../../components/DsSearch.vue'
 import DsModal from '../../components/DsModal.vue'
 import DsLink from '../../components/DsLink.vue'
@@ -43,13 +47,19 @@ export default {
   },
 }
 
-/** Segment / icon colour per summary tone — the bar and the row icon below it
- *  must read as the same thing, so they resolve from one map, and each entry is
- *  the DS status colour its tone already owns. */
-const SUMMARY_COLOR = {
-  positive: 'var(--ds-color-background-success-bold)',
-  warning: 'var(--ds-color-background-warning-bold)',
-  negative: 'var(--ds-color-background-danger-bold)',
+/** Chart colour slot per balance bucket, in the palette's fixed order. The
+ *  bar segment and the row icon below it resolve from this one map, so they
+ *  cannot drift apart. */
+const BUCKET_SLOT = { available: 'chart-1', soon: 'chart-2', held: 'chart-3' }
+
+/** The balance split as a one-row share bar: one series per bucket. */
+const balanceSplit = {
+  labels: ['Balance'],
+  series: BALANCE_SUMMARY.rows.map((r) => ({ key: r.key, label: r.label, color: BUCKET_SLOT[r.key], data: [r.value] })),
+  /** Spoken summary: each bucket's amount and share, from the same numbers. */
+  ariaLabel: 'Balance split: ' + BALANCE_SUMMARY.rows
+    .map((r) => `${r.label} ${r.amount} (${Math.round((r.value / BALANCE_SUMMARY.totalAmount) * 100)}%)`)
+    .join(', '),
 }
 
 /** An uppercase eyebrow label. The only type style on this screen the shared
@@ -82,10 +92,12 @@ const summaryCard = epCard(`
           <span style="${EP_CAPTION}">{{ summary.items }} items</span>
         </div>
 
-        <div style="display:flex; gap:6px; max-width:660px;" role="img"
-          :aria-label="'Balance split: ' + segments.map(s => s.label + ' ' + s.pct + '%').join(', ')">
-          <span v-for="s in segments" :key="s.key"
-            :style="'height:10px; border-radius:var(--ds-radius-pill); flex:' + s.pct + '; background:' + s.color" />
+        <!-- Legend off: the three rows below are the key (icon in the segment's
+             colour, label, amount), so a legend here would say it twice. -->
+        <div style="max-width:660px;">
+          <ds-stacked-bar-chart percent horizontal :labels="split.labels" :series="split.series"
+            value-format="currency" bare :height="28" :show-grid="false" :show-legend="false"
+            :aria-label="split.ariaLabel" />
         </div>
       </div>
 
@@ -186,21 +198,18 @@ const payoutsCard = epCard(`
 
     <template #body-cell-actions="props">
       <q-td :props="props">
-        <q-btn flat dense icon="more_vert" :aria-label="'Actions for ' + props.row.id"
-          style="border:1px solid var(--ds-color-border-container); border-radius:var(--ds-radius-sm); color:var(--ds-color-icon-subtle);" />
+        <ds-action-menu :label="'Actions for ' + props.row.id" :items="[
+          { label: 'View payout', icon: 'visibility' },
+          { label: 'Copy payout ID', icon: 'content_copy', copy: props.row.id },
+          { label: 'Download statement', icon: 'file_download' },
+        ]" />
       </q-td>
     </template>
 
     <template #bottom>
-      <div style="display:flex; align-items:center; gap:8px; width:100%;">
-        <span style="${EP_CAPTION}">Showing 1–{{ payouts.length }} of 33 payouts</span>
-        <span style="flex:1;" />
-        <q-btn outline no-caps dense disable label="Previous" color="grey-7" style="height:38px; padding:0 14px;" />
-        <q-btn v-for="n in 4" :key="n" :flat="n !== 1" :unelevated="n === 1" no-caps dense
-          :color="n === 1 ? 'primary' : 'grey-8'" :label="String(n)"
-          :aria-current="n === 1 ? 'page' : undefined" style="min-width:38px; height:38px;" />
-        <q-btn outline no-caps dense label="Next" color="primary" style="height:38px; padding:0 14px;" />
-      </div>
+      <!-- The design system's pager (DsPagination). The ledger shows one static
+           page of the 33 payouts, so the control responds but rows don't page. -->
+      <ds-pagination :total="33" :page-size="payouts.length" noun="payouts" style="width:100%;" />
     </template>
   </q-table>`)
 
@@ -337,14 +346,6 @@ function state ({ fundsOpen = false, mode = 'all', method = 'standard' } = {}) {
   const chipTone = toneChip
   const chipFor = statusChip
 
-  const total = BALANCE_SUMMARY.rows.reduce((sum, r) => sum + usd(r.amount), 0)
-  const segments = BALANCE_SUMMARY.rows.map((r) => ({
-    key: r.key,
-    label: r.label,
-    color: SUMMARY_COLOR[r.tone],
-    pct: Math.round((usd(r.amount) / total) * 100),
-  }))
-
   const selected = ref([])
   const modeRef = ref(mode)
   const open = ref(fundsOpen)
@@ -358,8 +359,8 @@ function state ({ fundsOpen = false, mode = 'all', method = 'standard' } = {}) {
   return {
     // Each summary row carries the colour of its own bar segment, so the icon
     // beside a number and the segment above it cannot drift apart.
-    summary: { ...BALANCE_SUMMARY, rows: BALANCE_SUMMARY.rows.map((r, i) => ({ ...r, color: segments[i].color })) },
-    segments,
+    summary: { ...BALANCE_SUMMARY, rows: BALANCE_SUMMARY.rows.map((r) => ({ ...r, color: `var(--ds-color-${BUCKET_SLOT[r.key]})` })) },
+    split: balanceSplit,
     payouts: PAYOUTS.map((p) => ({ ...p, chip: chipFor(p.status) })),
     payoutColumns: PAYOUT_COLUMNS,
     releasable: RELEASABLE,
@@ -381,7 +382,7 @@ function state ({ fundsOpen = false, mode = 'all', method = 'standard' } = {}) {
 
 const story = (opts) => epPage({
   active: 'balances',
-  components: { DsSearch, DsModal, DsLink },
+  components: { DsSearch, DsModal, DsLink, DsStackedBarChart },
   setup: () => state(opts),
   slot: SLOT,
 })
@@ -397,3 +398,78 @@ GetMyFunds.storyName = 'Get My Funds · release everything'
  *  follow the boxes ticked. Instant-to-bank is pre-selected to show the fee chip. */
 export const ReleaseSome = story({ fundsOpen: true, mode: 'some', method: 'instant-bank' })
 ReleaseSome.storyName = 'Get My Funds · release some'
+
+/* ---------------------------------------------------------------------------
+ * Chart concepts — for approval. The stories above are unchanged by these.
+ * ------------------------------------------------------------------------- */
+
+/** "Created Aug 17, 2026" → "2026-08-17", for a date axis. */
+const isoFrom = (created) => {
+  const d = new Date(created.replace(/^Created /, '') + ' UTC')
+  return d.toISOString().slice(0, 10)
+}
+
+/** The ledger's ten payouts, one per week, oldest first, split by what
+ *  happened to the money. Each week holds exactly one payout, so the other two
+ *  series are a real 0 that week (nothing moved), not missing. Withdrawals are
+ *  negative — money out of the bank account — so they stack below the axis.
+ *  The failed payout's week keeps its slot on the axis (time does not skip)
+ *  but draws no bar, since no money moved; the card footer names it. */
+const payoutHistory = (() => {
+  const rows = [...PAYOUTS].reverse()
+  const amounts = (test) => rows.map((p) => (test(p) ? usd(p.amount) : 0))
+  return {
+    labels: rows.map((p) => isoFrom(p.created)),
+    series: [
+      { key: 'deposited', label: 'Deposited', data: amounts((p) => p.type === 'Deposit' && p.status === 'Paid') },
+      { key: 'transit', label: 'In transit', data: amounts((p) => p.status === 'In Transit') },
+      { key: 'withdrawn', label: 'Withdrawn', data: amounts((p) => p.type === 'Withdrawal') },
+    ],
+    failed: PAYOUTS.filter((p) => p.status === 'Failed'),
+  }
+})()
+
+/** **Chart concept · Payouts over time.**
+ *
+ *  *Question it answers:* "How much has actually reached my bank each week,
+ *  and when did money go the other way?" The ledger answers that one row at a
+ *  time; ten weeks of payouts as bars show the rhythm (a deposit every Monday),
+ *  the two withdrawals, and the payout still in transit, at a glance.
+ *
+ *  *Why a stacked bar:* the Overview — Bar is for comparing magnitudes across
+ *  categories (here, payout weeks) and Stacked Bar for composition per
+ *  category. Stacking puts deposits above the axis and withdrawals below it on
+ *  one value axis, which keeps "money in" and "money out" on the same scale
+ *  without a second axis. Line was rejected: payouts are discrete events, not
+ *  a continuous quantity.
+ *
+ *  *Placement:* a DsChartCard between Balance Summary and the Payouts ledger —
+ *  the overview sits directly above the rows it summarises. The table toggle
+ *  gives the exact amounts.
+ *
+ *  *What it adds:* new — the page has no view of payouts over time today. */
+export const ChartConceptPayouts = epPage({
+  active: 'balances',
+  components: { DsSearch, DsModal, DsLink, DsStackedBarChart, DsChartCard },
+  setup: () => ({ ...state(), history: payoutHistory }),
+  slot: `
+  <div style="${EP_PAGE}">
+    ${epHeader('Balances', { badge: 'Chart concept — for approval', badgeColor: 'ds-warning text-ds-warning' })}
+    ${summaryCard}
+    <ds-chart-card title="Payouts over time" subtitle="Weekly payouts · Jun 15 – Aug 17, 2026" table-toggle
+      padding="lg" style="${EP_CARD}">
+      <template #default="{ view }">
+        <ds-stacked-bar-chart :labels="history.labels" :series="history.series" label-format="day"
+          value-format="currency" :height="260" :view="view" />
+      </template>
+      <template #footer>
+        <span v-for="f in history.failed" :key="f.id">
+          Not shown: {{ f.id }} ({{ f.amount }}, {{ f.created.replace('Created ', '') }}) failed — no money moved.
+        </span>
+      </template>
+    </ds-chart-card>
+    ${payoutsCard}
+  </div>
+  ${fundsDialog}`,
+})
+ChartConceptPayouts.storyName = 'Chart concept · Payouts over time'

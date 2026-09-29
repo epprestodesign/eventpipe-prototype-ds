@@ -36,11 +36,13 @@ defineProps({
   active: { type: String, default: 'inventory' },
   org: { type: String, default: 'Team Travel Source' },
   user: { type: String, default: 'Mike Addesa' },
+  // The org switcher's choices. Omit to use the AppBar's own default list.
+  orgs: { type: Array, default: null },
   // Full-bleed content (no elevated panel / canvas padding) — for full pages
   // that fill the content area edge-to-edge (the production screens).
   bleed: { type: Boolean, default: false },
 })
-const emit = defineEmits(['navigate'])
+const emit = defineEmits(['navigate', 'update:org'])
 </script>
 
 <template>
@@ -80,7 +82,7 @@ const emit = defineEmits(['navigate'])
 
     <!-- Main column -->
     <div class="appshell__main">
-      <AppBar :org="org" :user="user" />
+      <AppBar :org="org" :user="user" v-bind="orgs ? { orgs } : {}" @update:org="emit('update:org', $event)" />
       <div class="appshell__content" :class="{ 'appshell__content--bleed': bleed }">
         <div v-if="!bleed" class="appshell__panel"><slot /></div>
         <slot v-else />

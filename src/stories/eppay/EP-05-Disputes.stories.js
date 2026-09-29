@@ -3,126 +3,167 @@
  *  The 09/28 capture (references/092826/…-disputes-…png) set what is on this
  *  screen and where; the design system set how it looks.
  *
- *  Four decisions worth stating:
+ *  Six decisions worth stating:
  *
- *  1. The chart is hand-drawn — plain divs for the bars, one inline SVG
- *     polyline pair for the line mode. A charting library would be a new
- *     dependency for one card of one screen, and the shapes here are a
- *     fixed-scale eight-month comparison, not a data-bound plot. It reads the
- *     same way as the dashboard sparklines: this period in the brand colour,
- *     last year in the neutral behind it.
+ *  1. The volume chart is the DS chart catalog's DsBarChart / DsLineChart in
+ *     a DsChartCard. The card header carries three quiet controls in one
+ *     40px row: a joined Bar / Line icon switcher, a text-style "vs previous
+ *     period ▾" menu, and the card's own expand icon (DsChartCard's
+ *     table-toggle — always last, rightmost), which opens the exact monthly
+ *     values in a modal. The selected range is the first categorical colour,
+ *     the comparison the neutral dashed `comparison` series behind it.
+ *     The comparison is COMPUTED, not relabelled (see comparisonByMonth in
+ *     _disputes-data.js): "previous year" is the same range 12 months back,
+ *     "previous period" the same number of months immediately before it,
+ *     each month clipped to the same days as the month it sits behind. The
+ *     fixture starts on Sep 1, 2025, so any comparison month before that is
+ *     null — drawn as a gap / "No data", never 0 — and a one-line note under
+ *     the chart says which months have no comparison and why. With a
+ *     12-month fixture, "previous year" therefore never has data; the old
+ *     hand-typed Jan–Aug 2025 series was dropped rather than shown next to
+ *     computed ones, because nothing on the screen could tell a merchant
+ *     which of the two was invented.
  *
- *  2. The five stat cards are the table's filter control, not decoration. The
- *     capture spells this out ("Click a card above to filter"), so they are
- *     real buttons: clicking one re-titles the table, swaps the filter chip and
- *     narrows the rows. The counts on the cards stay the true account totals
- *     (34 disputes), while the table shows one page — which is why the footer
- *     reads "1–N of <card count>" rather than counting the rows on screen.
+ *  2. Every number on the screen comes from one fixture (_disputes-data.js,
+ *     48 disputes, Sep 2025 – Aug 2026). The screen used to type its totals
+ *     in by hand (34 disputes, $53,455.35) over 19 rows that could not add up
+ *     to them; now the summary, the Dispute By bar, the monthly volume, the
+ *     ratio concept, the status cards and the queue are all sums of the same
+ *     rows, so none of them can disagree.
  *
- *  3. Dispute By is one amount split six ways, so its segments run down a
- *     single brand ramp from darkest to lightest rather than across six unlike
- *     hues. The ordering already carries the ranking, each swatch sits beside
- *     its own label, and six arbitrary colours would read as six categories of
- *     something — which is exactly what these are not.
+ *  3. The page's date range (DsDateRangePicker in the header, default "Year
+ *     to date", Jan 1 – Aug 31, 2026; today = the fixture's AS_OF, min = its
+ *     first day) scopes EVERYTHING on the screen by dispute date: the volume
+ *     chart (one bar per month the range touches, partial months clipped, so
+ *     the bars add up to the summary), the Dispute Summary, Dispute By, the
+ *     ratio concept, the status cards and the queue. One date for the whole
+ *     page means no two figures on it can be about different periods.
+ *     It is the ONLY date control: the filter panel's old "Dispute date"
+ *     field was removed rather than left to narrow within the page range —
+ *     two date controls that must be read together is one too many, and the
+ *     queue's date is already on screen in the header.
+ *     Within that range, the top card is the ACCOUNT and the status cards and
+ *     table are the QUEUE. The chart, Dispute Summary and Dispute By answer
+ *     "how is this account doing", so they deliberately ignore the queue's
+ *     search and filters — a merchant narrowing the table to find one Klarna
+ *     dispute should not see their account-level ratio change underneath
+ *     them. Everything below the top card narrows together: the status
+ *     cards, the search box, the filter panel and the pagination all read
+ *     one result set.
  *
- *  4. Card-brand marks are neutral DS chips, not logos and not each network's
- *     own colour. Brand artwork in a prototype repo is a licensing question,
- *     and brand colours in a table whose other chips mean "won" and "lost"
- *     would be six more colours competing with the ones that carry status.
+ *  4. The five status cards are the table's status filter, not decoration
+ *     ("Click a card above to filter"), so they are real buttons that write
+ *     the same `status` field the filter panel writes. Their counts are facet
+ *     counts: each card counts its own status inside every OTHER active
+ *     filter and the search, so the cards always say what clicking them will
+ *     show. With nothing else applied they are the account totals.
+ *
+ *  5. The Filter button opens a DsSidePanel, not a menu. Six fields — two
+ *     multi-select dropdowns, three chip groups and an amount range — is a
+ *     form, and a q-menu under the button
+ *     would either scroll inside itself or cover the table it is filtering.
+ *     The panel edits a draft: nothing changes until Apply, whose label counts
+ *     the matches the draft would give ("Show 7 disputes"), so the merchant
+ *     knows before committing whether they are about to land on an empty
+ *     table. Closing the panel (×, Esc or the scrim) discards the draft.
+ *     Applied filters appear as removable chips above the table; the badge on
+ *     the Filter button counts them.
+ *
+ *  6. Dispute By is one amount split by a dimension (picked from the same
+ *     quiet text menu as the chart's comparison, "By payment method ▾"): a
+ *     single-row 100% stacked bar (DsStackedBarChart, the catalog's "Share Bar") over a static
+ *     DsChartLegend carrying each part's amount and share. Colours are the
+ *     catalog's fixed categorical order, not a brand ramp; a sixth part takes
+ *     the neutral overflow colour, since the catalog forbids a sixth hue.
+ *     Card-brand marks in the table are neutral DS chips, not logos — brand
+ *     artwork is a licensing question, and brand colours would compete with
+ *     the chips that carry status.
  */
-import { ref, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { epPage, epHeader, tintFor, statusChip, BRAND_CHIP, EP_CARD, EP_CAPTION, EP_PAGE } from './_eppay'
+import {
+  DISPUTES, DISPUTE_STATUSES, DISPUTE_BRANDS, DISPUTE_REASONS, DISPUTE_KINDS, DISPUTE_EVENTS, AS_OF, DATA_START,
+  emptyFilters, copyFilters, matchesFilters, matchesSearch, inRange, amountBounds, sumAmount, amountBy, byMonth,
+  comparisonByMonth, monthStarts, shiftMonths, txnsIn,
+} from './_disputes-data'
 import DsSearch from '../../components/DsSearch.vue'
 import DsChoiceChips from '../../components/DsChoiceChips.vue'
+import DsSidePanel from '../../components/DsSidePanel.vue'
+import DsField from '../../components/DsField.vue'
+import DsSelect from '../../components/DsSelect.vue'
+import DsInput from '../../components/DsInput.vue'
+import DsEmptyState from '../../components/DsEmptyState.vue'
+import DsDateRangePicker from '../../components/DsDateRangePicker.vue'
+import { formatRange, formatLong, formatMonth, endOfMonth } from '../../components/dateRangeMath.js'
+import DsPagination from '../../components/DsPagination.vue'
+import DsChartCard from '../../components/charts/DsChartCard.vue'
+import DsChartLegend from '../../components/charts/DsChartLegend.vue'
+import DsBarChart from '../../components/charts/DsBarChart.vue'
+import DsLineChart from '../../components/charts/DsLineChart.vue'
+import DsStackedBarChart from '../../components/charts/DsStackedBarChart.vue'
+import { formatValue } from '../../components/charts/chartFormat.js'
+import { seriesColorSlots } from '../../components/charts/chartData.js'
 
 export default {
   title: 'EP Pay/Screens/05 · Disputes',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
-    docs: { description: { component: 'Disputes: volume against the previous year, a summary of outcomes, a breakdown by payment method, and the dispute queue. The five stat cards filter the table — click one.' } },
+    docs: { description: { component: 'Disputes: monthly volume against a computed comparison (previous period or previous year), a summary of outcomes, a breakdown by payment method, and the dispute queue — all scoped by the page\'s date range. The five status cards, the search box and the Filter panel narrow the queue within it — click a card, or open Filter.' } },
   },
 }
 
 /* ---------------------------------------------------------------------------
- * Fixtures — local to this screen. The scaffold's shared fixtures describe the
- * merchant's balances and payouts; disputes are this file's business only.
+ * Account-level figures — all derived from the dispute fixture.
  * ------------------------------------------------------------------------- */
 
-/** Monthly dispute volume, in dollars. Fixed scale — see CHART_MAX. */
-const MONTHS = [
-  { m: 'Jan', sel: 10000, prev: 6500 },
-  { m: 'Feb', sel: 9000, prev: 6300 },
-  { m: 'Mar', sel: 18500, prev: 5800 },
-  { m: 'Apr', sel: 7800, prev: 5600 },
-  { m: 'May', sel: 400, prev: 2800 },
-  { m: 'Jun', sel: 300, prev: 3600 },
-  { m: 'Jul', sel: 3200, prev: 6500 },
-  { m: 'Aug', sel: 4500, prev: 6200 },
-]
-const CHART_MAX = 20000
-const GRIDS = ['$20k', '$15k', '$10k', '$5k', '$0']
+const usd = (n) => formatValue(n, 'currency')
+const shiftDays = (iso, days) => {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d) + days * 864e5).toISOString().slice(0, 10)
+}
 
-const SUMMARY = [
-  { label: 'Amount Disputed', value: '$53,455.35', big: true },
-  { label: 'Disputes Received', value: '34' },
-  { label: 'Won', value: '9' },
-  { label: 'Lost', value: '6' },
-  { label: 'Original Transactions', value: '6,800' },
-  { label: 'Dispute Ratio', value: '0.50%', big: true },
+/** The page date range's presets. Counted back from the fixture's AS_OF
+ *  (not the real clock) and clamped by the picker to [DATA_START, AS_OF].
+ *  "Last 6 / 12 months" are whole calendar months, so their previous period
+ *  lines up month for month with the chart. */
+const RANGE_PRESETS = [
+  { key: 'last30', label: 'Last 30 days', range: (t) => ({ start: shiftDays(t, -29), end: t }) },
+  { key: 'last90', label: 'Last 90 days', range: (t) => ({ start: shiftDays(t, -89), end: t }) },
+  { key: 'last6m', label: 'Last 6 months', range: (t) => ({ start: `${shiftMonths(t, -5).slice(0, 7)}-01`, end: t }) },
+  { key: 'ytd', label: 'Year to date', range: (t) => ({ start: `${t.slice(0, 4)}-01-01`, end: t }) },
+  { key: 'last12m', label: 'Last 12 months', range: (t) => ({ start: `${shiftMonths(t, -11).slice(0, 7)}-01`, end: t }) },
 ]
+const DEFAULT_RANGE = { start: `${AS_OF.slice(0, 4)}-01-01`, end: AS_OF, preset: 'ytd' }
 
-/* Shares of one total, biggest first, so the ramp runs dark to light in step
-   with the ranking. Straight from the DS brand ramp — no colour is invented.
-   The steps skip a stop each (900, 700, 500, 300, 200, 100): adjacent stops are
-   indistinguishable at swatch size, and six segments nobody can tell apart is
-   worse than five. */
-const DISPUTE_BY = [
-  { label: 'Visa', amount: '$15,888.88', pct: 29.7, color: 'var(--ds-palette-azure-900)' },
-  { label: 'Mastercard', amount: '$11,258.65', pct: 21.1, color: 'var(--ds-palette-azure-700)' },
-  { label: 'Discover', amount: '$11,150.32', pct: 20.9, color: 'var(--ds-palette-azure-500)' },
-  { label: 'Amex', amount: '$8,668.90', pct: 16.2, color: 'var(--ds-palette-azure-300)' },
-  { label: 'PayPal', amount: '$3,729.00', pct: 7.0, color: 'var(--ds-palette-azure-200)' },
-  { label: 'Klarna', amount: '$2,759.60', pct: 5.2, color: 'var(--ds-palette-azure-100)' },
+/** Comparison options. `short` is the trigger's text ("vs previous period"). */
+const COMPARE_OPTIONS = [
+  { value: 'period', label: 'Previous period', short: 'vs previous period' },
+  { value: 'year', label: 'Previous year', short: 'vs previous year' },
 ]
 
-/** The filter cards. `key` doubles as the status matched in the table. */
-const FILTERS = [
-  { key: 'Evidence Needed', label: 'EVIDENCE NEEDED', count: 10, amount: '$14,455.60 disputed' },
-  { key: 'Pending', label: 'PENDING', count: 9, amount: '$19,096.41 disputed' },
-  { key: 'Won', label: 'WON', count: 9, amount: '$11,852.68 disputed' },
-  { key: 'Lost', label: 'LOST', count: 6, amount: '$8,050.66 disputed' },
-  { key: 'All', label: 'ALL', count: 34, amount: '$53,455.35 disputed' },
+/** Dispute By — each option names the row field it splits the total by. */
+const BREAKDOWNS = [
+  { value: 'Payment Method', field: 'brand', short: 'By payment method' },
+  { value: 'Reason', field: 'reason', short: 'By reason' },
+  { value: 'Event', field: 'event', short: 'By event' },
 ]
 
-const ROWS = [
-  { status: 'Evidence Needed', id: 'DSP-52721', dateTop: 'Disputed: Aug 20, 2026', dateSub: 'Evidence due: Aug 30, 2026', amount: '$730.00', ofAmount: 'of $730.00', customer: 'Noah Klein', brand: 'Klarna', last4: '2914', txn: 'TXN-2026-15993', txnDate: 'Aug 20, 2026', kind: 'Retrieval', reason: 'Subscription canceled' },
-  { status: 'Evidence Needed', id: 'DSP-52173', dateTop: 'Disputed: Aug 8, 2026', dateSub: 'Evidence due: Aug 18, 2026', amount: '$671.40', ofAmount: 'of $1,119.00', customer: 'Elena Fischer', brand: 'Klarna', last4: '2914', txn: 'TXN-2026-15369', txnDate: 'Jul 27, 2026', kind: 'Chargeback', reason: 'Credit not processed' },
-  { status: 'Evidence Needed', id: 'DSP-50118', dateTop: 'Disputed: Apr 10, 2026', dateSub: 'Evidence due: Apr 20, 2026', amount: '$3,003.67', ofAmount: 'of $3,856.67', customer: 'Maya Sorensen', brand: 'Discover', last4: '7076', txn: 'TXN-244454', txnDate: 'Mar 20, 2026', kind: 'Chargeback', reason: 'Duplicate charge' },
-  { status: 'Evidence Needed', id: 'DSP-49707', dateTop: 'Disputed: Mar 22, 2026', dateSub: 'Evidence due: Apr 1, 2026', amount: '$1,320.00', ofAmount: 'of $1,320.00', customer: 'Jamal Rivers', brand: 'Visa', last4: '1606', txn: 'TXN-243521', txnDate: 'Mar 16, 2026', kind: 'Chargeback', reason: 'Credit not processed' },
-  { status: 'Evidence Needed', id: 'DSP-51625', dateTop: 'Disputed: Mar 22, 2026', dateSub: 'Evidence due: Apr 1, 2026', amount: '$471.00', ofAmount: 'of $471.00', customer: 'Elena Fischer', brand: 'Mastercard', last4: '4508', txn: 'TXN-2026-11963', txnDate: 'Mar 18, 2026', kind: 'Inquiry', reason: 'Fraudulent' },
-  { status: 'Evidence Needed', id: 'DSP-51214', dateTop: 'Disputed: Mar 4, 2026', dateSub: 'Evidence due: Mar 14, 2026', amount: '$739.00', ofAmount: 'of $739.00', customer: 'Hannah Reyes', brand: 'Visa', last4: '4242', txn: 'TXN-2026-11248', txnDate: 'Feb 19, 2026', kind: 'Inquiry', reason: 'Product unacceptable' },
-  { status: 'Evidence Needed', id: 'DSP-49159', dateTop: 'Disputed: Feb 25, 2026', dateSub: 'Evidence due: Mar 7, 2026', amount: '$1,876.44', ofAmount: 'of $1,932.44', customer: 'Ben Castellano', brand: 'Visa', last4: '9311', txn: 'TXN-242277', txnDate: 'Feb 15, 2026', kind: 'Inquiry', reason: 'Fraudulent' },
-  { status: 'Evidence Needed', id: 'DSP-48611', dateTop: 'Disputed: Jan 31, 2026', dateSub: 'Evidence due: Feb 10, 2026', amount: '$2,432.88', ofAmount: 'of $2,804.88', customer: 'Tom Okada', brand: 'Visa', last4: '8017', txn: 'TXN-241033', txnDate: 'Jan 17, 2026', kind: 'Retrieval', reason: 'Subscription canceled' },
-  { status: 'Evidence Needed', id: 'DSP-50666', dateTop: 'Disputed: Jan 19, 2026', dateSub: 'Evidence due: Jan 29, 2026', amount: '$2,462.00', ofAmount: 'of $2,462.00', customer: 'Marcus Webb', brand: 'Visa', last4: '4242', txn: 'TXN-2026-10312', txnDate: 'Jan 14, 2026', kind: 'Retrieval', reason: 'Product not received' },
-  { status: 'Evidence Needed', id: 'DSP-48200', dateTop: 'Disputed: Jan 12, 2026', dateSub: 'Evidence due: Jan 22, 2026', amount: '$749.21', ofAmount: 'of $908.21', customer: 'Elena Fischer', brand: 'Mastercard', last4: '2547', txn: 'TXN-240100', txnDate: 'Dec 20, 2025', kind: 'Retrieval', reason: 'Product not received' },
+/* Chart concept · Dispute ratio: the monitoring threshold. The chart catalog
+   has no reference-line prop, so it rides in as a flat comparison series —
+   neutral and dashed. Illustrative value: the real figure depends on the
+   network and acquirer, and product should confirm which one EP Pay shows.
+   Known gap: the percent axis formats ticks to 0 decimals, so a sub-2% range
+   labels its 0.5% steps "1%", "1%", "2%". Tooltip and table are exact; the
+   fix belongs in chartFormat's formatAxisValue, not here. */
+const RATIO_THRESHOLD = 0.009
 
-  { status: 'Pending', id: 'DSP-52890', dateTop: 'Disputed: Aug 24, 2026', dateSub: 'Evidence submitted: Aug 26, 2026', amount: '$1,204.55', ofAmount: 'of $1,204.55', customer: 'Priya Raman', brand: 'Amex', last4: '3315', txn: 'TXN-2026-16104', txnDate: 'Aug 11, 2026', kind: 'Chargeback', reason: 'Fraudulent' },
-  { status: 'Pending', id: 'DSP-52744', dateTop: 'Disputed: Aug 21, 2026', dateSub: 'Evidence submitted: Aug 23, 2026', amount: '$3,410.90', ofAmount: 'of $3,410.90', customer: 'Owen Marsh', brand: 'Visa', last4: '6620', txn: 'TXN-2026-16022', txnDate: 'Aug 4, 2026', kind: 'Chargeback', reason: 'Product not received' },
-  { status: 'Pending', id: 'DSP-52410', dateTop: 'Disputed: Aug 12, 2026', dateSub: 'Evidence submitted: Aug 14, 2026', amount: '$885.00', ofAmount: 'of $885.00', customer: 'Lena Fischer', brand: 'Mastercard', last4: '4508', txn: 'TXN-2026-15782', txnDate: 'Jul 30, 2026', kind: 'Inquiry', reason: 'Duplicate charge' },
+/** The status cards, in the capture's order. `key` is the status matched. */
+const CARDS = [...DISPUTE_STATUSES.map((s) => ({ key: s, label: s.toUpperCase() })), { key: 'All', label: 'ALL' }]
 
-  { status: 'Won', id: 'DSP-51988', dateTop: 'Disputed: Jul 2, 2026', dateSub: 'Won: Jul 24, 2026', amount: '$2,150.00', ofAmount: 'of $2,150.00', customer: 'Grace Lindqvist', brand: 'Visa', last4: '1188', txn: 'TXN-2026-14310', txnDate: 'Jun 18, 2026', kind: 'Chargeback', reason: 'Product not received' },
-  { status: 'Won', id: 'DSP-51640', dateTop: 'Disputed: Jun 14, 2026', dateSub: 'Won: Jul 3, 2026', amount: '$640.25', ofAmount: 'of $640.25', customer: 'Andre Soto', brand: 'Discover', last4: '7076', txn: 'TXN-2026-13877', txnDate: 'Jun 2, 2026', kind: 'Inquiry', reason: 'Credit not processed' },
-  { status: 'Won', id: 'DSP-51203', dateTop: 'Disputed: May 28, 2026', dateSub: 'Won: Jun 15, 2026', amount: '$1,975.40', ofAmount: 'of $2,110.40', customer: 'Hannah Reyes', brand: 'Visa', last4: '4242', txn: 'TXN-2026-13204', txnDate: 'May 9, 2026', kind: 'Chargeback', reason: 'Fraudulent' },
-
-  { status: 'Lost', id: 'DSP-50902', dateTop: 'Disputed: May 4, 2026', dateSub: 'Lost: May 26, 2026', amount: '$1,488.00', ofAmount: 'of $1,488.00', customer: 'Diego Ramirez', brand: 'PayPal', last4: '8830', txn: 'TXN-2026-12551', txnDate: 'Apr 22, 2026', kind: 'Chargeback', reason: 'Fraudulent' },
-  { status: 'Lost', id: 'DSP-50477', dateTop: 'Disputed: Apr 18, 2026', dateSub: 'Lost: May 9, 2026', amount: '$920.60', ofAmount: 'of $920.60', customer: 'Tom Okada', brand: 'Visa', last4: '8017', txn: 'TXN-2026-12088', txnDate: 'Apr 3, 2026', kind: 'Chargeback', reason: 'Duplicate charge' },
-  { status: 'Lost', id: 'DSP-49845', dateTop: 'Disputed: Mar 9, 2026', dateSub: 'Lost: Mar 30, 2026', amount: '$3,268.10', ofAmount: 'of $3,268.10', customer: 'Maya Sorensen', brand: 'Amex', last4: '3315', txn: 'TXN-2026-11402', txnDate: 'Feb 24, 2026', kind: 'Retrieval', reason: 'Subscription canceled' },
-]
-
-/** The dispute queue's columns. Seven of the eight stack a value over a muted
- *  second line, so each is drawn by a `#body-cell-*` slot; `field` still points
- *  at the primary value so the column has something real behind it. */
+/** The queue's columns. Seven of the eight stack a value over a muted second
+ *  line, so each is drawn by a `#body-cell-*` slot; `field` still points at
+ *  the primary value so the column has something real behind it. */
 const COLUMNS = [
   { name: 'status', label: 'Status', field: 'status', align: 'left' },
   { name: 'id', label: 'ID', field: 'id', align: 'left' },
@@ -133,6 +174,8 @@ const COLUMNS = [
   { name: 'details', label: 'Additional Details', field: 'kind', align: 'left' },
   { name: 'actions', label: '', field: 'id', align: 'right', style: 'width:56px;', headerStyle: 'width:56px;' },
 ]
+
+const PAGE_SIZE = 10
 
 /* ---------------------------------------------------------------------------
  * Markup
@@ -147,67 +190,77 @@ const TD = 'padding:12px 16px; vertical-align:top; white-space:nowrap;'
  *  the flex track it sits in, which the card shell has no opinion about. */
 const PANEL = (grow, basis, min) => `flex:${grow} 1 ${basis}; min-width:${min};`
 
+/* Card-header controls. One row, vertically centred, 40px tall; DsChartCard
+   appends its expand icon (table-toggle) after the actions slot, so it is
+   always the last, rightmost control. Two patterns, both quiet:
+   - a SWITCHER: joined 40×40 icon buttons in one bordered container (the
+     DsActionMenu 40×40 look), the selected one on the brand-subtlest fill
+     with a brand icon; aria-pressed carries the state, a tooltip the name;
+   - a TEXT MENU: a flat "vs previous period ▾" trigger and a q-menu of
+     menuitemradio options — a wide outlined field was too loud for a
+     setting that changes one series. */
+const SWITCHER = 'display:inline-flex; height:40px; box-sizing:border-box; border:1px solid var(--ds-color-border-container); border-radius:var(--ds-radius-md); background:var(--ds-color-surface); overflow:hidden;'
+
+/** A quiet dropdown. `model` is the setup ref it writes; `options` are
+ *  { value, label, caption? }; `trigger` is the expression for its text. */
+const quietMenu = (model, options, trigger, name) => `
+  <q-btn flat no-caps size="14px" padding="0 4px 0 8px"
+    style="height:40px; min-height:40px; margin-left:-8px; border-radius:var(--ds-radius-md); font-weight:600; color:var(--ds-color-text);"
+    :aria-label="'${name}: ' + ${trigger}" aria-haspopup="menu">
+    <!-- Label + chevron drawn here rather than via icon-right, whose 12px gap
+         pushed "By payment method" off the narrow Dispute By title row. -->
+    <span>{{ ${trigger} }}</span><q-icon name="expand_more" size="20px" style="margin-left:2px;" />
+    <q-menu anchor="bottom left" self="top left" :offset="[0, 4]">
+      <q-list role="menu" aria-label="${name}" class="q-py-xs" style="min-width:220px;">
+        <q-item v-for="o in ${options}" :key="o.value" clickable v-close-popup role="menuitemradio"
+          :aria-checked="String(${model} === o.value)" :active="${model} === o.value" active-class="text-primary"
+          style="min-height:40px;" @click="${model} = o.value">
+          <q-item-section>
+            <q-item-label>{{ o.label }}</q-item-label>
+            <q-item-label v-if="o.caption" caption>{{ o.caption }}</q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <q-icon v-if="${model} === o.value" name="check" size="18px" color="primary" />
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-menu>
+  </q-btn>`
+
+/* The volume chart (layout per the user, 2026-09-29): title and subtitle, then
+   the comparison menu on its own row below them; the legend row with the
+   chart-type switcher at its right end; the chart. The expand icon (DsChartCard
+   `table-toggle`) sits top right and opens the monthly data as a searchable
+   table. The legend is drawn here rather than by the chart so the switcher can
+   share its row; it uses the chart's own colour slots and still shows / hides
+   series. The coverage note says when (and why) comparison months are missing. */
 const chartCard = `
-  <q-card flat bordered style="${PANEL('1.7', '420px', '380px')}">
-    <q-card-section style="padding:20px 22px;">
-      <div class="row items-center no-wrap q-mb-lg">
-        <div style="font-size:1.125rem; font-weight:700;">Disputes</div>
-        <q-space />
-        <ds-choice-chips v-model="chartMode" :options="chartModes" :multiple="false" class="q-mr-md" />
-        <div style="display:flex; align-items:center; gap:6px; border:1px solid var(--ds-color-border); border-radius:var(--ds-radius-md); padding:4px 10px 4px 14px;">
-          <span style="${EP_CAPTION}">Compared to</span>
-          <q-select v-model="compare" :options="['Previous Year', 'Previous Period']" borderless dense
-            options-dense dropdown-icon="expand_more" style="font-weight:700;" />
+  <ds-chart-card title="Disputes" :subtitle="'Disputed amount by month · ' + rangeText" table-toggle
+    style="${PANEL('1.7', '420px', '380px')}">
+    <template #default="{ view }">
+      <div v-if="view === 'chart'" style="margin:-8px 0 4px;">
+        ${quietMenu('compare', 'compareOptions', 'compareShort', 'Compare to')}
+      </div>
+      <div v-if="view === 'chart'" class="row items-center no-wrap" style="gap:12px; margin-bottom:6px;">
+        <ds-chart-legend :items="volumeLegend" :hidden="hiddenSeries" @toggle="toggleSeries" style="flex:1; min-width:0;" />
+        <div role="group" aria-label="Chart type" style="${SWITCHER} flex:none;" data-test="chart-switcher">
+          <q-btn v-for="(m, i) in chartModes" :key="m.value" flat padding="0" :icon="m.icon"
+            :aria-label="m.label" :aria-pressed="String(chartMode === m.value)" :style="switchStyle(m.value, i)"
+            @click="chartMode = m.value">
+            <q-tooltip>{{ m.label }}</q-tooltip>
+          </q-btn>
         </div>
       </div>
-
-      <!-- Hand-drawn on purpose: a fixed-scale eight-month comparison, not a
-           data-bound plot. A charting library for one card of one screen is a
-           dependency the prototype does not need, and there is no DS chart
-           component to reach for. -->
-      <div style="display:flex; gap:10px;">
-        <div style="display:flex; flex-direction:column; justify-content:space-between; height:170px; ${EP_CAPTION} text-align:right;">
-          <span v-for="g in grids" :key="g">{{ g }}</span>
-        </div>
-        <div style="flex:1; min-width:0;">
-          <div style="position:relative; height:170px;">
-            <div v-for="(g, i) in grids" :key="'grid-' + g"
-              :style="'position:absolute; left:0; right:0; border-top:1px solid var(--ds-color-border); top:' + (i * 25) + '%;'"></div>
-
-            <div v-if="chartMode === 'bar'" style="position:absolute; inset:0; display:flex; align-items:flex-end; gap:0;">
-              <div v-for="m in months" :key="m.m"
-                style="flex:1; display:flex; align-items:flex-end; justify-content:center; gap:4px; height:100%;">
-                <div :style="'width:16px; border-radius:var(--ds-radius-sm) var(--ds-radius-sm) 0 0; background:var(--ds-color-border-bold); height:' + pct(m.prev) + '%;'"></div>
-                <div :style="'width:16px; border-radius:var(--ds-radius-sm) var(--ds-radius-sm) 0 0; background:var(--ds-color-background-brand-bold); height:' + pct(m.sel) + '%;'"></div>
-              </div>
-            </div>
-
-            <svg v-else viewBox="0 0 100 100" preserveAspectRatio="none" role="img"
-              aria-label="Dispute volume, selected range against the previous year"
-              style="position:absolute; inset:0; width:100%; height:100%;">
-              <polyline :points="prevLine" fill="none" stroke="var(--ds-color-border-bold)" stroke-width="2"
-                vector-effect="non-scaling-stroke" stroke-linejoin="round" />
-              <polyline :points="selLine" fill="none" stroke="var(--ds-color-background-brand-bold)" stroke-width="2"
-                vector-effect="non-scaling-stroke" stroke-linejoin="round" />
-            </svg>
-          </div>
-
-          <div style="display:flex; margin-top:6px;">
-            <div v-for="m in months" :key="'lbl-' + m.m" style="flex:1; text-align:center; ${EP_CAPTION}">{{ m.m }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row justify-center items-center q-gutter-lg q-mt-md">
-        <div style="display:flex; align-items:center; gap:8px; ${EP_CAPTION}">
-          <span style="width:12px; height:12px; border-radius:var(--ds-radius-sm); background:var(--ds-color-background-brand-bold);"></span>Selected range
-        </div>
-        <div style="display:flex; align-items:center; gap:8px; ${EP_CAPTION}">
-          <span style="width:12px; height:12px; border-radius:var(--ds-radius-sm); background:var(--ds-color-border-bold);"></span>Previous Year
-        </div>
-      </div>
-    </q-card-section>
-  </q-card>`
+      <ds-bar-chart v-if="chartMode === 'bar'" :labels="volumeLabels" :series="volumeSeries" :show-legend="false"
+        :hidden-series="hiddenSeries" label-format="month" value-format="currency" :height="220" :view="view" :aria-label="volumeAria" />
+      <ds-line-chart v-else :labels="volumeLabels" :series="volumeSeries" :show-legend="false"
+        :hidden-series="hiddenSeries" label-format="month" value-format="currency" :height="220" :view="view" :aria-label="volumeAria" />
+      <p v-if="coverageNote" class="row items-start no-wrap" data-test="coverage-note"
+        style="gap:6px; margin:10px 0 0; ${EP_CAPTION}">
+        <q-icon name="info_outline" size="16px" style="margin-top:1px; flex:none;" /> <span>{{ coverageNote }}</span>
+      </p>
+    </template>
+  </ds-chart-card>`
 
 const summaryCard = `
   <q-card flat bordered style="${PANEL('1', '260px', '250px')}">
@@ -215,7 +268,7 @@ const summaryCard = `
       <div class="row items-baseline no-wrap q-mb-md">
         <div style="font-size:1.125rem; font-weight:700;">Dispute Summary</div>
         <q-space />
-        <div style="${EP_CAPTION}">Last 12 months</div>
+        <div style="${EP_CAPTION}">{{ rangeCaption }}</div>
       </div>
       <div v-for="(s, i) in summary" :key="s.label"
         :style="'display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:11px 0;' + (i < summary.length - 1 ? ' border-bottom:1px solid var(--ds-color-border);' : '')">
@@ -225,44 +278,32 @@ const summaryCard = `
     </q-card-section>
   </q-card>`
 
+/* One total split by the chosen dimension: the catalog's single-row share bar,
+   with a static legend underneath that carries each part's amount and share.
+   The chart's own legend is off because this one replaces it; the Table view
+   has the same values. Account-wide (decision 3) — not narrowed by the queue. */
 const disputeByCard = `
-  <q-card flat bordered style="${PANEL('1', '260px', '250px')}">
-    <q-card-section style="padding:20px 22px;">
-      <div class="row items-center no-wrap q-mb-md">
-        <div style="font-size:1.125rem; font-weight:700; white-space:nowrap;">Dispute By</div>
-        <q-space />
-        <q-select v-model="breakdown" :options="['Payment Method', 'Reason', 'Product']" outlined dense
-          options-dense dropdown-icon="expand_more" style="font-weight:700;" />
+  <ds-chart-card title="Dispute By" :subtitle="disputeBySubtitle" table-toggle style="${PANEL('1', '260px', '250px')}">
+    <template #default="{ view }">
+      <div v-if="view === 'chart'" style="margin:-8px 0 8px;">
+        ${quietMenu('breakdown', 'breakdownOptions', 'breakdownShort', 'Break down by')}
       </div>
+      <ds-stacked-bar-chart percent horizontal :labels="['Amount']" :series="disputeBySeries"
+        value-format="currency" bare :height="28" :show-grid="false" :show-legend="false" :view="view"
+        :aria-label="'Disputed amount by ' + breakdown.toLowerCase() + ', share of ' + disputeByTotal" />
+      <ds-chart-legend v-if="view === 'chart'" :items="disputeByLegend" :interactive="false" layout="column"
+        style="margin-top:14px;" />
+    </template>
+  </ds-chart-card>`
 
-      <!-- A stacked share bar: six segments of one total. Divs, because the DS
-           has no chart primitive and a six-segment bar is not worth one. -->
-      <div style="display:flex; gap:3px; margin-bottom:18px;" role="img"
-        :aria-label="'Disputed amount by ' + breakdown">
-        <div v-for="d in disputeBy" :key="'seg-' + d.label"
-          :style="'height:10px; border-radius:var(--ds-radius-sm); background:' + d.color + '; flex:' + d.pct + ';'"></div>
-      </div>
-
-      <div v-for="d in disputeBy" :key="d.label" class="row items-start no-wrap" style="padding:7px 0;">
-        <span :style="'width:11px; height:11px; border-radius:var(--ds-radius-sm); flex:none; margin:5px 10px 0 0; background:' + d.color + ';'"></span>
-        <div style="min-width:0;">
-          <div style="font-weight:700;">{{ d.label }}</div>
-          <div style="${EP_CAPTION}">{{ d.amount }}</div>
-        </div>
-        <q-space />
-        <div style="font-weight:700; padding-top:1px;">{{ d.pct.toFixed(1) }}%</div>
-      </div>
-    </q-card-section>
-  </q-card>`
-
-/* The filter row. `q-card tag="button"` keeps the DS card shell and real button
-   semantics at the same time, so the pressed state is announced, not just
-   painted. Each card wears its own status tint, which is why these are not the
-   plain white cards the rest of the screen uses. */
+/* The status cards. `q-card tag="button"` keeps the DS card shell and real
+   button semantics at the same time, so the pressed state is announced, not
+   just painted. Each card wears its own status tint, which is why these are
+   not the plain white cards the rest of the screen uses. */
 const filterCards = `
   <div style="display:flex; gap:14px; margin:18px 0;">
-    <q-card v-for="f in filters" :key="f.key" flat bordered tag="button" type="button"
-      :aria-pressed="active === f.key" :style="cardStyle(f)" @click="active = f.key">
+    <q-card v-for="f in cards" :key="f.key" flat bordered tag="button" type="button"
+      :aria-pressed="active === f.key" :style="cardStyle(f)" @click="pickStatus(f.key)">
       <q-card-section :style="active === f.key ? 'padding:14px 18px;' : 'padding:15px 19px;'">
         <div :style="'font-size:0.75rem; font-weight:700; letter-spacing:0.05em; color:' + tint(f).fg + ';'">{{ f.label }}</div>
         <div :style="'font-size:1.75rem; font-weight:700; line-height:1.2; margin:2px 0; color:' + tint(f).fg + ';'">{{ f.count }}</div>
@@ -271,10 +312,47 @@ const filterCards = `
     </q-card>
   </div>`
 
+/* The filter panel. Every field edits `draft`; Apply copies it onto the
+   applied filters. Chip groups for the short fixed lists (a merchant scans
+   four statuses faster than they open a dropdown), dropdowns for the long
+   labels. */
+const filterPanel = `
+  <ds-side-panel v-model="panelOpen" title="Filter disputes" width="480px">
+    <div style="display:flex; flex-direction:column; gap:22px; padding-top:8px;">
+      <ds-field label="Status">
+        <ds-choice-chips v-model="draft.status" :options="statusOptions" aria-label="Status" />
+      </ds-field>
+      <ds-select v-model="draft.reasons" :options="reasonOptions" label="Reason" multiple clearable
+        placeholder="Any reason" />
+      <ds-field label="Payment method">
+        <ds-choice-chips v-model="draft.brands" :options="brandOptions" aria-label="Payment method" />
+      </ds-field>
+      <ds-field label="Dispute type">
+        <ds-choice-chips v-model="draft.kinds" :options="kindOptions" aria-label="Dispute type" />
+      </ds-field>
+      <div style="display:flex; gap:12px;">
+        <ds-input v-model="draft.amountMin" type="currency" label="Minimum amount" placeholder="0" style="flex:1;" />
+        <ds-input v-model="draft.amountMax" type="currency" label="Maximum amount" placeholder="No limit"
+          :error="amountError" style="flex:1;" />
+      </div>
+      <ds-select v-model="draft.events" :options="eventOptions" label="Event" multiple clearable
+        placeholder="Any event" />
+    </div>
+    <template #footer>
+      <div class="row items-center no-wrap">
+        <q-btn flat no-caps color="primary" label="Clear all" :disable="!draftCount" @click="clearDraft" />
+        <q-space />
+        <q-btn unelevated no-caps color="primary" :label="applyLabel" :disable="!!amountError"
+          data-test="apply-filters" @click="applyDraft" />
+      </div>
+    </template>
+  </ds-side-panel>`
+
 /* The queue is a QTable with `.ds-table`, so the Azure header bar, the zebra
-   rows and the rounded outline all come from the design system. An earlier pass
-   drew this as a plain <table> and re-painted that header by hand; the header
-   was then the same colour twice, from two places. */
+   rows and the rounded outline all come from the design system. The table is
+   handed one page of rows and DsPagination (the DS "Rich" pager, with its
+   "Showing x–y of z" summary) pages the whole result set, so the count is the
+   real number of matches rather than what is on screen. */
 const table = `
   <q-card flat bordered>
     <q-card-section style="padding:22px 24px;">
@@ -289,28 +367,29 @@ const table = `
           <ds-search v-model="q" placeholder="Search disputes" :results="suggestions" />
         </div>
         <q-space />
-        <q-btn outline no-caps color="primary" icon="filter_list" label="Filter" class="q-mr-sm">
-          <q-badge v-if="chips.length" color="primary" rounded class="q-ml-sm">{{ chips.length }}</q-badge>
+        <q-btn outline no-caps color="primary" icon="filter_list" label="Filter" class="q-mr-sm"
+          aria-haspopup="dialog" data-test="open-filters" @click="panelOpen = true">
+          <q-badge v-if="chips.length" color="primary" rounded class="q-ml-sm"
+            :aria-label="chips.length + ' filters applied'">{{ chips.length }}</q-badge>
         </q-btn>
         <q-btn outline no-caps color="primary" icon="file_download" label="Export" />
       </div>
 
-      <div v-if="chips.length" class="row items-center no-wrap q-mb-md"
+      <div v-if="chips.length" class="row items-center q-mb-md" data-test="active-filters"
         style="background:var(--ds-color-background-brand-subtlest); border:1px solid var(--ds-color-border);
-               border-radius:var(--ds-radius-md); padding:10px 14px;">
+               border-radius:var(--ds-radius-md); padding:8px 14px; gap:4px 0;">
         <q-icon name="filter_list" size="18px" color="grey-7" class="q-mr-sm" />
         <span style="${EP_CAPTION} margin-right:10px;">Filter by:</span>
-        <q-chip v-for="c in chips" :key="c.label" removable dense color="primary" text-color="white"
-          style="font-size:0.8125rem;" @remove="active = 'All'">
+        <q-chip v-for="c in chips" :key="c.key" removable dense color="primary" text-color="white"
+          style="font-size:0.8125rem;" :remove-aria-label="'Remove ' + c.field + ' filter'" @remove="removeChip(c.key)">
           {{ c.field }}: <strong class="q-ml-xs">{{ c.label }}</strong>
         </q-chip>
         <q-space />
-        <q-btn flat dense no-caps color="primary" label="Clear all" @click="active = 'All'" />
+        <q-btn flat dense no-caps color="primary" label="Clear all" @click="clearApplied" />
       </div>
 
-      <q-table class="ds-table" :rows="rows" :columns="columns" row-key="id"
-        flat bordered :pagination="{ rowsPerPage: 0 }"
-        no-data-label="No disputes match this search.">
+      <q-table class="ds-table" :rows="pageRows" :columns="columns" row-key="id"
+        flat bordered :pagination="{ rowsPerPage: 0 }">
 
         <template #header-cell-actions="props">
           <q-th :props="props">
@@ -370,27 +449,52 @@ const table = `
 
         <template #body-cell-actions="props">
           <q-td :props="props" style="${TD}">
-            <q-btn outline dense color="grey-6" icon="more_vert" size="sm" aria-label="Row actions" />
+            <ds-action-menu :label="'Actions for ' + props.row.id" :items="[
+              { label: 'View dispute', icon: 'visibility' },
+              { label: 'Submit evidence', icon: 'upload_file', disabled: props.row.status !== 'Evidence Needed' },
+              { label: 'Copy dispute ID', icon: 'content_copy', copy: props.row.id },
+              { label: 'Accept dispute', icon: 'gavel', danger: true, dividerBefore: true, disabled: props.row.status === 'Won' || props.row.status === 'Lost', confirm: { title: 'Accept ' + props.row.id + '?', message: 'You concede the dispute and the disputed amount stays with the cardholder.', okLabel: 'Accept dispute' } },
+            ]" />
           </q-td>
         </template>
 
+        <template #no-data>
+          <div style="flex:1;" data-test="no-results">
+            <ds-empty-state icon="filter_list_off" title="No matching disputes" :description="emptyDescription">
+              <template #action>
+                <q-btn unelevated no-caps color="primary" label="Clear filters" @click="clearEverything" />
+              </template>
+            </ds-empty-state>
+          </div>
+        </template>
+
         <template #bottom>
-          <div class="row items-center" style="flex:1; padding:4px 0;">
-            <div style="${EP_CAPTION}">{{ footer }}</div>
-            <q-space />
-            <q-btn flat no-caps color="grey-6" label="Previous" disable class="q-mr-sm" />
-            <q-btn unelevated no-caps color="primary" label="1" aria-current="page" style="min-width:40px;" class="q-mr-sm" />
-            <q-btn outline no-caps color="grey-7" label="Next" />
+          <div style="flex:1; padding:4px 0;" data-test="showing">
+            <ds-pagination v-model="page" :total="rows.length" :page-size="pageSize" noun="disputes" />
           </div>
         </template>
       </q-table>
     </q-card-section>
   </q-card>`
 
-const SLOT = `
+/* Concept only — see ChartConceptRatio. Full width under the three-up row,
+   because it expands the summary's single "Dispute Ratio" figure into the
+   trend behind it. */
+const ratioCard = `
+  <ds-chart-card title="Dispute ratio" subtitle="Disputes received ÷ transactions processed, by month" table-toggle
+    style="${EP_CARD}">
+    <template #default="{ view }">
+      <ds-line-chart :labels="volumeLabels" :series="ratioSeries" label-format="month" value-format="percent"
+        :height="200" :view="view" />
+    </template>
+  </ds-chart-card>`
+
+const slot = ({ badge = '', extra = '' } = {}) => `
   <div style="${EP_PAGE}">
     ${epHeader('Disputes', {
-      actions: '<q-btn outline no-caps color="grey-8" icon="event" icon-right="expand_more" label="Year to Date" />',
+      actions: `<ds-date-range-picker v-model="range" :presets="rangePresets" :today="today" :min="min" :max="today"
+        align="right" label="Disputes date range" data-test="page-range" />`,
+      ...(badge ? { badge, badgeColor: 'ds-warning text-ds-warning' } : {}),
     })}
 
     <q-card flat bordered style="${EP_CARD}">
@@ -401,29 +505,211 @@ const SLOT = `
       </q-card-section>
     </q-card>
 
+    ${extra}
     ${filterCards}
     ${table}
+    ${filterPanel}
   </div>`
 
 /* ---------------------------------------------------------------------------
  * State
  * ------------------------------------------------------------------------- */
 
-function state(initialFilter) {
-  const active = ref(initialFilter)
-  const q = ref('')
+/** "Visa" / "Visa, Amex" / "Visa +2" — a chip stays one line. */
+const listLabel = (values) => (values.length <= 2 ? values.join(', ') : `${values[0]} +${values.length - 1}`)
 
-  /* DsChoiceChips in single-select mode clears on a second click of the live
-     chip. A chart has to be in one mode or the other, so the setter drops the
-     null and the group behaves as a segmented control. */
+/** The applied filters as chips — one per field, in the panel's order. `key`
+ *  is what removing the chip clears. */
+function chipsFor(f) {
+  const out = []
+  const list = (key, field) => { if (f[key].length) out.push({ key, field, label: listLabel(f[key]) }) }
+  list('status', 'Status')
+  list('reasons', 'Reason')
+  list('brands', 'Payment method')
+  list('kinds', 'Type')
+  const { min, max } = amountBounds(f)
+  if (min !== null || max !== null) {
+    const label = min !== null && max !== null ? `${usd(min)} – ${usd(max)}` : min !== null ? `${usd(min)} or more` : `Up to ${usd(max)}`
+    out.push({ key: 'amount', field: 'Amount', label })
+  }
+  list('events', 'Event')
+  return out
+}
+
+/** @param initialStatus  a status, or 'All'
+ *  @param opts.filters   any other fields to start applied (see emptyFilters)
+ *  @param opts.panel     open the filter panel on load
+ *  @param opts.range     the page date range to start on (default: year to date) */
+function state(initialStatus, { filters = {}, panel = false, range: startRange = DEFAULT_RANGE } = {}) {
+  const applied = reactive(copyFilters(emptyFilters(), filters))
+  applied.status = initialStatus === 'All' ? [] : [initialStatus]
+  const draft = reactive(copyFilters(emptyFilters(), applied))
+  const panelOpen = ref(panel)
+  const q = ref('')
+  const page = ref(1)
+  /** The page date range — scopes everything on the screen (decision 3). */
+  const range = ref({ ...startRange })
+  const scoped = computed(() => DISPUTES.filter((r) => inRange(r, range.value)))
+
+  /* The panel always opens on what is applied — a draft abandoned last time
+     is not resurrected. */
+  watch(panelOpen, (open) => { if (open) copyFilters(draft, applied) })
+
+  /* A chart has to be in one mode or the other, so the setter ignores an
+     empty value. */
   const mode = ref('bar')
-  const chartMode = computed({
-    get: () => mode.value,
-    set: (v) => { if (v) mode.value = v },
+  const chartMode = computed({ get: () => mode.value, set: (v) => { if (v) mode.value = v } })
+  /* The volume chart's legend, drawn by the page so the chart-type switcher
+     can share its row. Same colour slots the chart uses; clicking a key hides
+     that series (never the last one visible). */
+  const hiddenSeries = ref([])
+  const toggleSeries = (key) => {
+    const on = hiddenSeries.value.includes(key)
+    if (!on && hiddenSeries.value.length >= volumeSeries.value.length - 1) return
+    hiddenSeries.value = on ? hiddenSeries.value.filter((k) => k !== key) : [...hiddenSeries.value, key]
+  }
+
+  /* ---- the queue ---- */
+  const searched = computed(() => scoped.value.filter((r) => matchesSearch(r, q.value)))
+  const rows = computed(() => searched.value.filter((r) => matchesFilters(r, applied)))
+  /** Everything but status — what the status cards count within. */
+  const facet = computed(() => searched.value.filter((r) => matchesFilters(r, applied, ['status'])))
+
+  const cards = computed(() => CARDS.map((c) => {
+    const inCard = c.key === 'All' ? facet.value : facet.value.filter((r) => r.status === c.key)
+    return { ...c, count: inCard.length, amount: `${usd(sumAmount(inCard))} disputed` }
+  }))
+
+  const active = computed(() => {
+    if (!applied.status.length) return 'All'
+    return applied.status.length === 1 ? applied.status[0] : null
+  })
+  const pickStatus = (key) => { applied.status = key === 'All' ? [] : [key] }
+
+  // Any change to what is matched starts again at page 1.
+  watch([q, () => JSON.stringify(applied), range], () => { page.value = 1 })
+  const pageRows = computed(() => rows.value.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE))
+
+  const chips = computed(() => chipsFor(applied))
+  const removeChip = (key) => {
+    const blank = emptyFilters()
+    if (key === 'amount') { applied.amountMin = ''; applied.amountMax = '' }
+    else applied[key] = blank[key]
+  }
+  const clearApplied = () => copyFilters(applied, emptyFilters())
+  const clearEverything = () => { clearApplied(); q.value = '' }
+
+  /* ---- the panel ---- */
+  const draftMatches = computed(() => searched.value.filter((r) => matchesFilters(r, draft)).length)
+  const draftCount = computed(() => chipsFor(draft).length)
+  const amountError = computed(() => {
+    const { min, max } = amountBounds(draft)
+    return min !== null && max !== null && max < min ? 'Must be at least the minimum' : ''
+  })
+  const applyLabel = computed(() => `Show ${draftMatches.value} dispute${draftMatches.value === 1 ? '' : 's'}`)
+  const applyDraft = () => { copyFilters(applied, draft); panelOpen.value = false }
+  const clearDraft = () => copyFilters(draft, emptyFilters())
+
+  /* ---- the account figures (decision 3: scoped by the page range, not
+     narrowed by the queue) ---- */
+  const rangeText = computed(() => formatRange(range.value))
+  const rangeCaption = computed(() => {
+    const hit = RANGE_PRESETS.find((p) => p.key === range.value.preset)
+    return hit ? hit.label : rangeText.value
+  })
+  const volumeLabels = computed(() => monthStarts(range.value))
+  const monthly = computed(() => byMonth(DISPUTES, range.value))
+
+  const compare = ref('period')
+  const compareOpt = computed(() => COMPARE_OPTIONS.find((o) => o.value === compare.value))
+  const comparison = computed(() => comparisonByMonth(DISPUTES, range.value, compare.value))
+  /* Each option says in the menu when it has nothing to show for this range,
+     so "Previous year" is not a surprise empty chart. */
+  const compareOptions = computed(() => COMPARE_OPTIONS.map((o) => {
+    const c = comparisonByMonth(DISPUTES, range.value, o.value)
+    return { ...o, caption: c.coverage === 'none' ? `No data before ${formatLong(DATA_START)}` : formatRange(c.window) }
+  }))
+  /* Like the dashboard: a comparison with no data at all is dropped (the
+     note says why); a partial one keeps its nulls, which the charts draw as
+     gaps / "No data", never as 0. */
+  const volumeSeries = computed(() => {
+    const out = [{ key: 'selected', label: 'Selected range', data: monthly.value.map((m) => m.amount) }]
+    if (comparison.value.coverage !== 'none') {
+      out.push({ key: 'previous', label: compareOpt.value.label, data: comparison.value.values, comparison: true })
+    }
+    return out
+  })
+  /* Says WHY comparison months are missing. The chart's own note already
+     says missing is not zero, so this one does not repeat it. The missing
+     months are always the earliest ones (history has a start, not holes),
+     so they print as one span. */
+  const coverageNote = computed(() => {
+    const c = comparison.value
+    const name = compareOpt.value.label.toLowerCase()
+    const floor = formatLong(DATA_START)
+    if (c.coverage === 'none') return `No ${name} to compare: ${formatRange(c.window)} is before dispute history starts (${floor}).`
+    if (c.coverage === 'partial') {
+      const mon = (m) => formatMonth(m).slice(0, 3)
+      const span = c.missing.length === 1 ? mon(c.missing[0]) : `${mon(c.missing[0])}–${mon(c.missing[c.missing.length - 1])}`
+      return `No ${name} for ${span}: dispute history starts ${floor}.`
+    }
+    return ''
+  })
+  const volumeAria = computed(() => `Disputed amount by month, ${rangeText.value}${comparison.value.coverage === 'none' ? '' : `, compared with the ${compareOpt.value.label.toLowerCase()} (${formatRange(comparison.value.window)})`}`)
+
+  const summary = computed(() => {
+    const rows = scoped.value
+    const txns = txnsIn(range.value)
+    return [
+      { label: 'Amount Disputed', value: usd(sumAmount(rows)), big: true },
+      { label: 'Disputes Received', value: String(rows.length) },
+      { label: 'Won', value: String(rows.filter((r) => r.status === 'Won').length) },
+      { label: 'Lost', value: String(rows.filter((r) => r.status === 'Lost').length) },
+      { label: 'Original Transactions', value: txns.toLocaleString('en-US') },
+      { label: 'Dispute Ratio', value: txns ? formatValue(rows.length / txns, 'percent', { decimals: 2 }) : '—', big: true },
+    ]
   })
 
-  const tint = (f) => tintFor(f.key)
+  /* Chart concept · Dispute ratio — disputes received ÷ transactions
+     processed, per month of the page range. Ratios, not percentages. */
+  const ratioSeries = computed(() => [
+    { key: 'ratio', label: 'Dispute ratio', data: monthly.value.map((m) => {
+      const { start, end } = range.value
+      const t = txnsIn({ start: m.month > start ? m.month : start, end: endOfMonth(m.month) < end ? endOfMonth(m.month) : end })
+      return t ? m.count / t : null
+    }) },
+    { key: 'threshold', label: 'Monitoring threshold (0.9%)', data: volumeLabels.value.map(() => RATIO_THRESHOLD), comparison: true },
+  ])
 
+  const breakdown = ref('Payment Method')
+  const breakdownShort = computed(() => BREAKDOWNS.find((b) => b.value === breakdown.value).short)
+  const breakdownOptions = BREAKDOWNS.map(({ value }) => ({ value, label: value }))
+  const disputeBy = computed(() => amountBy(scoped.value, BREAKDOWNS.find((b) => b.value === breakdown.value).field))
+  const disputeBySeries = computed(() => disputeBy.value.map((d, i) => ({ key: `part-${i}`, label: d.label, data: [d.amount] })))
+  const disputeByTotal = computed(() => sumAmount(scoped.value))
+  /** The legend rows: swatch from the same slot the bar segment gets, amount
+   *  and share formatted by the chart formatters. */
+  const disputeByLegend = computed(() => {
+    const slots = seriesColorSlots(disputeBySeries.value)
+    return disputeBy.value.map((d, i) => ({
+      key: `part-${i}`, label: d.label, color: slots[i],
+      value: usd(d.amount), detail: formatValue(d.amount / disputeByTotal.value, 'percent'),
+    }))
+  })
+
+  /** Switcher button: 40 wide, 38 tall inside the 1px container border (40
+   *  overall, like DsActionMenu); a hairline between the two. */
+  const switchStyle = (value, i) => {
+    const on = chartMode.value === value
+    return [
+      'width:40px; min-width:40px; height:38px; min-height:38px; border-radius:0;',
+      i ? 'border-left:1px solid var(--ds-color-border-container);' : '',
+      on ? 'background:var(--ds-color-background-brand-subtlest); color:var(--ds-color-text-brand);'
+        : 'background:var(--ds-color-surface); color:var(--ds-color-icon-subtle);',
+    ].join(' ')
+  }
+
+  const tint = (f) => tintFor(f.key)
   /* One card is the current filter, and the capture marks it with a 2px edge in
      its own tone rather than a different fill — the fills already carry meaning.
      The card section compensates with 1px of padding so the row's height stays
@@ -438,56 +724,59 @@ function state(initialFilter) {
     ].join(' ')
   }
 
-  const chipStyle = statusChip
-  const brandStyle = () => BRAND_CHIP
-
-  const matches = (r) => {
-    const needle = q.value.trim().toLowerCase()
-    if (!needle) return true
-    return [r.id, r.customer, r.txn, r.reason, r.kind].some((v) => v.toLowerCase().includes(needle))
-  }
-
-  const rows = computed(() =>
-    ROWS.filter((r) => (active.value === 'All' || r.status === active.value) && matches(r)))
-
-  const chips = computed(() =>
-    active.value === 'All' ? [] : [{ field: 'Status', label: active.value }])
-
-  const footer = computed(() => {
-    const card = FILTERS.find((f) => f.key === active.value)
-    const total = q.value.trim() ? rows.value.length : card.count
-    return `Showing 1–${rows.value.length} of ${total} disputes`
-  })
-
-  const pct = (v) => (v / CHART_MAX) * 100
-  const line = (key) => MONTHS
-    .map((m, i) => `${(((i + 0.5) / MONTHS.length) * 100).toFixed(2)},${(100 - pct(m[key])).toFixed(2)}`)
-    .join(' ')
-
   return {
-    active, chartMode, q,
-    columns: COLUMNS,
-    compare: ref('Previous Year'),
-    breakdown: ref('Payment Method'),
-    chartModes: [
-      { value: 'bar', label: 'Bar', icon: 'bar_chart' },
-      { value: 'line', label: 'Line', icon: 'show_chart' },
-    ],
-    months: MONTHS, grids: GRIDS, pct, selLine: line('sel'), prevLine: line('prev'),
-    summary: SUMMARY, disputeBy: DISPUTE_BY, filters: FILTERS,
-    tint, cardStyle, chipStyle, brandStyle,
-    rows, chips, footer,
-    heading: computed(() => (active.value === 'All' ? 'All Disputes' : `${active.value} Disputes`)),
+    // queue
+    q, page, pageSize: PAGE_SIZE, rows, pageRows, columns: COLUMNS,
+    cards, active, pickStatus, tint, cardStyle,
+    chipStyle: statusChip, brandStyle: () => BRAND_CHIP,
+    chips, removeChip, clearApplied, clearEverything,
+    heading: computed(() => {
+      if (!applied.status.length) return 'All Disputes'
+      return applied.status.length === 1 ? `${applied.status[0]} Disputes` : 'Disputes'
+    }),
+    emptyDescription: computed(() => (q.value.trim()
+      ? `Nothing matches “${q.value.trim()}” with these filters. Try a different search or remove a filter.`
+      : 'Nothing in the queue matches these filters. Remove a filter or widen the date range.')),
     // The dropdown under the search box offers the rows it would leave behind.
     suggestions: computed(() => rows.value.slice(0, 6).map((r) => ({ id: r.id, label: r.id, sublabel: `${r.customer} · ${r.amount}` }))),
+    // panel
+    panelOpen, draft, draftCount, applyLabel, applyDraft, clearDraft, amountError,
+    statusOptions: DISPUTE_STATUSES, reasonOptions: DISPUTE_REASONS, brandOptions: DISPUTE_BRANDS,
+    kindOptions: DISPUTE_KINDS, eventOptions: DISPUTE_EVENTS,
+    // page range
+    range, rangePresets: RANGE_PRESETS, today: AS_OF, min: DATA_START, rangeText, rangeCaption,
+    // account charts
+    hiddenSeries, toggleSeries,
+    volumeLegend: computed(() => {
+      const slots = seriesColorSlots(volumeSeries.value)
+      return volumeSeries.value.map((s, i) => ({ key: s.key, label: s.label, color: slots[i], dashed: !!s.comparison && chartMode.value === 'line' }))
+    }),
+    chartMode, switchStyle, compare, compareOptions, compareShort: computed(() => compareOpt.value.short),
+    breakdown, breakdownOptions, breakdownShort,
+    /* What the bar means, in words: it splits the disputed dollars in the
+       range by the chosen dimension, so the reader knows the parts add up to
+       the Dispute Summary's disputed amount. No date range here — the page
+       picker, the Disputes card and the Summary already say it, and repeating
+       it ran this narrow card's subtitle to three lines. */
+    disputeBySubtitle: computed(() => `Share of the disputed amount, by ${breakdown.value.toLowerCase()}`),
+    chartModes: [
+      { value: 'bar', label: 'Bar chart', icon: 'bar_chart' },
+      { value: 'line', label: 'Line chart', icon: 'show_chart' },
+    ],
+    volumeLabels, volumeSeries, volumeAria, coverageNote, ratioSeries,
+    disputeBySeries, disputeByLegend, disputeByTotal: computed(() => usd(disputeByTotal.value)),
+    summary,
   }
 }
 
-const screen = (filter) => epPage({
+const screen = (filter, slotOpts, stateOpts) => epPage({
   active: 'disputes',
-  components: { DsSearch, DsChoiceChips },
-  setup: () => state(filter),
-  slot: SLOT,
+  components: {
+    DsSearch, DsChoiceChips, DsSidePanel, DsField, DsSelect, DsInput, DsEmptyState, DsPagination, DsDateRangePicker,
+    DsChartCard, DsChartLegend, DsBarChart, DsLineChart, DsStackedBarChart,
+  },
+  setup: () => state(filter, stateOpts),
+  slot: slot(slotOpts),
 })
 
 /** The queue as it opens: the disputes with an evidence deadline running. */
@@ -497,6 +786,52 @@ EvidenceNeeded.storyName = 'Evidence Needed (default)'
 /** Evidence is in and the network has not ruled yet — nothing to do but wait. */
 export const Pending = screen('Pending')
 
-/** No status filter: the chip row disappears and the Filter badge clears. */
+/** No status filter: the chip row disappears and the Filter badge clears.
+ *  48 disputes over five pages. */
 export const AllDisputes = screen('All')
 AllDisputes.storyName = 'All Disputes'
+
+/** The Filter panel open over the queue, with filters already applied: Visa
+ *  and Mastercard disputes over $500, inside the page's default range (year to
+ *  date — dates are the page picker's job, not the panel's). The table behind
+ *  the scrim, the chips, the Filter badge and the status cards' facet counts
+ *  all reflect them; the Apply button counts what the draft would show.
+ *  Change a field to watch the Apply count move before anything is applied. */
+export const FiltersOpen = screen('All', {}, {
+  panel: true,
+  filters: { brands: ['Visa', 'Mastercard'], amountMin: 500 },
+})
+FiltersOpen.storyName = 'Filters open'
+
+/** Filters that match nothing: Evidence Needed disputes paid by PayPal. The
+ *  status cards still count within the other filter (so "Won 3" says where
+ *  the PayPal disputes are), and the table offers one way out. */
+export const NoMatchingDisputes = screen('Evidence Needed', {}, {
+  filters: { brands: ['PayPal'] },
+})
+NoMatchingDisputes.storyName = 'No matching disputes'
+
+/** **Chart concept — for approval.** The screen as it opens, plus a dispute
+ *  ratio trend under the summary row.
+ *
+ *  - **Question it answers:** "Is my dispute ratio getting worse, and how close
+ *    is it to the level that puts my account under review?" The summary shows
+ *    one 12-month figure (0.71%); it cannot show that August ran at 1.6% after a
+ *    quieter spring (about 0.5%). The volume chart above is in dollars, so it cannot
+ *    answer this either — one $3,000 dispute and three $1,000 ones look the
+ *    same there, but not to a card network.
+ *  - **Why a line:** change over time for one continuous measure, with a
+ *    reference to read it against (Overview: "Line — change over time, 1–5
+ *    series"). A rate, so `valueFormat: 'percent'` on ratios. Its own chart
+ *    rather than a second axis on the volume chart — the Overview's "one value
+ *    axis" rule.
+ *  - **Adds, does not replace:** the summary's single ratio stays; this is
+ *    the trend behind it. The threshold is a flat comparison series (dashed,
+ *    neutral) because the catalog has no reference-line prop; its 0.9% value
+ *    is illustrative until product confirms which network's rule EP Pay shows.
+ */
+export const ChartConceptRatio = screen('Evidence Needed', {
+  badge: 'Chart concept — for approval',
+  extra: ratioCard,
+})
+ChartConceptRatio.storyName = 'Chart concept · Dispute ratio trend'

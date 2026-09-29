@@ -33,7 +33,9 @@ export const cartesianProps = {
   emptyText: { type: String, default: 'No data for this period' },
   /** Accessible summary. Auto-generated from the data when omitted. */
   ariaLabel: { type: String, default: '' },
-  /** 'chart' | 'table' — the table is the accessible alternative view. */
+  /** 'chart' | 'table' | 'data' — the table is the accessible alternative
+   *  view; 'data' makes it interactive (search, sort, series columns) for
+   *  DsChartCard's View more modal. */
   view: { type: String, default: 'chart' },
   /** Start the value axis at zero. */
   beginAtZero: { type: Boolean, default: true },

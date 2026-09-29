@@ -51,7 +51,7 @@ Hover a slice (or focus the ring and use the arrow keys) for its value and share
     valueFormat: { control: 'select', options: VALUE_FORMATS },
     legendPosition: { control: 'inline-radio', options: ['right', 'bottom'] },
     maxSegments: { control: { type: 'number', min: 2, max: 5 } },
-    view: { control: 'inline-radio', options: ['chart', 'table'] },
+    view: { control: 'inline-radio', options: ['chart', 'table', 'data'] },
     loading: { control: 'boolean' },
     error: { control: 'text' },
     segments: { control: false },

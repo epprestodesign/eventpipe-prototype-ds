@@ -37,6 +37,10 @@ const props = defineProps({
   forceFallback: { type: Boolean, default: false },
   /** The ground is pale, so the showcase headline runs in dark ink. */
   light: { type: Boolean, default: false },
+  /** Show the showcase's frosted cards. Off for video grounds that bring their own. */
+  cards: { type: Boolean, default: true },
+  /** Passed to Av2Showcase: overrides its headline for one story. */
+  headline: { type: String, default: '' },
   supportOpen: { type: Boolean, default: false },
 })
 const open = ref(props.supportOpen)
@@ -55,7 +59,7 @@ const open = ref(props.supportOpen)
       <div class="av2sp__bar"><Av2Footer /></div>
     </div>
     <Av2Showcase class="av2sp__show" :showcase="showcase" :variant="variant"
-      :force-fallback="forceFallback" :light="light">
+      :force-fallback="forceFallback" :light="light" :cards="cards" :headline="headline">
       <template v-if="$slots.ground" #ground><slot name="ground" /></template>
     </Av2Showcase>
     <Av2SupportModal v-model="open" :email="supportEmail" />

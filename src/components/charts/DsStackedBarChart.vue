@@ -11,6 +11,8 @@ defineProps({
   horizontal: { type: Boolean, default: false },
   /** Normalise each bar to 100%. */
   percent: { type: Boolean, default: false },
+  /** Compact share bar: no axes or grid, the bar fills the height. */
+  bare: { type: Boolean, default: false },
 })
 defineEmits(['update:hiddenSeries', 'retry'])
 </script>
