@@ -1,0 +1,112 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Components/Charts/Overview" />
+
+# Charts
+
+The EventPipe chart catalog: Vue components on the DS tokens, one prop API for every chart, organised **by chart type**. Every example below is its own story in the sidebar. All data in this section is **synthetic** (`src/stories/charts/fixtures/`), with fixed dates and values.
+
+## Chart types — when to use each
+
+| Type | Use it for | Component | Stories |
+| --- | --- | --- | --- |
+| **Line** | Change over time, 1–5 series; current vs. previous period | `DsLineChart` | [Line](?path=/docs/components-charts-line--docs) |
+| **Area** | Volume or cumulative growth over time; stacked composition over time | `DsAreaChart` | [Area](?path=/docs/components-charts-area--docs) |
+| **Bar** | Comparing categories; grouped periods; horizontal for long labels | `DsBarChart` | [Bar](?path=/docs/components-charts-bar--docs) |
+| **Stacked Bar** | Composition per category; 100% breakdown; single-row share bar | `DsStackedBarChart` | [Stacked Bar](?path=/docs/components-charts-stacked-bar--docs) |
+| **Donut** | Part-to-whole for 2–5 parts, with a centre metric | `DsDonutChart` | [Donut](?path=/docs/components-charts-donut--docs) |
+| **Sparkline** | A word-sized trend beside a number or in a table row | `DsSparkline` | [Sparkline](?path=/docs/components-charts-sparkline--docs) |
+| **Metric Card** | A headline number + period comparison + trend | `DsMetricCard` | [Metric Card](?path=/docs/components-charts-metric-card--docs) |
+
+Shared building blocks: [Chart Card](?path=/docs/components-charts-shared-elements-chart-card--docs) · [Header](?path=/docs/components-charts-shared-elements-header--docs) · [Legend](?path=/docs/components-charts-shared-elements-legend--docs) · [Tooltip](?path=/docs/components-charts-shared-elements-tooltip--docs) · [States](?path=/docs/components-charts-shared-elements-states--docs) · [Data Table](?path=/docs/components-charts-shared-elements-data-table--docs)
+
+Not a chart? A single number with no trend is a [Stat](?path=/docs/components-layout-structure-stat--docs). A long list of exact values is a Table.
+
+## Approved vs. experimental
+
+| Status | What |
+| --- | --- |
+| **Catalog** | Everything under Line, Area, Bar, Stacked Bar, Donut, Sparkline, Metric Card and Shared Elements. These are the real components in `src/components/charts/`. |
+| **Experimental** | [Research → Renderer Comparison](?path=/docs/components-charts-research-renderer-comparison--docs). Unovis prototypes for evaluation only — devDependency, imported only from `src/stories/charts/research/`. |
+
+The catalog renders with **Chart.js 4** behind a renderer-agnostic prop API. The renderer lives only in `src/components/charts/internal/`; no Chart.js configuration object is part of any public prop. Changing renderer later touches internals only.
+
+## Shared visual rules
+
+- **Colour comes only from tokens.** Categorical series use `--ds-color-chart-1` … `--ds-color-chart-5` **in fixed order**: Azure (brand) · Orange 600 · Teal 600 · Violet 600 · Yellow 700. A previous-period / "Other" series uses `--ds-color-chart-comparison` (Graphite). The order was validated for colour-vision deficiency (adjacent pairs, light and dark) — keep it; never generate a sixth hue.
+- **Colour follows the entity.** Hiding a series never repaints the rest.
+- **Comparison series** (`comparison: true`) are neutral, dashed on lines, and drawn behind.
+- **Marks:** 2px straight lines (no smoothing), 4px rounded bar ends, a 1–2px surface gap between stacked segments and donut slices, recessive gridlines (`--ds-color-chart-grid`), no vertical gridlines on time axes.
+- **Text** wears text tokens (`--ds-color-text`, `-subtle`), never the series colour. Product Sans throughout, including canvas axes.
+- **One value axis.** Two measures of different scale → two charts.
+- **Status colours** (`--ds-color-chart-positive` / `-negative`) are reserved for good/bad meaning (Metric Card delta, Sparkline tone) and always ship with an icon or text.
+
+## Light and dark
+
+The Storybook **Theme** toolbar (paintbrush) drives Quasar's real `Dark` plugin — it does not just repaint the canvas background. Dark mode sets `body.body--dark`, and the DS dark tokens in `src/css/ds-theme-dark.scss` hang off that class. Canvas charts resolve their colours from the tokens on their own element and re-render when Quasar's dark state changes; legends, tooltips, cards and sparklines use `var(--ds-color-*)` directly.
+
+- Theme state is set on **every** story render, so it cannot leak from one story to the next.
+- **Dark** / **Light** stories force a theme for visual-regression coverage. In the Docs view they render inside a local `.ds-theme-dark` / `.ds-theme-light` scope so one story does not flip the whole page.
+- **DS decision pending:** the design system had no dark tokens before this section. `ds-theme-dark.scss` is the minimum set charts, cards, legends and tooltips need (Navy surfaces, matching Quasar's `$dark`). Components outside Charts were not audited against it.
+
+## Responsive behaviour
+
+Charts fill their container's width; `height` is fixed in px (`size` for Donut). They re-layout on container resize — no page reload. Axis ticks thin out automatically; category labels truncate past `maxLabelLength` (full text in tooltip and table); the Chart Card header wraps its filters under the title; the Donut legend moves below the ring with `legend-position="bottom"`. Every chart type has a **Mobile** story at 360px. Prefer **horizontal** bars on narrow screens.
+
+## Formatting
+
+All charts, legends, tooltips, tables and metric cards format through `src/components/charts/chartFormat.js` (en-US, **UTC** dates — output never shifts with the viewer's timezone).
+
+| `valueFormat` | Tooltip / table | Axis |
+| --- | --- | --- |
+| `number` | 12,480.5 | 12,480 → 12.5K above 10,000 |
+| `compact` | 12.5K | 12.5K |
+| `currency` | $48,210.55 | $48.2K |
+| `currency-compact` | $48.2K | $48.2K |
+| `percent` (expects a **ratio**, 0.184) | 18.4% | 18% |
+
+| `labelFormat` (ISO `YYYY-MM-DD` labels) | Axis | Tooltip / table |
+| --- | --- | --- |
+| `day` | Sep 1 | Tue, Sep 1, 2026 |
+| `month` | Sep | September 2026 |
+| `month-year` | Sep 2026 | September 2026 |
+| `category` | as given (truncated) | as given |
+
+Period deltas (`formatDelta`) show a sign and one decimal (+14.2%); from a zero baseline they read **New**, and with a missing baseline **No comparison** — never ∞ or 0%.
+
+## Missing, zero and empty
+
+These are three different facts and the catalog never collapses them:
+
+| Case | Data | What renders |
+| --- | --- | --- |
+| **Missing** | `null` in `data` | A gap (lines), no bar (bars), "No data" in tooltip and table, a note under the chart. Isolated values keep a dot. |
+| **Zero** | `0` | A real mark on the baseline; an all-zero chart says "Every reported value is zero". |
+| **All missing** | every value `null` | "No values reported — not the same as zero". |
+| **Empty** | no labels / no series | "No data for this period". |
+
+Plus **Loading** (skeleton at plot height) and **Error** (message + Retry, `@retry`).
+
+## Accessibility
+
+- Every chart has an accessible summary (`aria-label`, auto-generated from the data or set with `ariaLabel`) and a **visually hidden data table** with the exact values. The Chart Card's **Chart / Table** toggle shows that table to everyone.
+- Charts are keyboard-operable: Tab to the plot, **← / →** (↑ / ↓ for horizontal bars; arrows for donut slices) to move the tooltip, **Home / End**, **Esc**.
+- Legend items are toggle buttons with `aria-pressed`. The last visible series cannot be hidden.
+- Identity is never colour-only: ≥2 series always have a legend; comparison series are also dashed; Metric Card deltas carry an icon and text.
+- Categorical colours are ≥3:1 against the chart surface in both themes.
+- Automated axe checks were run on the chart stories (see the delivery report for results and limits); canvas content itself is not inspectable by axe, which is why the data table exists.
+
+## Before production
+
+Decisions needed before any production migration:
+
+1. **Adopt the dark tokens** in `ds-theme-dark.scss` as a DS-wide decision (or replace them), and audit non-chart components.
+2. **Confirm Chart.js** as the renderer (see Research recommendation) and move `chart.js` from this repo's catalog into the product app's dependencies.
+3. **Adopt the categorical order** (`--ds-color-chart-1…5`) as the DS data-viz palette.
+4. **Migrate EP Pay's hand-drawn charts** (EpPayStatCard sparkline, Disputes bar/line, share bars) onto `DsMetricCard`, `DsBarChart` / `DsLineChart` and `DsStackedBarChart`.
+
+## Deferred chart types
+
+Not built, on purpose — no empty placeholders:
+
+- **Scatter / bubble**, **heatmap**, **funnel**, **gauge / radial progress**, **combo (bar + line)**, **maps / Sankey / network**. None is used in the app today. A combo chart also tends to become a dual-axis chart, which the rules above forbid; Sankey / network / maps are the case where Unovis would be worth revisiting.

@@ -13,6 +13,11 @@ import 'quasar/src/css/index.sass'
 // Our global styles + component-level overrides.
 import '../src/css/app.scss'
 
+// Theme toolbar → Quasar Dark (see withQuasarTheme.js). The CSS makes the
+// preview canvas follow the dark surface when Dark is on.
+import { withQuasarTheme } from './withQuasarTheme.js'
+import './preview-theme.css'
+
 // Register Quasar as a Vue plugin for every story, then globally
 // register every Q* component so any story template can use <q-*>
 // tags directly without per-file imports.
@@ -35,6 +40,7 @@ setup((app) => {
 
 /** @type { import('@storybook/vue3-vite').Preview } */
 const preview = {
+  decorators: [withQuasarTheme],
   parameters: {
     backgrounds: {
       options: {
@@ -61,6 +67,13 @@ const preview = {
             'Overview',
             'Actions', 'Navigation', 'Forms', 'Feedback & Status',
             'Layout & Structure', 'Media & Visuals', 'Typography & Content',
+            // Charts: ordered by chart type, then shared building blocks, then
+            // the renderer research (experimental) last.
+            'Charts', [
+              'Overview', 'Line', 'Area', 'Bar', 'Stacked Bar', 'Donut', 'Sparkline', 'Metric Card',
+              'Shared Elements', ['Chart Card', 'Header', 'Legend', 'Tooltip', 'States', 'Data Table'],
+              'Research', ['Renderer Comparison'],
+            ],
           ],
           'App Chrome',
           'Account',

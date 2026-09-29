@@ -1,0 +1,17 @@
+/* Dark-mode canvas for the Storybook preview.
+ *
+ * The backgrounds addon paints `.sb-show-main` (Canvas) and
+ * `#anchor--<id> .docs-story` (Docs) with `!important`. When the Theme toolbar
+ * turns Quasar Dark on, the canvas must follow the DS dark surface instead of
+ * staying on the selected light swatch.
+ *
+ * The Docs selector borrows ID specificity through :is(#…) so it outranks the
+ * addon's `#anchor--id .docs-story` rule without naming every story id.
+ */
+body.body--dark.sb-show-main {
+  background: var(--ds-color-surface-canvas) !important;
+}
+body.body--dark :is(.docs-story, #ds-theme-specificity-anchor) {
+  background: var(--ds-color-surface-canvas) !important;
+  color: var(--ds-color-text);
+}
