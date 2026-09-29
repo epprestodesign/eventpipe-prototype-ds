@@ -48,6 +48,12 @@ jobs:
       - name: Build prototype
         run: pnpm build:prototype
 
+      # EP Pay standalone prototype → /eventpipe-prototype-ds/ep-pay/. Same
+      # pattern: after build-storybook, into storybook-static/ep-pay. It renders
+      # the EP Pay Storybook stories directly, so it never drifts from them.
+      - name: Build EP Pay prototype
+        run: pnpm build:ep-pay
+
       - uses: actions/upload-pages-artifact@v5
         with:
           path: storybook-static

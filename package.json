@@ -14,7 +14,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:stories": "node scripts/smoke-stories.mjs",
-    "verify": "pnpm lint && pnpm test && pnpm build-storybook"
+    "verify": "pnpm lint && pnpm test && pnpm build-storybook",
+    "dev:ep-pay": "vite --config vite.eppay.config.js --port 6009",
+    "build:ep-pay": "vite build --config vite.eppay.config.js"
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.6.2",
