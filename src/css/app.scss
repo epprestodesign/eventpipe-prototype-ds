@@ -13,6 +13,7 @@
 @use './ds-utilities.scss';      // Tier 3 — bg-ds-*/text-ds-*/border-ds-* helpers
 @use './ds-theme-dark.scss';     // Dark overrides (minimum set) + chart data tokens
 @use './eppay-theme.scss';       // EP Pay — structural helpers only (.eppay)
+@use './account-v2.scss';        // Account V2 — the staff sign-in shell (.av2)
 
 // Custom font — Product Sans (matches EventPipe/Viserys production). Referenced
 // from Google's CDN the same way the app does, so no proprietary font files are

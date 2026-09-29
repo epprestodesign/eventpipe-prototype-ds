@@ -208,6 +208,27 @@ const preview = {
           // Experimental workspaces — pinned to the very bottom (after the wildcard).
           'Event Producer Portal',
           'Eventpipe Labs',
+          // Account V2 — the platform staff sign-in and account security from
+          // Linear P-ENG-228 (Auth: Login Refactor to Blitz + MFA). Flows are
+          // launch scope, one per ticket; authenticator apps are scheduled for
+          // later (ENG-3033) and kept in their own group so they never read as
+          // launch scope. The admin platform's older Account section is untouched.
+          'Account V2', [
+            'Flows', [
+              '01 · Sign in',
+              '02 · Email code',
+              '03 · Forgot & set password',
+              '04 · Account security',
+              '05 · MFA is coming',
+            ],
+            'Emails',
+            'Later · Authenticator app (ENG-3033)', [
+              'Challenge',
+              'Setup',
+              'Recovery codes',
+            ],
+            'Concepts',
+          ],
           // EP Pay — a separate product rather than a Labs experiment, so it
           // gets its own section, below Labs.
           'EP Pay', [

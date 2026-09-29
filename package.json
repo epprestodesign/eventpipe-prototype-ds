@@ -40,6 +40,7 @@
     "playwright": "^1.63.0",
     "remark-gfm": "^4.0.1",
     "sass-embedded": "^1.83.0",
+    "shaders": "^3.2.474",
     "storybook": "^10.4.6",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.69.0",

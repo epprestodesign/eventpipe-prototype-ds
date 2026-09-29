@@ -84,6 +84,11 @@ The sidebar is ordered the way product & design think (set in `.storybook/previe
 - **Design Requests** — ticket-scoped design work: Teams Mgmt Comms (Phase 1 &
   2), Aug 19, DES-95 Customized Page Revamp, Multiple Secondary Fees
   (DES-451/452/456), and GB Reminder Controls (PP-42/43/44).
+- **Account V2** — the EventPipe platform staff sign-in and account security,
+  designed against Linear P-ENG-228 (Auth: Login Refactor to Blitz + MFA):
+  sign in, the emailed MFA code, forgot/set password (reset + invite), account
+  security, the "MFA is coming" banner and the six auth emails. Authenticator
+  apps (ENG-3033) sit in a separate "Later" group. Desktop web only.
 - **EP Pay** — the payments product: dashboard, balances, transactions,
   disputes, developer tools and the merchant application wizard, plus concept
   designs for five areas with no requirements yet (Customers, Payment Links,
