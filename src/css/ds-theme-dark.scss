@@ -1,0 +1,153 @@
+// =============================================================
+// Dark theme — MINIMUM semantic overrides (Tier 2) + chart tokens.
+//
+// Status: DS-level decision pending. Before the Charts section existed the
+// system had no dark-mode tokens at all (ds-color-tokens.scss defines :root
+// light values only). Charts, cards, legends and tooltips have to be correct
+// in dark, so this file defines the smallest set of overrides those surfaces
+// read — text, borders, surfaces, neutral/status backgrounds — plus the chart
+// data tokens. It is NOT a full dark palette: components outside the chart
+// family were not audited against it.
+//
+// Surfaces sit on the Navy ramp so dark mode matches Quasar's own $dark /
+// $dark-page (src/css/quasar.variables.scss), which Quasar applies to its
+// components when the Dark plugin is on.
+//
+// Three scopes:
+//   .body--dark      — Quasar's Dark plugin (the real app theme state).
+//   .ds-theme-dark   — a local dark scope (used by Storybook's Docs view so a
+//                      "Dark" story can render dark without flipping the page).
+//   .ds-theme-light  — a local light scope inside a dark page.
+// =============================================================
+
+// Values every overridden token takes in each theme. Light values mirror
+// ds-color-tokens.scss / :root below; they are repeated here only so a
+// .ds-theme-light scope can restore them inside a dark page.
+$ds-theme-light: (
+  // Semantic (mirrors ds-color-tokens.scss)
+  '--ds-color-text': #212529,
+  '--ds-color-text-subtle': #6C757D,
+  '--ds-color-text-subtlest': #8C92A0,
+  '--ds-color-text-brand': #2561FA,
+  '--ds-color-text-success': var(--ds-palette-green-700),
+  '--ds-color-text-danger': var(--ds-palette-red-600),
+  '--ds-color-text-warning': var(--ds-palette-yellow-700),
+  '--ds-color-icon': var(--ds-palette-graphite-900),
+  '--ds-color-icon-subtle': var(--ds-palette-graphite-600),
+  '--ds-color-border': var(--ds-palette-graphite-200),
+  '--ds-color-border-bold': var(--ds-palette-graphite-400),
+  '--ds-color-border-container': #DFDFDF,
+  '--ds-color-background-neutral': var(--ds-palette-graphite-100),
+  '--ds-color-background-brand-subtlest': var(--ds-palette-azure-50),
+  '--ds-color-background-success': var(--ds-palette-green-50),
+  '--ds-color-background-danger': var(--ds-palette-red-50),
+  '--ds-color-background-warning': var(--ds-palette-yellow-50),
+  '--ds-color-background-info': var(--ds-palette-blue-50),
+  '--ds-color-surface': #FFFFFF,
+  '--ds-color-surface-canvas': #F9F9FA,
+  '--ds-color-surface-sunken': var(--ds-palette-graphite-50),
+  '--ds-color-surface-raised': #FFFFFF,
+  '--ds-color-surface-overlay': #FFFFFF,
+  '--ds-shadow-card': 0 0 14px 0.4px rgba(0, 0, 0, 0.08),
+
+  // Chart data tokens. Categorical order is the CVD-safety mechanism — see
+  // the Charts Overview. Validated (adjacent pairs) on #FFFFFF: all checks
+  // pass, every slot >= 3:1. Slots 1-3 also pass all-pairs.
+  '--ds-color-chart-1': #2561FA,                       // Azure (brand)
+  '--ds-color-chart-2': var(--ds-palette-orange-600),
+  '--ds-color-chart-3': var(--ds-palette-teal-600),
+  '--ds-color-chart-4': var(--ds-palette-violet-600),
+  '--ds-color-chart-5': var(--ds-palette-yellow-700),
+  '--ds-color-chart-comparison': var(--ds-palette-graphite-400), // previous period / "Other"
+  '--ds-color-chart-grid': var(--ds-palette-graphite-100),
+  '--ds-color-chart-axis': var(--ds-palette-graphite-200),
+  '--ds-color-chart-track': var(--ds-palette-graphite-100),     // empty donut ring, sparkline baseline
+  '--ds-color-chart-positive': var(--ds-palette-green-600),
+  '--ds-color-chart-negative': var(--ds-palette-red-600),
+  '--ds-color-chart-badge-negative': var(--ds-palette-red-700), // delta text on background-danger (>= 4.5:1)
+);
+
+$ds-theme-dark: (
+  '--ds-color-text': var(--ds-palette-graphite-50),
+  '--ds-color-text-subtle': var(--ds-palette-graphite-300),
+  '--ds-color-text-subtlest': var(--ds-palette-graphite-400),
+  '--ds-color-text-brand': var(--ds-palette-azure-300),
+  '--ds-color-text-success': var(--ds-palette-green-400),
+  '--ds-color-text-danger': var(--ds-palette-red-400),
+  '--ds-color-text-warning': var(--ds-palette-yellow-400),
+  '--ds-color-icon': var(--ds-palette-graphite-50),
+  '--ds-color-icon-subtle': var(--ds-palette-graphite-300),
+  '--ds-color-border': var(--ds-palette-navy-700),
+  '--ds-color-border-bold': var(--ds-palette-navy-500),
+  '--ds-color-border-container': var(--ds-palette-navy-700),
+  '--ds-color-background-neutral': var(--ds-palette-navy-800),
+  '--ds-color-background-brand-subtlest': var(--ds-palette-navy-800),
+  '--ds-color-background-success': var(--ds-palette-green-950),
+  '--ds-color-background-danger': var(--ds-palette-red-950),
+  '--ds-color-background-warning': var(--ds-palette-yellow-950),
+  '--ds-color-background-info': var(--ds-palette-navy-800),
+  '--ds-color-surface': var(--ds-palette-navy-900),
+  '--ds-color-surface-canvas': var(--ds-palette-navy-950),
+  '--ds-color-surface-sunken': var(--ds-palette-navy-950),
+  '--ds-color-surface-raised': var(--ds-palette-navy-800),
+  '--ds-color-surface-overlay': var(--ds-palette-navy-800),
+  '--ds-shadow-card': none,
+
+  // Validated (adjacent pairs) on Navy 900 #00123D: all checks pass, every
+  // slot >= 3:1 and inside the dark lightness band. Slot 1 steps to Blue 500
+  // because brand Azure #2561FA drops below 3:1 on navy.
+  '--ds-color-chart-1': var(--ds-palette-blue-500),
+  '--ds-color-chart-2': var(--ds-palette-orange-600),
+  '--ds-color-chart-3': var(--ds-palette-teal-600),
+  '--ds-color-chart-4': var(--ds-palette-violet-500),
+  '--ds-color-chart-5': var(--ds-palette-yellow-700),
+  '--ds-color-chart-comparison': var(--ds-palette-graphite-500),
+  '--ds-color-chart-grid': var(--ds-palette-navy-800),
+  '--ds-color-chart-axis': var(--ds-palette-navy-600),
+  '--ds-color-chart-track': var(--ds-palette-navy-700),
+  '--ds-color-chart-positive': var(--ds-palette-green-500),
+  '--ds-color-chart-negative': var(--ds-palette-red-400),
+  '--ds-color-chart-badge-negative': var(--ds-palette-red-400),
+);
+
+@mixin emit($map) {
+  @each $name, $value in $map {
+    #{$name}: #{$value};
+  }
+}
+
+// Chart tokens need a light default on :root (semantic ones already have it).
+:root {
+  --ds-color-chart-1: #2561FA;
+  --ds-color-chart-2: var(--ds-palette-orange-600);
+  --ds-color-chart-3: var(--ds-palette-teal-600);
+  --ds-color-chart-4: var(--ds-palette-violet-600);
+  --ds-color-chart-5: var(--ds-palette-yellow-700);
+  --ds-color-chart-comparison: var(--ds-palette-graphite-400);
+  --ds-color-chart-grid: var(--ds-palette-graphite-100);
+  --ds-color-chart-axis: var(--ds-palette-graphite-200);
+  --ds-color-chart-track: var(--ds-palette-graphite-100);
+  --ds-color-chart-positive: var(--ds-palette-green-600);
+  --ds-color-chart-negative: var(--ds-palette-red-600);
+  --ds-color-chart-badge-negative: var(--ds-palette-red-700);
+}
+
+body.body--dark,
+.ds-theme-dark {
+  @include emit($ds-theme-dark);
+  color-scheme: dark;
+}
+
+// A light scope wins inside a dark page; a dark scope wins inside a light one.
+.ds-theme-light,
+body.body--dark .ds-theme-light {
+  @include emit($ds-theme-light);
+  color-scheme: light;
+}
+
+// Scoped themes paint their own canvas so the local tokens are visible.
+.ds-theme-dark,
+.ds-theme-light {
+  color: var(--ds-color-text);
+  background: var(--ds-color-surface-canvas);
+}
