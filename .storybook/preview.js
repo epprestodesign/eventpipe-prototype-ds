@@ -76,7 +76,17 @@ const preview = {
             ],
           ],
           'App Chrome',
-          'Account',
+          // Sign up ∕ Login (formerly Account) — the EventPipe log in, merged with
+          // Account V1 on 2026-10-01; renamed the same day. The "∕" is U+2215, not
+          // "/", which Storybook would read as a folder separator.
+          // The full flow first, then the left-rail treatments, then every
+          // right-panel screen. Account V2 (staff login) is separate, below.
+          'Sign up ∕ Login', [
+            'Overview',
+            'Full flow',
+            'Left rail',
+            'Right panel', ['Sign up', 'Log in', 'MFA methods', 'Forgot password'],
+          ],
           'Pages', [
             '01 Users', '02 Events', '03 Pickup Reports', '04 Reports', '05 Hotels',
             '06 Hotel Brands', '07 Amenities', '08 Room Types', '09 Venues', '10 Event Companies',
@@ -207,57 +217,54 @@ const preview = {
           '*',
           // Experimental workspaces — pinned to the very bottom (after the wildcard).
           'Event Producer Portal',
-          'Eventpipe Labs',
-          // Account V2 — the platform staff sign-in and account security from
-          // Linear P-ENG-228 (Auth: Login Refactor to Blitz + MFA). Flows are
-          // launch scope, one per ticket; authenticator apps are scheduled for
-          // later (ENG-3033) and kept in their own group so they never read as
-          // launch scope. The admin platform's older Account section is untouched.
-          'Account V1', [
-            'Scope & decisions',
-            'Account access',
-            'Phase 1 · Login migration',
-            'Phase 2 · MFA',
-            'Components',
-          ],
-          'Account V2', [
-            'Flows', [
-              '01 · Sign in',
-              '02 · Email code',
-              '03 · Forgot & set password',
-              '04 · Account security',
-              '05 · MFA is coming',
-            ],
-            'Emails',
-            'Later · Authenticator app (ENG-3033)', [
-              'Challenge',
-              'Setup',
-              'Recovery codes',
-            ],
-            'Concepts',
-          ],
-          // EP Pay — a separate product rather than a Labs experiment, so it
-          // gets its own section, below Labs.
-          'EP Pay', [
-            'Screens', [
-              '01 · Login',
-              '02 · Dashboard',
-              '03 · Balances',
-              '04 · Transactions',
-              '05 · Disputes',
-              '06 · Developer',
-              '07 · Merchant Application',
-              // Concepts, not specified product — no requirements exist for
-              // these five areas anywhere in Linear (checked 2026-09-29).
-              '08 · Unbuilt Areas', [
-                'Customers',
-                'Payment Links',
-                'Products',
-                'Subscriptions',
-                'Invoicing',
+          // Experimental work lives under Eventpipe Labs: Account V2 and EP Pay
+          // joined Bulk Reservation Edit here on 2026-10-01.
+          'Eventpipe Labs', [
+            'Bulk Reservation Edit',
+            // Account V2 — the platform staff sign-in and account security from
+            // Linear P-ENG-228 (Auth: Login Refactor to Blitz + MFA). Flows are
+            // launch scope, one per ticket; authenticator apps are scheduled for
+            // later (ENG-3033) and kept in their own group so they never read as
+            // launch scope. Moved into Eventpipe Labs on 2026-10-01; it is not part of
+            // the Account section.
+            'Account V2', [
+              'Flows', [
+                '01 · Sign in',
+                '02 · Email code',
+                '03 · Forgot & set password',
+                '04 · Account security',
+                '05 · MFA is coming',
               ],
+              'Emails',
+              'Later · Authenticator app (ENG-3033)', [
+                'Challenge',
+                'Setup',
+                'Recovery codes',
+              ],
+              'Concepts',
             ],
-            'Components',
+            // EP Pay — moved into Eventpipe Labs on 2026-10-01.
+            'EP Pay', [
+              'Screens', [
+                '01 · Login',
+                '02 · Dashboard',
+                '03 · Balances',
+                '04 · Transactions',
+                '05 · Disputes',
+                '06 · Developer',
+                '07 · Merchant Application',
+                // Concepts, not specified product — no requirements exist for
+                // these five areas anywhere in Linear (checked 2026-09-29).
+                '08 · Unbuilt Areas', [
+                  'Customers',
+                  'Payment Links',
+                  'Products',
+                  'Subscriptions',
+                  'Invoicing',
+                ],
+              ],
+              'Components',
+            ],
           ],
         ],
       },

@@ -31,7 +31,7 @@ import Av2LoginInlineError from './components/Av2LoginInlineError.vue'
 import Av2LoginMethodList from './components/Av2LoginMethodList.vue'
 
 export default {
-  title: 'Account V2/Later · Authenticator app (ENG-3033)/Challenge',
+  title: 'Eventpipe Labs/Account V2/Later · Authenticator app (ENG-3033)/Challenge',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

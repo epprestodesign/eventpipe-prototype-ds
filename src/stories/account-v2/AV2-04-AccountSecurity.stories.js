@@ -30,7 +30,7 @@ import { page } from '../pages/_shell'
 import Av2SecurityPage from './components/Av2SecurityPage.vue'
 
 export default {
-  title: 'Account V2/Flows/04 · Account security',
+  title: 'Eventpipe Labs/Account V2/Flows/04 · Account security',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

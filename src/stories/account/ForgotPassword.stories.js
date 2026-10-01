@@ -1,51 +1,14 @@
-/** ACCOUNT / Forgot password → request-reset + sent states. */
-import { ref } from 'vue'
-import DsInput from '../../components/DsInput.vue'
-import logo from '../../assets/logo/eventpipe-logo.svg'
+import { credentialsStory, baselineStory } from './_stories'
 
 export default {
-  title: 'Account/Forgot password',
-  tags: ['autodocs'],
-  parameters: {
-    layout: 'fullscreen',
-    docs: { description: { component: 'Beginning-stage **Forgot password** — request a reset link, plus the confirmation state.' } },
-  },
+  // ASCII id: the title's "∕" (U+2215) would otherwise end up in the URL.
+  id: 'sign-up-login-right-panel-forgot-password',
+  title: 'Sign up ∕ Login/Right panel/Forgot password',
+  parameters: { layout: 'fullscreen', docs: { description: { component: 'Phase 1 (login migration): the reset-password request. Cancel returns to log in and keeps the entered email; the confirmation reads the same whether or not an account exists. **Today’s reset** is the current production screen for comparison. Sending is intentionally frozen for review.' } } },
 }
-
-export const RequestReset = {
-  render: () => ({
-    components: { DsInput },
-    setup: () => ({ logo, email: ref('') }),
-    template: `
-      <div class="ep-auth">
-        <div class="ep-auth__card">
-          <img :src="logo" alt="EventPipe" class="ep-auth__logo" />
-          <h1 class="ep-auth__title">Forgot password?</h1>
-          <p class="ep-auth__sub">Enter your email and we'll send a reset link.</p>
-
-          <ds-input v-model="email" type="email" label="Email" required placeholder="you@company.com" />
-
-          <q-btn unelevated no-caps color="primary" class="full-width q-mt-lg" label="Send reset link" />
-
-          <p class="ep-auth__foot"><a href="#" class="ep-auth__link" @click.prevent>← Back to log in</a></p>
-        </div>
-      </div>`,
-  }),
-}
-
-export const LinkSent = {
-  render: () => ({
-    setup: () => ({ logo }),
-    template: `
-      <div class="ep-auth">
-        <div class="ep-auth__card" style="text-align:center;">
-          <img :src="logo" alt="EventPipe" class="ep-auth__logo" style="margin-left:auto; margin-right:auto;" />
-          <q-icon name="mark_email_read" size="48px" color="primary" class="q-mb-md" />
-          <h1 class="ep-auth__title">Check your email</h1>
-          <p class="ep-auth__sub">We sent a reset link to <strong>you@company.com</strong>. It expires in 30 minutes.</p>
-          <q-btn outline no-caps color="primary" class="full-width" label="Resend link" />
-          <p class="ep-auth__foot"><a href="#" class="ep-auth__link" @click.prevent>← Back to log in</a></p>
-        </div>
-      </div>`,
-  }),
-}
+export const ResetPassword = { name: 'Reset password', ...credentialsStory({ initialView: 'reset' }) }
+export const InvalidEmail = credentialsStory({ initialView: 'reset', scenario: 'validation' })
+export const SendingReset = credentialsStory({ initialView: 'reset', scenario: 'submitting' })
+export const ResetUnavailable = credentialsStory({ initialView: 'reset', scenario: 'unavailable' })
+export const ResetRequested = credentialsStory({ initialView: 'sent' })
+export const TodaysReset = { name: 'Today’s reset (baseline)', ...baselineStory('reset') }

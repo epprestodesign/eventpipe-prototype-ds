@@ -35,7 +35,7 @@ import Av2SecurityPage from './components/Av2SecurityPage.vue'
 import Av2SecurityTotpSetup from './components/Av2SecurityTotpSetup.vue'
 
 export default {
-  title: 'Account V2/Later · Authenticator app (ENG-3033)/Setup',
+  title: 'Eventpipe Labs/Account V2/Later · Authenticator app (ENG-3033)/Setup',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

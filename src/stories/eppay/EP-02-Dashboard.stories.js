@@ -27,7 +27,7 @@ import { computeInsights } from './_insights'
 import { DATA_START, DATA_END } from './_transactions-data'
 
 export default {
-  title: 'EP Pay/Screens/02 · Dashboard',
+  title: 'Eventpipe Labs/EP Pay/Screens/02 · Dashboard',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

@@ -105,7 +105,7 @@ import { formatValue } from '../../components/charts/chartFormat.js'
 import { seriesColorSlots } from '../../components/charts/chartData.js'
 
 export default {
-  title: 'EP Pay/Screens/05 · Disputes',
+  title: 'Eventpipe Labs/EP Pay/Screens/05 · Disputes',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

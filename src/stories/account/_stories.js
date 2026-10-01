@@ -3,38 +3,49 @@ import DsField from '../../components/DsField.vue'
 import DsLink from '../../components/DsLink.vue'
 import DsText from '../../components/DsText.vue'
 import logoWhite from '../../assets/logo/eventpipe-logo-fff.svg'
-import './account-v1.css'
+import AccountLayout from './components/AccountLayout.vue'
+import AccountCredentials from './components/AccountCredentials.vue'
+import './account.css'
 
-export default {
-  title: 'Account V1/Account access',
-  parameters: {
-    layout: 'fullscreen',
-    docs: { description: { component: 'Existing account login and password reset screens, composed from DsField, QInput, QBtn, DsLink and the existing reversed EventPipe logo. Uses the design system’s typography, colors and controls. Form submissions stay local to this preview.' } },
-  },
+// Illustrative editorial content, not a claim that a feature has shipped.
+export const sampleUpdate = {
+  title: 'Stay up to date with EventPipe',
+  body: 'Find the latest product improvements and tips for your team here. This is sample announcement copy for design review.',
 }
 
-const screen = (initialState) => ({
+/** A right-panel credentials screen (log in or reset) on the brand-only left rail. */
+export const credentialsStory = (args = {}) => ({
+  args,
+  render: (args) => ({
+    components: { AccountLayout, AccountCredentials },
+    setup: () => ({ args }),
+    template: '<account-layout :update="args.update"><account-credentials :key="args.initialView + args.scenario" :initial-view="args.initialView" :scenario="args.scenario" /></account-layout>',
+  }),
+})
+
+/**
+ * Today's production screen, rebuilt from screenshots (formerly Account V1 ›
+ * Account access). Kept as the "before" for the redesigned log in and reset.
+ */
+export const baselineStory = (initialState) => ({
   render: () => ({
     components: { DsField, DsLink, DsText },
     setup() {
       const state = ref(initialState)
       const email = ref('')
       const password = ref('')
-      const switchState = (next) => {
-        state.value = next
-        password.value = ''
-      }
+      const switchState = (next) => { state.value = next; password.value = '' }
       return { state, email, password, switchState, logoWhite }
     },
     template: `
-      <main class="ep-authx account-v1">
-        <div class="ep-authx__brand account-v1__brand">
-          <img :src="logoWhite" alt="EventPipe" class="account-v1__logo" />
+      <main class="ep-authx acct">
+        <div class="ep-authx__brand acct__brand">
+          <img :src="logoWhite" alt="EventPipe" class="acct__logo" />
         </div>
-        <div class="ep-authx__form account-v1__form">
-          <div class="account-v1__content">
+        <div class="ep-authx__form acct__form">
+          <div class="acct__content">
             <ds-text as="h1" variant="h2">{{ state === 'login' ? 'Welcome!' : 'Forgot your password?' }}</ds-text>
-            <p class="account-v1__intro">
+            <p class="acct__intro">
               {{ state === 'login'
                 ? 'Please enter your credentials to access your account.'
                 : 'We got you, type in an email and we will send you the steps you recover your account.' }}
@@ -51,7 +62,7 @@ const screen = (initialState) => ({
                     aria-label="Password" autocomplete="current-password" placeholder="Password" />
                 </ds-field>
               </div>
-              <div class="account-v1__actions row items-center justify-between q-mt-lg">
+              <div class="acct__actions row items-center justify-between q-mt-lg">
                 <div v-if="state === 'login'">
                   Forgot your password?
                   <ds-link class="q-ml-sm" href="#reset-password" @click.prevent="switchState('reset')">Reset Password</ds-link>
@@ -65,6 +76,3 @@ const screen = (initialState) => ({
       </main>`,
   }),
 })
-
-export const Login = { name: 'Log in', ...screen('login') }
-export const ResetPassword = { name: 'Reset password', ...screen('reset') }

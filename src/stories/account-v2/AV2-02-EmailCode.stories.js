@@ -44,7 +44,7 @@ import Av2CodeResend from './components/Av2CodeResend.vue'
 import Av2LoginInlineError from './components/Av2LoginInlineError.vue'
 
 export default {
-  title: 'Account V2/Flows/02 · Email code',
+  title: 'Eventpipe Labs/Account V2/Flows/02 · Email code',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

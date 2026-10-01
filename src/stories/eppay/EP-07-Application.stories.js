@@ -41,7 +41,7 @@ import DsSelect from '../../components/DsSelect.vue'
 import logo from '../../assets/logo/eventpipe-logo.svg'
 
 export default {
-  title: 'EP Pay/Screens/07 · Merchant Application',
+  title: 'Eventpipe Labs/EP Pay/Screens/07 · Merchant Application',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

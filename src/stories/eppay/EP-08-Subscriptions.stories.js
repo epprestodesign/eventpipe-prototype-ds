@@ -42,7 +42,7 @@ import DsChartCard from '../../components/charts/DsChartCard.vue'
 import DsStackedBarChart from '../../components/charts/DsStackedBarChart.vue'
 
 export default {
-  title: 'EP Pay/Screens/08 · Unbuilt Areas/Subscriptions',
+  title: 'Eventpipe Labs/EP Pay/Screens/08 · Unbuilt Areas/Subscriptions',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

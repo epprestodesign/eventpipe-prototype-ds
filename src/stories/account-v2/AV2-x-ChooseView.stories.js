@@ -58,7 +58,7 @@ import Av2ViewLockedEmail from './components/Av2ViewLockedEmail.vue'
 import Av2ViewRow from './components/Av2ViewRow.vue'
 
 export default {
-  title: 'Account V2/Concepts/Passwordless · Choose view',
+  title: 'Eventpipe Labs/Account V2/Concepts/Passwordless · Choose view',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

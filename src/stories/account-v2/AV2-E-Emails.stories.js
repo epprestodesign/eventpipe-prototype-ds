@@ -22,7 +22,7 @@ import Av2EmailFacts from './components/Av2EmailFacts.vue'
 import Av2EmailButton from './components/Av2EmailButton.vue'
 
 export default {
-  title: 'Account V2/Emails',
+  title: 'Eventpipe Labs/Account V2/Emails',
   tags: ['autodocs'],
   parameters: {
     layout: 'padded',

@@ -43,7 +43,7 @@ import Av2LoginEmailField from './components/Av2LoginEmailField.vue'
 import Av2LoginPasswordField from './components/Av2LoginPasswordField.vue'
 
 export default {
-  title: 'Account V2/Flows/01 · Sign in',
+  title: 'Eventpipe Labs/Account V2/Flows/01 · Sign in',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
