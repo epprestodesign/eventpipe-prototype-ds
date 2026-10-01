@@ -41,7 +41,7 @@ import twoSidesWebm from '../../assets/login-loops/d-two-sides-web-1080.webm'
 import twoSidesMp4 from '../../assets/login-loops/d-two-sides-web-1080.mp4'
 
 export default {
-  title: 'Account V2/Concepts/Login Backgrounds',
+  title: 'Eventpipe Labs/Account V2/Concepts/Login Backgrounds',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

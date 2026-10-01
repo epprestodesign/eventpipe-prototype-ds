@@ -25,7 +25,7 @@ import Av2SecurityPage from './components/Av2SecurityPage.vue'
 import Av2SecurityCodesModal from './components/Av2SecurityCodesModal.vue'
 
 export default {
-  title: 'Account V2/Later · Authenticator app (ENG-3033)/Recovery codes',
+  title: 'Eventpipe Labs/Account V2/Later · Authenticator app (ENG-3033)/Recovery codes',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

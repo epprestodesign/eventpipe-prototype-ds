@@ -41,7 +41,7 @@ import DsSparkline from '../../components/charts/DsSparkline.vue'
 import DsPagination from '../../components/DsPagination.vue'
 
 export default {
-  title: 'EP Pay/Screens/04 · Transactions',
+  title: 'Eventpipe Labs/EP Pay/Screens/04 · Transactions',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

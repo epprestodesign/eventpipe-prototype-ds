@@ -31,7 +31,7 @@ const BANNER = {
 }
 
 export default {
-  title: 'Account V2/Flows/05 · MFA is coming',
+  title: 'Eventpipe Labs/Account V2/Flows/05 · MFA is coming',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

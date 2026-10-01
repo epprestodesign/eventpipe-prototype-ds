@@ -37,7 +37,7 @@ import DsChartCard from '../../components/charts/DsChartCard.vue'
 import DsBarChart from '../../components/charts/DsBarChart.vue'
 
 export default {
-  title: 'EP Pay/Screens/08 · Unbuilt Areas/Payment Links',
+  title: 'Eventpipe Labs/EP Pay/Screens/08 · Unbuilt Areas/Payment Links',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

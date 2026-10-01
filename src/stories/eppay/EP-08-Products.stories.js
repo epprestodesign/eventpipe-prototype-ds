@@ -74,7 +74,7 @@ const TAXONOMY = [
 ].join('\n')
 
 export default {
-  title: 'EP Pay/Screens/08 · Unbuilt Areas/Products',
+  title: 'Eventpipe Labs/EP Pay/Screens/08 · Unbuilt Areas/Products',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

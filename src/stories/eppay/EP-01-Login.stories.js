@@ -16,7 +16,7 @@ import DsInput from '../../components/DsInput.vue'
 import logo from '../../assets/logo/eventpipe-logo.svg'
 
 export default {
-  title: 'EP Pay/Screens/01 · Login',
+  title: 'Eventpipe Labs/EP Pay/Screens/01 · Login',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

@@ -39,7 +39,7 @@ import DsModal from '../../components/DsModal.vue'
 import DsLink from '../../components/DsLink.vue'
 
 export default {
-  title: 'EP Pay/Screens/03 · Balances',
+  title: 'Eventpipe Labs/EP Pay/Screens/03 · Balances',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

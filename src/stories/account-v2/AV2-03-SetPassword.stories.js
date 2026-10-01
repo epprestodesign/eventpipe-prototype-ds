@@ -39,7 +39,7 @@ import Av2ResetNotice from './components/Av2ResetNotice.vue'
 import Av2SetPwStrength, { MIN_LENGTH } from './components/Av2SetPwStrength.vue'
 
 export default {
-  title: 'Account V2/Flows/03 · Forgot & set password',
+  title: 'Eventpipe Labs/Account V2/Flows/03 · Forgot & set password',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
