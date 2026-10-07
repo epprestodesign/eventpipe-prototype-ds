@@ -1,0 +1,48 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Design Requests/Team Name Qualifiers/Overview" />
+
+# Team Name Qualifiers · Registration Settings
+
+Team Name Qualifiers let an admin choose which of the company's custom fields (age division, gender, skill level, coach name…) a guest or group block creator fills in when they **type** a team name, so the name lands on the reservation with structure: “Augusta Arsenal · U13 · Girls”.
+
+This folder is the **admin** half: the event **Registration** tab, reskinned onto the design system from the captures supplied on October 7, 2026. The guest checkout half of the brief (Individual Reservation Checkout) is being built in another repo and is not here.
+
+## What's here
+
+| Story | What it shows |
+| --- | --- |
+| **Screens › Registration Settings** | The whole tab, live. Start at **Default** and use the checkboxes, or open a named state |
+| **Components › Qualifier Panel** | The Team Name Qualifiers panel alone: collapsed, open, selections with preview, not applicable |
+| **Components › Expiration Field** | The date + time (EST) control revealed by Room Block Restrictions and each Team Selection Required |
+
+## Behavior, from the captures
+
+| When | Then |
+| --- | --- |
+| Page loads | Team Name Qualifiers is collapsed, badged **Optional** |
+| Qualifiers opened | “Select custom fields to use as qualifiers · 4 fields available”: Age Division, Gender, Skill Level (dropdowns) and Coach Name (free text) |
+| One or more fields picked | Picked rows highlight; **Manually entered team names will appear as** previews the name. Dropdowns show their first option; free text shows an italic “[Coach Name]” placeholder |
+| Group Block Booking – Team Selection Required | Reveals **Registration Requirement Expiration For Group Blocks** |
+| Reservation Booking – Team Selection Required | Reveals **Registration Requirement Expiration For Reservations** |
+| **Both** Team Selection Required | **Hide Team List** is disabled with an info tooltip; Team Name Qualifiers becomes “Not applicable — all guests are required to select from your registered team list. Use Custom Fields if you need to capture additional structured data.” |
+| Room Block Restrictions | Reveals **Restriction Expiration** |
+| Compliance Tracking | Shows the **Compliance** card |
+
+Dropdown options are as captured: Registered Entity (Team, Organization), Compliance Criteria (Reservations, Room Nights), Formula (Hard Count, Percentage).
+
+## Built on the design system
+
+DsSelect, DsInput (including its calendar date picker), DsField, Badge (outline — Optional and field-type tags), DsLink, DsConfirmDialog (Delete All Registrations) and the App Shell. New to this request: the **Qualifier Panel** and **Expiration Field** compositions above. Colors, type and spacing come from DS tokens only.
+
+## Assumptions to confirm
+
+The captures don't show these, so the prototype makes a call that should be confirmed:
+
+- **Only one Team Selection Required on.** Hide Team List and Team Name Qualifiers stay available, because the other booking flow still lets people type a team name. Only both together lock them.
+- **Hide Team List while locked.** It shows unchecked while disabled; an earlier choice comes back if a requirement is turned off again.
+- **Tooltip copy** for Hide Team List (disabled) and both Team Selection Required checkboxes is drafted, not from the captures.
+- **Restrictions card** is shown whether or not Room Block Restrictions is on, as in the captures.
+- **Qualifier order** in the built name follows the picker order; the captures don't show reordering.
+- **Refresh** re-reads the company's custom fields; **Manage Custom Fields** opens Company Settings › Custom Fields in a new tab.
+- **Delete** asks for confirmation before deleting, which the captures don't show.
