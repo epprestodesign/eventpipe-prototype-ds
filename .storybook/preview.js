@@ -201,6 +201,13 @@ const preview = {
                 'References',
               ],
             ],
+            // Team Name Qualifiers (2026-10-07) — the admin Registration Settings
+            // half of the request; the guest checkout is built in another repo.
+            'Team Name Qualifiers', [
+              'Overview',
+              'Screens', ['Registration Settings'],
+              'Components', ['Qualifier Panel', 'Expiration Field'],
+            ],
             'DES-95 Customized Page Revamp', [
               'Customized Event Site Edits 072426',
               'References', [
