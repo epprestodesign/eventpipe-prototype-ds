@@ -31,7 +31,7 @@ const props = defineProps({
   /** Where the prototype opens: compliance | create | team | delete | deleted | log | recon | recon-res | recon-deleted */
   start: { type: String, default: 'compliance' },
   /** An event id to filter the Compliance list to on load (its Event Name
-   *  search is set to that event — STA-2 then preselects it). */
+   *  filter picks that event — STA-2 then preselects it). */
   filter: { type: String, default: '' },
   /** Registered Entity for every event on load: Team | Organization. */
   entity: { type: String, default: '' },
@@ -41,6 +41,8 @@ const props = defineProps({
   review: { type: Boolean, default: true },
   /** Start with Click to fill on. */
   clickFill: { type: Boolean, default: false },
+  /** Delete Team placement under review: button (A) | save (B) | menu (C, recommended) | bottom (D). */
+  deletePlacement: { type: String, default: 'menu' },
 })
 
 const DELETE_TEAM = 't4' // Augusta Lions GA 13/14 — the team the review states delete
@@ -53,15 +55,21 @@ const notes = reactive({})
 const recon = reactive(seedRecon())
 const recTab = ref('blocks')
 const route = ref({ name: 'compliance' })
-const filtersFor = () => emptyFilters(props.filter ? { eventName: eventById(props.filter)?.name || '' } : {})
+const filtersFor = () => emptyFilters(props.filter ? { eventId: props.filter } : {})
 const filters = ref(filtersFor())
 const compTab = ref('compliance')
 /** STA-2: the event Add single team preselects, from the list's filters. */
 const preselect = computed(() => singleEventId(teams, events, filters.value))
 const flash = ref(null)
-const newRow = ref(-1)
 const revision = ref(0)
 const entityChoice = ref(props.entity || 'Team')
+const placement = ref(props.deletePlacement)
+const PLACEMENTS = [
+  { label: 'A', value: 'button', slot: 'button', title: 'A · Trash-can button in the header' },
+  { label: 'B', value: 'save', slot: 'save', title: 'B · Trash beside Cancel / Save Changes' },
+  { label: 'C', value: 'menu', slot: 'menu', title: 'C · ••• menu in the header (recommended)' },
+  { label: 'D', value: 'bottom', slot: 'bottom', title: 'D · Section at the bottom of the page' },
+]
 
 const evt = (id) => events.find((e) => e.id === id) || eventById(id)
 const word = (eventId) => entityWord(evt(eventId))
@@ -102,7 +110,6 @@ function onDeleted(t) {
   r.res.unshift(...orphans.filter((o) => o.kind === 'res'))
   syncCounts(t.eventId)
   activity[t.eventId].unshift({ when: nowStamp(), user: USER, text: deletedBlurb(w, displayName(t)) })
-  newRow.value = 0
   flash.value = { text: `${w} ‘${displayName(t)}’ was deleted.`, eventId: t.eventId }
   compTab.value = 'compliance'
   go('compliance')
@@ -154,7 +161,6 @@ function reset(startAt = props.start) {
   filters.value = filtersFor()
   compTab.value = 'compliance'
   flash.value = null
-  newRow.value = -1
   revision.value++
   applyStart(startAt)
 }
@@ -215,10 +221,15 @@ const active = computed(() => (route.value.name === 'log' ? 'events' : 'complian
         </q-list>
       </q-btn-dropdown>
       <q-separator vertical class="stdp__sep" />
-      <span class="stdp__label">Registered Entity</span>
+      <span class="stdp__label">Entity</span>
       <q-btn-toggle v-model="entityChoice" no-caps unelevated dense toggle-color="primary" class="stdp__toggle"
-        :options="[{ label: 'Teams', value: 'Team' }, { label: 'Organizations', value: 'Organization' }]"
+        :options="[{ label: 'Teams', value: 'Team' }, { label: 'Orgs', value: 'Organization' }]"
         @update:model-value="reset(route.name === 'team' ? 'team' : route.name)" />
+      <q-separator vertical class="stdp__sep" />
+      <span class="stdp__label">Delete Team</span>
+      <q-btn-toggle v-model="placement" no-caps unelevated dense toggle-color="primary" class="stdp__toggle stdp__abc" :options="PLACEMENTS">
+        <template v-for="pl in PLACEMENTS" :key="pl.value" #[pl.value]><q-tooltip>{{ pl.title }}</q-tooltip></template>
+      </q-btn-toggle>
       <q-btn flat no-caps dense color="primary" icon="restart_alt" label="Restart" @click="reset()" />
     </aside>
 
@@ -229,7 +240,7 @@ const active = computed(() => (route.value.name === 'log' ? 'events' : 'complian
           @open-reconciliation="(id) => openRecon(id)"
           @open-team="(id) => go('team', { teamId: id })" @add-single="go('create')"
           @upload="Notify.create({ message: 'Opens the Registration Data Uploader (unchanged)', icon: 'upload_file', timeout: 2200 })"
-          @view-log="(id) => go('log', { eventId: id })" @dismiss-flash="flash = null" />
+          @dismiss-flash="flash = null" />
 
         <std-team-edit-screen v-else-if="route.name === 'create'" key="create" mode="create"
           :teams="teams" :events="events" :default-event-id="preselect" :show-errors="showErrors"
@@ -237,10 +248,10 @@ const active = computed(() => (route.value.name === 'log' ? 'events' : 'complian
 
         <std-team-edit-screen v-else-if="route.name === 'team' && teamById(route.teamId)" :key="route.teamId" mode="edit"
           :team="teamById(route.teamId)" :events="events" :notes="notes[route.teamId] || []"
-          :confirm-open="!!route.confirm" @back="go('compliance')" @deleted="onDeleted" />
+          :confirm-open="!!route.confirm" :delete-placement="placement" @back="go('compliance')" @deleted="onDeleted" />
 
         <std-activity-logs-screen v-else-if="route.name === 'log'" :event="evt(route.eventId)"
-          :rows="activity[route.eventId]" :highlight="newRow" @back="go('compliance')" />
+          :rows="activity[route.eventId]" @back="go('compliance')" />
 
         <std-reconciliation-screen v-else-if="route.name === 'recon'" :key="'recon-' + route.eventId" v-model:tab="recTab"
           :event="evt(route.eventId)" :items="recon[route.eventId]" :teams="teams.filter((t) => t.eventId === route.eventId)"
@@ -262,6 +273,7 @@ const active = computed(() => (route.value.name === 'log' ? 'events' : 'complian
 .stdp__ticket { padding: 3px 8px; font-size: 0.75rem; font-weight: 600; border-radius: var(--ds-radius-sm); }
 .stdp__label { color: var(--ds-color-text-subtle); }
 .stdp__toggle { border: 1px solid var(--ds-color-border); }
+.stdp__abc :deep(.q-btn) { min-width: 30px; }
 .stdp__click { font-size: 0.875rem; }
 .stdp__fill { padding: 0 10px; }
 .stdp__sep { margin: 0 4px; }

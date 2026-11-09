@@ -14,7 +14,7 @@ const log = (word, name) => ({
   render: () => ({
     components: { StdActivityLog },
     setup: () => ({ rows: [{ when: 'Fri, 11/06/2026 10:48 AM', user: 'Justin Girard', text: deletedBlurb(word, name) }, ...seedActivity()] }),
-    template: '<div style="max-width:980px;"><std-activity-log :rows="rows" :highlight="0" /></div>',
+    template: '<div style="max-width:980px;"><std-activity-log :rows="rows" /></div>',
   }),
 })
 export const Team = log('Team', 'Augusta Lions')

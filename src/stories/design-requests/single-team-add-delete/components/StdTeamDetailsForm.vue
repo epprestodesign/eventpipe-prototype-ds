@@ -5,7 +5,7 @@
 // create — every field editable. Required: Team Name OR Organization Name,
 //          plus Contact Email. Team ID is optional; left blank it is generated
 //          from the names, and the field says what it will be.
-// edit   — production's normal Team Edit: Team Name and Contact Name locked.
+// edit   — production's Team Edit (11/09 capture): Organization Name locked.
 //
 // Each field carries data-field="<key>" so the prototype's Click to fill can
 // tell which field was clicked.
@@ -31,49 +31,36 @@ const idHint = computed(() => {
 </script>
 
 <template>
+  <!-- One column, as production (11/09 review: no side-by-side inputs). -->
   <div class="stdf">
-    <div class="stdf__grid">
-      <template v-if="create">
-        <ds-input v-model="form.name" data-field="name" label="Team Name" :error="errors.name" />
-        <ds-input v-model="form.org" data-field="org" label="Organization Name" :error="errors.org" />
-      </template>
-      <template v-else>
-        <ds-field label="Team Name">
-          <q-input :model-value="form.name" outlined dense readonly hide-bottom-space>
-            <template #append><q-icon name="lock" size="18px" color="grey-7" aria-label="Locked" /></template>
-          </q-input>
-        </ds-field>
-        <ds-input v-model="form.org" data-field="org" label="Organization Name" />
-      </template>
-      <ds-input v-model="form.teamId" data-field="teamId" label="Team/Org ID" :hint="idHint" :error="errors.teamId" class="stdf__full" />
-      <template v-if="create">
-        <ds-input v-model="form.contactName" data-field="contactName" label="Contact Name" />
-      </template>
-      <ds-field v-else label="Contact Name">
-        <q-input :model-value="form.contactName" outlined dense readonly hide-bottom-space>
+    <template v-if="create">
+      <ds-input v-model="form.name" data-field="name" label="Team Name" :error="errors.name" />
+      <ds-input v-model="form.org" data-field="org" label="Organization Name" :error="errors.org" />
+    </template>
+    <template v-else>
+      <ds-input v-model="form.name" data-field="name" label="Team Name" />
+      <ds-field label="Organization Name">
+        <q-input :model-value="form.org" outlined dense readonly hide-bottom-space>
           <template #append><q-icon name="lock" size="18px" color="grey-7" aria-label="Locked" /></template>
         </q-input>
       </ds-field>
-      <ds-input v-model="form.contactEmail" data-field="contactEmail" type="email" label="Contact Email" :required="create" :error="errors.contactEmail" />
-      <ds-input v-model="form.contactPhone" data-field="contactPhone" type="tel" label="Contact Phone" />
-      <ds-input v-model="form.address" data-field="address" label="Team Address" class="stdf__full" />
-      <ds-input v-model="form.city" data-field="city" label="Team City" />
-      <div class="stdf__pair">
-        <ds-input v-model="form.state" data-field="state" label="Team State/Province" />
-        <ds-input v-model="form.zip" data-field="zip" label="Team Zip/Postal Code" />
-      </div>
-      <ds-input v-model="form.participants" data-field="participants" type="number" label="# of Team Participants" />
-      <ds-input v-model="form.teamsCount" data-field="teamsCount" type="number" label="# of Teams" />
-      <ds-select v-model="form.venue" data-field="venue" :options="VENUES" label="Venue" placeholder="Select a venue" class="stdf__full" />
-    </div>
+    </template>
+    <ds-input v-model="form.teamId" data-field="teamId" label="Team/Org ID" :hint="idHint" :error="errors.teamId" />
+    <ds-input v-model="form.contactName" data-field="contactName" label="Contact Name" />
+    <ds-input v-model="form.contactEmail" data-field="contactEmail" type="email" label="Contact Email" :required="create" :error="errors.contactEmail" />
+    <ds-input v-model="form.contactPhone" data-field="contactPhone" type="tel" label="Contact Phone" />
+    <ds-input v-model="form.address" data-field="address" label="Team Address" />
+    <ds-input v-model="form.city" data-field="city" label="Team City" />
+    <ds-input v-model="form.state" data-field="state" label="Team State/Province" />
+    <ds-input v-model="form.zip" data-field="zip" label="Team Zip/Postal Code" />
+    <ds-input v-model="form.participants" data-field="participants" type="number" label="# of Team Participants" />
+    <ds-input v-model="form.teamsCount" data-field="teamsCount" type="number" label="# of Teams" />
+    <ds-select v-model="form.venue" data-field="venue" :options="VENUES" label="Venue" placeholder="Select a venue" />
     <p v-if="create" class="stdf__req">Enter a Team Name, an Organization Name, or both. Contact Email is required.</p>
   </div>
 </template>
 
 <style scoped>
-.stdf__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; max-width: 840px; }
-.stdf__full { grid-column: 1 / -1; }
-.stdf__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.stdf__req { margin: 16px 0 0; font-size: 0.8125rem; color: var(--ds-color-text-subtle); }
-@media (max-width: 720px) { .stdf__grid { grid-template-columns: 1fr; } }
+.stdf { display: flex; flex-direction: column; gap: 16px; max-width: 656px; }
+.stdf__req { margin: 0; font-size: 0.8125rem; color: var(--ds-color-text-subtle); }
 </style>

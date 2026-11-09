@@ -130,16 +130,17 @@ export const seedTeams = () => [
 export const complianceNeed = (t) => (t.status === 'Need' ? `${t.need} Room Nights` : t.status)
 
 /* ---------------------------------------------------------------------------
- * Compliance page filters — production's inline Filter panel. Text searches
- * need 4 characters, as production says. Event Start Date keeps events still
+ * Compliance page filters — production's inline Filter panel. Entity Name is
+ * a text search (4 characters). Event Name is a type-ahead: type 4 characters,
+ * pick one event (11/09 review: production's filter selects a single event). Event Start Date keeps events still
  * running on or after the date (production's 2026-11-06 filter still lists
  * events that began 11/05).
  * ------------------------------------------------------------------------- */
 export const emptyFilters = (over = {}) => ({
-  entityName: '', eventName: '', date: '2026-11-06', producer: '', manager: '', type: '', status: '', favorites: false, ...over,
+  entityName: '', eventId: '', date: '2026-11-06', producer: '', manager: '', type: '', status: '', favorites: false, ...over,
 })
 const hit = (q, v) => q.trim().length < 4 || (v || '').toLowerCase().includes(q.trim().toLowerCase())
-export const eventMatches = (e, f) => hit(f.eventName, e.name) && (!f.date || e.isoEnd >= f.date)
+export const eventMatches = (e, f) => (!f.eventId || e.id === f.eventId) && (!f.date || e.isoEnd >= f.date)
   && (!f.producer || e.producer === f.producer) && (!f.manager || e.manager === f.manager) && (!f.type || e.type === f.type)
 export const STATUS_OPTIONS = ['Compliant', 'Exempt', 'Not Coming', 'Not Compliant']
 const statusMatches = (t, s) => !s || (s === 'Not Compliant' ? t.status === 'Need' : t.status === s)
@@ -150,7 +151,7 @@ export const filterTeams = (teams, events, f) => teams.filter((t) => {
 /** The "Filtered By:" chips, in production's grey chip style. */
 export const filterChips = (f) => [
   f.date && { key: 'date', label: f.date },
-  f.eventName.trim().length >= 4 && { key: 'eventName', label: `Event: ${f.eventName.trim()}` },
+  f.eventId && { key: 'eventId', label: eventById(f.eventId)?.name || f.eventId },
   f.entityName.trim().length >= 4 && { key: 'entityName', label: `Entity: ${f.entityName.trim()}` },
   f.producer && { key: 'producer', label: f.producer },
   f.manager && { key: 'manager', label: f.manager },
@@ -158,14 +159,16 @@ export const filterChips = (f) => [
   f.status && { key: 'status', label: f.status },
   f.favorites && { key: 'favorites', label: 'Favorites' },
 ].filter(Boolean)
-/** STA-2: the event to preselect in create mode — only when the filtered list
- *  narrows to exactly one event (production's event filter is a text search,
- *  so "filtered to an event" means the results hold a single event). */
-export const singleEventId = (teams, events, f) => {
-  const ids = [...new Set(filterTeams(teams, events, f).map((t) => t.eventId))]
-  const evs = events.filter((e) => eventMatches(e, f))
-  if (ids.length === 1) return ids[0]
-  return f.eventName.trim().length >= 4 && evs.length === 1 ? evs[0].id : ''
+/** STA-2: the event to preselect in create mode — the event picked in the
+ *  Compliance list's Event Name filter, if any. */
+export const singleEventId = (teams, events, f) => f.eventId || ''
+
+/** Type-ahead events (Event Name filter, create mode): nothing until 4
+ *  characters, then every event whose name contains them. */
+export const TYPEAHEAD_MIN = 4
+export const eventSearch = (events, q) => {
+  const n = (q || '').trim().toLowerCase()
+  return n.length < TYPEAHEAD_MIN ? [] : events.filter((e) => e.name.toLowerCase().includes(n))
 }
 
 /** Event activity log rows already present before the prototype runs (STD-4). */
@@ -214,6 +217,8 @@ export function validateNewTeam(f, teams) {
 export const emptyTeamForm = (eventId = '') => ({
   eventId, name: '', org: '', teamId: '', contactName: '', contactEmail: '', contactPhone: '',
   address: '', city: '', state: '', zip: '', participants: '', teamsCount: '', venue: '',
+  // Goals & Restrictions overrides and Communications (shown in both modes).
+  statusOverride: 'No Override', goalOverride: '', blockOverride: '', optOut: false,
 })
 
 /** STD-2: static copy, the same for every team. */

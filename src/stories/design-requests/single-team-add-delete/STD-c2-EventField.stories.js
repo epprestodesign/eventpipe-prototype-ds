@@ -7,16 +7,16 @@ export default {
   component: StdEventField,
   tags: ['autodocs', 'STA-2', 'ENG2-116'],
   decorators: [ticketDecorator('STA-2')],
-  parameters: { layout: 'padded', docs: { description: { component: docText('The required, single-select **Event** dropdown at the top of create-mode Team Edit. Preselected when the Compliance list is filtered to an event; otherwise “Please select”. Saving without one shows an inline error. Registration System Event ID is not asked for.', 'STA-2') } } },
+  parameters: { layout: 'padded', docs: { description: { component: docText('**Event Name**, a type-ahead — the same control as the Compliance page’s Event Name filter (11/09 review). Type 4 characters and matching events drop down; pick one, clear it with ×. Required at the top of create-mode Team Edit, and preselected when the Compliance list is filtered to an event. Saving without one shows an inline error. Registration System Event ID is not asked for.', 'STA-2') } } },
 }
 
 const field = (initial, error = '') => ({
   render: () => ({
     components: { StdEventField },
     setup: () => ({ v: ref(initial), error }),
-    template: '<div style="max-width:408px;"><std-event-field v-model="v" :error="error" /></div>',
+    template: '<div style="max-width:656px;"><std-event-field v-model="v" required :error="error" /></div>',
   }),
 })
-export const PleaseSelect = { name: 'Please select', ...field('') }
+export const Empty = { name: 'Empty · type 4 characters', ...field('') }
 export const Preselected = field('evt-east')
 export const Required = { name: 'Required error', ...field('', 'Select an event.') }

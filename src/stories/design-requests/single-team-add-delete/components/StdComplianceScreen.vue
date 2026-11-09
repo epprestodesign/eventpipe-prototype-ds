@@ -5,11 +5,11 @@
 //
 // STA-1: "Add/Update Teams" ▾ replaces the Registration Data Uploader button —
 //        same blue spot, beside the grey Export ▾.
-// STA-2: when the filters narrow the list to one event, Add single team
-//        preselects it (the parent works that out from the same filters).
+// STA-2: Event Name is a type-ahead that picks one event; Add single team
+//        preselects that event.
 // STD-1: rows open Team Edit; no delete on rows.
-// STD-3: after a delete the user lands here with a success message; the
-//        event's Reconciliation counts include what was unlinked.
+// STD-3: after a delete the user lands here with a success message linking
+//        to Reconciliation (11/09 review: no activity-log link).
 import { computed, reactive, ref, watch } from 'vue'
 import DsSelect from '../../../../components/DsSelect.vue'
 import DsInput from '../../../../components/DsInput.vue'
@@ -17,6 +17,7 @@ import DsField from '../../../../components/DsField.vue'
 import DsAlert from '../../../../components/DsAlert.vue'
 import DsLink from '../../../../components/DsLink.vue'
 import StdAddUpdateTeamsButton from './StdAddUpdateTeamsButton.vue'
+import StdEventField from './StdEventField.vue'
 import { STATUS_OPTIONS, complianceNeed, displayName, eventMatches, filterChips, filterTeams } from '../_std'
 
 const props = defineProps({
@@ -29,14 +30,14 @@ const props = defineProps({
   /** STD-3 success message: { text, eventId } */
   flash: { type: Object, default: null },
 })
-const emit = defineEmits(['update:filters', 'update:tab', 'open-team', 'add-single', 'upload', 'view-log', 'dismiss-flash', 'open-reconciliation'])
+const emit = defineEmits(['update:filters', 'update:tab', 'open-team', 'add-single', 'upload', 'dismiss-flash', 'open-reconciliation'])
 
 /* Filter panel: edits a draft; Apply Filters commits it, as production does. */
 const panelOpen = ref(false)
 const draft = reactive({ ...props.filters })
 watch(() => props.filters, (f) => Object.assign(draft, f), { deep: true })
 const apply = () => { emit('update:filters', { ...draft }); panelOpen.value = false }
-const clearAll = () => { Object.assign(draft, { entityName: '', eventName: '', date: '', producer: '', manager: '', type: '', status: '', favorites: false }); apply() }
+const clearAll = () => { Object.assign(draft, { entityName: '', eventId: '', date: '', producer: '', manager: '', type: '', status: '', favorites: false }); apply() }
 const removeChip = (key) => emit('update:filters', { ...props.filters, [key]: key === 'favorites' ? false : '' })
 
 const chips = computed(() => filterChips(props.filters))
@@ -118,7 +119,7 @@ const NEED_TONE = { Compliant: 'ok', Exempt: 'exempt', 'Not Coming': 'away', Loc
         </ds-field>
         <ds-select v-model="draft.producer" label="Event Producer Company" :options="['', ...uniq('producer')].map((v) => ({ label: v || 'Any', value: v }))" />
         <ds-select v-model="draft.manager" label="Event Manager" :options="['', ...uniq('manager')].map((v) => ({ label: v || 'Any', value: v }))" />
-        <ds-input v-model="draft.eventName" label="Event Name" hint="Must type 4 characters to search" />
+        <std-event-field v-model="draft.eventId" :events="events" />
         <ds-select v-model="draft.type" label="Event Type" :options="['', ...uniq('type')].map((v) => ({ label: v || 'Any', value: v }))" />
         <ds-select v-model="draft.status" label="Compliance Status" placeholder="Select Compliance Status" :options="['', ...STATUS_OPTIONS].map((v) => ({ label: v || 'Any', value: v }))" />
         <div class="stdc__panel-end">
@@ -133,8 +134,7 @@ const NEED_TONE = { Compliant: 'ok', Exempt: 'exempt', 'Not Coming': 'away', Loc
 
     <ds-alert v-if="flash" severity="success" :title="flash.text" class="q-mt-md">
       Its linked group blocks and reservations were moved to Reconciliation.
-      <ds-link href="#reconciliation" @click.prevent="emit('open-reconciliation', flash.eventId)">View in Reconciliation</ds-link> ·
-      <ds-link href="#activity" @click.prevent="emit('view-log', flash.eventId)">View the event activity log</ds-link>
+      <ds-link href="#reconciliation" @click.prevent="emit('open-reconciliation', flash.eventId)">View in Reconciliation</ds-link>
       <template #action><q-btn flat round dense icon="close" aria-label="Dismiss" @click="emit('dismiss-flash')" /></template>
     </ds-alert>
 

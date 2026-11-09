@@ -208,7 +208,7 @@ const preview = {
               'Screens', ['01 · Compliance List', '02 · Team Edit · Create Mode', '03 · Team Edit · Delete', '04 · Event Activity Logs', '05 · Event Reconciliation'],
               'Components', [
                 'Add-Update Teams Button', 'Event Field', 'Team Details Form', 'Team Edit Header',
-                'Delete Confirmation Modal', 'Auto-Generated Note', 'Activity Log Entry', 'Delete Success Message',
+                'Delete Team Placement', 'Delete Confirmation Modal', 'Auto-Generated Note', 'Activity Log Entry', 'Delete Success Message',
               ],
             ],
             // Team Name Qualifiers (2026-10-07) — the admin Registration Settings

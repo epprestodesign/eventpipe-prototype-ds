@@ -7,7 +7,6 @@ import StdActivityLog from './StdActivityLog.vue'
 const props = defineProps({
   event: { type: Object, required: true },
   rows: { type: Array, default: () => [] },
-  highlight: { type: Number, default: -1 },
 })
 const TABS = ['Hotels', 'RFPs', 'Venues', 'Notes', 'Groups', 'Reservations', 'Waitlist', 'Pickup', 'Registration', 'Customize', 'Activity Logs']
 const meta = [
@@ -40,7 +39,7 @@ const meta = [
       </q-tabs>
     </div>
     <div class="stdl__body">
-      <std-activity-log :rows="rows" :highlight="highlight" />
+      <std-activity-log :rows="rows" />
     </div>
   </div>
 </template>
