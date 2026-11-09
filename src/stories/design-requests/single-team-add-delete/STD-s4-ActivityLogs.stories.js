@@ -7,7 +7,7 @@ export default {
   title: 'Design Requests/Single-Team Add and Delete/Screens/04 · Event Activity Logs',
   component: StdPrototype,
   tags: ['autodocs', 'STD-4', 'ENG2-114'],
-  parameters: { layout: 'fullscreen', docs: { description: { component: docText('The event’s Activity Logs tab after a delete. The existing columns record who and when; the blurb records what. The new entry is highlighted.', 'STD-4') } } },
+  parameters: { layout: 'fullscreen', docs: { description: { component: docText('The event’s Activity Logs tab after a delete. The existing columns record who and when; the blurb records what. The new entry is a plain row, like every other entry (not bolded).', 'STD-4') } } },
 }
 
 export const AfterDelete = screen({ start: 'log' })

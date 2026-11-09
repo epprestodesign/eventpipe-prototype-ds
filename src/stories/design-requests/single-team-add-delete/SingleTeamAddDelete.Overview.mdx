@@ -5,9 +5,19 @@ import { Meta } from '@storybook/addon-docs/blocks'
 # Single-Team Add and Delete
 
 **Linear:** [P-ENG2-251](https://linear.app/eventpipe/project/single-team-add-and-delete-84eda936c544) · Teams Management · spec by Scott Villemain (draft 5 Nov 2026) · eng lead Michael Kirby.
-**Status:** draft designs for review — the project's open item, "Designs for relevant UI components".
+**Status:** draft designs, revised after the 11/09 review with Scott — the project's open item, "Designs for relevant UI components".
 
 Hoco users can add teams today only through the Registration Data Uploader, and remove them only with the event-level batch delete. This adds two functions, built together: **add one team** from the Compliance page through a create mode on Team Edit, and **delete one team** from Team Edit. Both reuse the rules the uploader and batch delete already follow.
+
+## 11/09 review — what changed
+
+- **Team Edit layout** now matches production's single column (no side-by-side inputs), in both modes, from the 11/09 dev captures (`references/110926`).
+- **Create mode:** Event Name with Cancel / Save Team on top, then the page as it is today — Goals & Restrictions, Team / Org Information, Communications. Compliance Credits and Notes are left out until the team exists. Save lands on the team's normal page.
+- **Event Name is a type-ahead**, the same control as the Compliance filter: type 4 characters, pick one event. The Compliance filter's Event Name now works that way too, so STA-2's preselect is simply the event picked there.
+- **Delete Team placement** — four options to compare, with a recommendation: A header button · B beside Save Changes · C ••• menu · D bottom section. See **Components › Delete Team Placement**, and the review bar's **Delete Team A / B / C / D** toggle in the Prototype.
+- **Success message** keeps **View in Reconciliation** and drops the activity-log link.
+- **Activity log entry** is a plain row — not bolded.
+- Confirmed as is: the Add/Update Teams button, validation, the auto-generated "Team added" note. **Out of scope:** BigQuery, and the Reconciliation pages (Screens › 05 stays as reference only).
 
 ## Where it lives in the app
 
@@ -21,10 +31,10 @@ The **Prototype** runs this end to end. Each step, the tickets it covers, and th
 | --- | --- | --- | --- |
 | 1 | On **Compliance**, open **Add/Update Teams ▾** (beside Export ▾) | STA-1 · ENG2-111 | Components › Add-Update Teams Button |
 | 2 | Choose **Add single team** → Team Edit opens in create mode | STA-3 · ENG2-117 | Components › Team Edit Header (create) |
-| 3 | Pick the **Event** — preselected if the list was filtered, else "Please select" | STA-2 · ENG2-116 | Components › Event Field |
+| 3 | Pick the **Event Name** (type-ahead) — preselected if the list was filtered to an event | STA-2 · ENG2-116 | Components › Event Field |
 | 4 | Fill in the Details; **Save** runs the uploader's validation | STA-4 · ENG2-118 | Components › Team Details Form |
 | 5 | Saved → the page becomes the normal Team Edit, with the auto-generated note | STA-3 · STA-5 · ENG2-119 | Components › Auto-Generated Note |
-| 6 | On Team Edit, **Delete Team** in the header | STD-1 · ENG2-110 | Components › Team Edit Header |
+| 6 | On Team Edit, **Delete Team** — A header button · B beside Save · C ••• menu (recommended) · D bottom section | STD-1 · ENG2-110 | Components › Delete Team Placement |
 | 7 | The confirmation modal — Cancel is the default | STD-2 · ENG2-112 | Components › Delete Confirmation Modal |
 | 8 | Confirmed → back on Compliance with a success message | STD-3 · ENG2-113 | Components › Delete Success Message |
 | 9 | The event's Activity Logs shows the entry | STD-4 · ENG2-114 | Components › Activity Log Entry |
@@ -47,15 +57,15 @@ The Prototype's review bar (and the Create Mode screens) carry **Autofill**, rev
 | Screen | States |
 | --- | --- |
 | **01 · Compliance List** | All events · filtered to an event · after a delete |
-| **02 · Team Edit · Create Mode** | Event "Please select" · Event preselected · Save with errors |
-| **03 · Team Edit · Delete** | Delete Team in the header · the modal · the modal for an Organizations event |
+| **02 · Team Edit · Create Mode** | Event Name empty · preselected · Save with errors · click to fill |
+| **03 · Team Edit · Delete** | C ••• menu (recommended) · A header button · B beside Save Changes · D bottom of the page · the modal · Organizations modal |
 | **04 · Event Activity Logs** | The entry after a delete · Organizations wording |
-| **05 · Event Reconciliation** | Group Blocks · edge cases (labelled, with Autofill) · Individual Reservations · after a delete |
+| **05 · Event Reconciliation** | Reference only — out of scope (11/09). Group Blocks · edge cases · Individual Reservations · after a delete |
 
 ## Rules the drafts follow (from the tickets)
 
 - **Add/Update Teams** options: *Upload registration data* (unchanged) and *Add single team*. No role gating.
-- **Create mode** shows only the Event dropdown and Details fields; tabs, Goals & Restrictions, Compliance Credits and Notes appear after the first save. Cancel saves nothing.
+- **Create mode** shows Event Name, Goals & Restrictions, Team / Org Information and Communications; tabs, Compliance Credits and Notes appear after the first save. Cancel saves nothing.
 - **Validation:** Team Name **or** Organization Name, plus Contact Email. Team ID optional; blank → generated (Team Name, Organization Name, or both concatenated). Uniqueness checked within the event after generation. Every failure is an inline error and creates nothing.
 - **Delete:** never on list rows. Modal copy is static. After the delete, back to Compliance with a success message; the team is gone from the list.
 - **Organizations:** "Team" reads "Organization" in the modal and the log entry.
@@ -77,15 +87,13 @@ The Compliance page, the event Reconciliation page and Activity Logs are rebuilt
 
 ## Assumptions to confirm
 
-1. **STA-2 preselect.** The spec calls the Compliance event filter single-select. Production's is a 4-character **text search**, and the list defaults to a date filter. The draft preselects the event only when the filters narrow the list to **one event**; otherwise it shows "Please select". *Confirm with Scott.*
-2. **Delete Team placement.** It sits top-right of the Team Edit header card (outline, danger colour), apart from Save Changes in the Goals & Restrictions card. The Team Edit header is from the August capture; no current TTS capture yet.
-3. **Create mode** shows only Team / Org Information, with **Cancel / Save Team** top-right of that card. Team Name and Contact Name, locked in production, are editable here.
-4. **A new team** joins the list needing the event's full goal (e.g. "24 Room Nights"). That's a guess at what the compliance calculation does for a team with no bookings.
+1. **Delete Team placement** — pick A, B, C or D. Recommendation: **C, the ••• menu** (reasons on Components › Delete Team Placement). The prototype opens on C.
+2. **Locked fields on Team Edit** follow the 11/09 dev capture (confirmed): **Organization Name** locked; Team Name and Contact Name editable.
+3. **Create mode's Goals & Restrictions** (confirmed): Calculated reads "—" until the first save; the overrides can be set now. Cancel / Save Team sit beside Event Name, in the first card, as Save Changes sits in production's first card.
+4. **A new team** joins the list needing the event's full goal (e.g. "24 Room Nights") — a guess at what the compliance calculation does for a team with no bookings.
 5. **Generated Team ID** concatenates with no separator ("Augusta LionsGeorgia Elite"). Confirm against the uploader.
-6. **Organization wording** is also applied to the **Delete** button label; the tickets name only the modal and log.
-7. **Error summary.** Errors also get an alert above the form ("Check the highlighted fields").
-8. **Success message.** It adds that linked items moved to Reconciliation, with links to the Reconciliation tab and the activity log. The spec only asks for "a success message", and production's success pattern hasn't been captured.
-9. **"Team added" toast** confirms the create save, for the same reason.
-10. **Not built:** the Registration Data Uploader page. Its menu option shows a note instead.
-11. **Reconciliation behaviour** isn't captured, only the layout. The draft: picking a team fills Location / Phone / Email; **Link** with no team picked shows "Select a registered team to link." under the selection (production's Link button looks enabled while empty); with a team, it removes the card and adds its nights to the team (a "Need" team can turn Compliant). A club block that already has a registered team still leaves on one link — production's "Registered Teams: n" suggests a block can hold several teams; **Ignore** removes the card with no confirmation. Counts on both tabs and on the Compliance page's Reconciliation tab update.
-12. **After a delete**, the team's cards are listed first with its name under **Unlinked Team Name** (production shows "None" in every capture), and its open blocks read **Open**. The edge-case blocks also put their booked name under Unlinked Team Name, and use **Open** and **Cancelled** statuses — neither seen in production yet. "View in Reconciliation" now opens the event's Reconciliation page rather than the tab.
+6. **Organization wording** is also applied to the Delete Team label and menu item; the tickets name only the modal and log.
+7. **Error summary.** Errors also get an alert under Event Name ("Check the highlighted fields").
+8. **"Team added" toast** confirms the create save; production's success pattern hasn't been captured.
+9. **Not built:** the Registration Data Uploader page. Its menu option shows a note instead.
+10. **Reconciliation** (out of scope, reference only): its link / ignore behaviour is guessed — see Screens › 05.

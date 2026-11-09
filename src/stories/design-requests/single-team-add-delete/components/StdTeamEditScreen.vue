@@ -1,22 +1,27 @@
 <script setup>
 // Team Edit — the team drill-in from Compliance, in two modes.
 //
-// create (STA-2 · STA-3 · STA-4 · STA-5): only the Event dropdown and the
-//   Details fields. Tabs, Goals & Restrictions, Compliance Credits and Notes
-//   are hidden until the first save. Cancel saves nothing. A valid Save emits
-//   `created` with the new team; the parent then shows the normal Team Edit
-//   with the auto-generated note.
-// edit (STD-1 · STD-2 · STD-3): production's Team Edit plus "Delete Team" in
-//   the header and the confirmation modal. Confirming emits `deleted`.
+// Both modes follow production's single-column Team Edit (11/09 review).
+//
+// create (STA-2 · STA-3 · STA-4 · STA-5): Event Name (type-ahead) with
+//   Cancel / Save Team on top, then the page as it is today — Goals &
+//   Restrictions, Team / Org Information, Communications — without Compliance
+//   Credits and Notes (nothing to do there until the team exists). Cancel
+//   saves nothing. A valid Save emits `created`; the parent then shows the
+//   normal Team Edit with the auto-generated note.
+// edit (STD-1 · STD-2 · STD-3): production's Team Edit plus Delete Team, in
+//   one of three placements under review (`deletePlacement`), and the
+//   confirmation modal. Confirming emits `deleted`.
 import { computed, inject, reactive, ref, nextTick, watch } from 'vue'
 import DsAlert from '../../../../components/DsAlert.vue'
-import DsSelect from '../../../../components/DsSelect.vue'
 import StdTeamEditHeader from './StdTeamEditHeader.vue'
 import StdEventField from './StdEventField.vue'
 import StdTeamDetailsForm from './StdTeamDetailsForm.vue'
 import StdDeleteTeamDialog from './StdDeleteTeamDialog.vue'
 import StdNotes from './StdNotes.vue'
-import { FILL_PRESETS, SAMPLE, complianceNeed, displayName, emptyTeamForm, entityWord, eventById, generatedTeamId, validateNewTeam } from '../_std'
+import StdGoalsSection from './StdGoalsSection.vue'
+import StdDeleteTeamAction from './StdDeleteTeamAction.vue'
+import { FILL_PRESETS, SAMPLE, displayName, emptyTeamForm, entityWord, eventById, generatedTeamId, validateNewTeam } from '../_std'
 
 const props = defineProps({
   mode: { type: String, default: 'edit' },
@@ -32,6 +37,8 @@ const props = defineProps({
   confirmOpen: { type: Boolean, default: false },
   /** Open with the errors from an empty Save showing (review state). */
   showErrors: { type: Boolean, default: false },
+  /** Delete Team placement under review: button (A) | save (B) | menu (C) | bottom (D). */
+  deletePlacement: { type: String, default: 'menu' },
 })
 const emit = defineEmits(['back', 'created', 'deleted'])
 
@@ -93,34 +100,44 @@ function confirmDelete() {
   deleting.value = true
   setTimeout(() => { deleting.value = false; confirm.value = false; emit('deleted', props.team) }, 700)
 }
-const STATUS = ['No Override', 'Compliant', 'Non-Compliant', 'Exempt', 'Local', 'Not Coming']
-const statusOverride = ref('No Override')
 </script>
 
 <template>
   <div class="stde">
     <std-team-edit-header :mode="mode" :title="team ? displayName(team) : ''" :event-name="event?.name || ''"
-      :word="word" v-model:tab="tab" @back="emit('back')" @delete="confirm = true" />
+      :word="word" :delete-placement="deletePlacement" v-model:tab="tab" @back="emit('back')" @delete="confirm = true" />
 
     <!-- CREATE MODE -->
-    <q-card v-if="isCreate" flat bordered class="stde__card" :class="{ 'stde--click-fill': autofill?.click }" @focusin="onFocusIn">
-      <q-card-section class="stde__section">
-        <div class="row items-start q-mb-lg">
-          <h2 class="stde__h2">Team / Org Information</h2>
-          <q-space />
-          <div class="row q-gutter-sm">
-            <q-btn outline no-caps color="grey-8" label="Cancel" :disable="saving" @click="emit('back')" />
-            <q-btn unelevated no-caps color="primary" :label="`Save ${word}`" :loading="saving" @click="save" />
+    <div v-if="isCreate" :class="{ 'stde--click-fill': autofill?.click }" @focusin="onFocusIn">
+      <q-card flat bordered class="stde__card">
+        <q-card-section class="stde__section">
+          <div class="row items-start no-wrap q-gutter-md">
+            <div class="col stde__event"><std-event-field v-model="form.eventId" data-field="eventId" :events="events" required :error="errors.eventId" /></div>
+            <div class="row q-gutter-sm no-wrap">
+              <q-btn outline no-caps color="grey-8" label="Cancel" :disable="saving" @click="emit('back')" />
+              <q-btn unelevated no-caps color="primary" :label="`Save ${word}`" :loading="saving" @click="save" />
+            </div>
           </div>
-        </div>
-        <ds-alert v-if="errorCount" severity="error" title="Check the highlighted fields" class="q-mb-lg">
-          Nothing was created. Fix {{ errorCount === 1 ? 'the field' : `the ${errorCount} fields` }} below and save again.
-        </ds-alert>
-        <div style="max-width:408px;"><std-event-field v-model="form.eventId" data-field="eventId" :events="events" :error="errors.eventId" /></div>
-        <q-separator class="q-my-lg" />
-        <std-team-details-form v-model:form="form" :errors="errors" mode="create" />
-      </q-card-section>
-    </q-card>
+          <ds-alert v-if="errorCount" severity="error" title="Check the highlighted fields" class="q-mt-lg">
+            Nothing was created. Fix {{ errorCount === 1 ? 'the field' : `the ${errorCount} fields` }} below and save again.
+          </ds-alert>
+        </q-card-section>
+      </q-card>
+      <q-card flat bordered class="stde__card">
+        <q-card-section class="stde__section">
+          <h2 class="stde__h2 q-mb-md">Goals &amp; Restrictions</h2>
+          <std-goals-section v-model:form="form" />
+          <h2 class="stde__h2 stde__h2--next">Team / Org Information</h2>
+          <std-team-details-form v-model:form="form" :errors="errors" mode="create" />
+        </q-card-section>
+      </q-card>
+      <q-card flat bordered class="stde__card">
+        <q-card-section class="stde__section">
+          <h2 class="stde__h2 q-mb-sm">Communications</h2>
+          <q-checkbox v-model="form.optOut" dense label="Opt out of Teams Management Communications" data-field="optOut" />
+        </q-card-section>
+      </q-card>
+    </div>
 
     <!-- EDIT MODE (normal Team Edit) -->
     <template v-else>
@@ -131,17 +148,21 @@ const statusOverride = ref('No Override')
               <h2 class="stde__h2">Goals &amp; Restrictions</h2>
               <q-space />
               <div class="row q-gutter-sm">
+                <!-- B · trash beside Cancel / Save Changes -->
+                <std-delete-team-action v-if="deletePlacement === 'save'" variant="save" :word="word" @delete="confirm = true" />
                 <q-btn outline no-caps color="grey-8" label="Cancel" />
                 <q-btn unelevated no-caps color="primary" label="Save Changes" />
               </div>
             </div>
-            <div class="stde__goals">
-              <div class="stde__cap">Compliance Status</div><div class="stde__cap">Calculated</div><div class="stde__cap">Override</div>
-              <div /><div>{{ complianceNeed(team) }}</div><div style="max-width:170px;"><ds-select v-model="statusOverride" :options="STATUS" /></div>
-              <div class="stde__cap">Compliance Goal</div><div>{{ team.goal }} Room Nights</div><div><q-input outlined dense hide-bottom-space style="width:70px;" aria-label="Compliance goal override" /></div>
-            </div>
-            <h2 class="stde__h2 q-mt-lg q-mb-md">Team / Org Information</h2>
+            <std-goals-section v-model:form="form" :team="team" />
+            <h2 class="stde__h2 stde__h2--next">Team / Org Information</h2>
             <std-team-details-form v-model:form="form" mode="edit" />
+          </q-card-section>
+        </q-card>
+        <q-card flat bordered class="stde__card">
+          <q-card-section class="stde__section">
+            <h2 class="stde__h2 q-mb-sm">Communications</h2>
+            <q-checkbox v-model="form.optOut" dense label="Opt out of Teams Management Communications" />
           </q-card-section>
         </q-card>
         <q-card flat bordered class="stde__card">
@@ -166,6 +187,9 @@ const statusOverride = ref('No Override')
         <q-card-section class="stde__section stde__empty">No communications have been sent to this {{ word.toLowerCase() }} yet.</q-card-section>
       </q-card>
 
+      <!-- D · Delete Team at the bottom of the whole page -->
+      <std-delete-team-action v-if="deletePlacement === 'bottom'" variant="bottom" :word="word" @delete="confirm = true" />
+
       <std-delete-team-dialog v-model="confirm" :word="word" :deleting="deleting" @confirm="confirmDelete" />
     </template>
   </div>
@@ -176,8 +200,8 @@ const statusOverride = ref('No Override')
 .stde__card { margin-bottom: 20px; }
 .stde__section { padding: 26px 30px; }
 .stde__h2 { margin: 0; font-size: 1.0625rem; line-height: 1.4; font-weight: 700; letter-spacing: normal; color: var(--ds-color-text); }
-.stde__goals { display: grid; grid-template-columns: 170px 170px 1fr; gap: 8px 16px; align-items: center; max-width: 560px; }
-.stde__cap { font-size: 0.8125rem; color: var(--ds-color-text-subtle); }
+.stde__event { max-width: 656px; }
+.stde__h2--next { margin: 36px 0 16px; padding-top: 28px; border-top: 1px solid var(--ds-color-border); }
 .stde__empty { color: var(--ds-color-text-subtle); }
 /* Click to fill is on: a pointer cursor hints that fields fill on click. */
 .stde--click-fill :deep([data-field] input) { cursor: copy; }

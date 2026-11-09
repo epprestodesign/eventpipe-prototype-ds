@@ -1,16 +1,21 @@
 <script setup>
 // The Team Edit header card.
 //
-// STD-1 · ENG2-110 — "Delete Team" sits in this header for every registered
-// team, set apart from Save (which lives down in the form card). It is never on
-// Compliance list rows. Outline + danger colour so it reads as destructive
-// without competing with the page's primary action. "Team" reads "Organization"
-// for events that register Organizations.
+// STD-1 · ENG2-110 — Delete Team's placement is under review (11/09): A, a
+// trash-can button here; B, beside Save Changes; C, a ••• overflow menu here;
+// D, a section at the bottom of the page. The screen draws B and D, so the
+// header shows nothing for them.
+// Never on Compliance list rows. "Team" reads "Organization" for events that
+// register Organizations.
 //
 // STA-3 · ENG2-117 — in create mode the header names the task instead of a team
 // and the tabs are hidden until the first save.
+import StdDeleteTeamAction from './StdDeleteTeamAction.vue'
+
 defineProps({
   mode: { type: String, default: 'edit' },
+  /** Delete Team placement: button (A) | save (B) | menu (C) | bottom (D). */
+  deletePlacement: { type: String, default: 'menu' },
   title: { type: String, default: '' },
   eventName: { type: String, default: '' },
   word: { type: String, default: 'Team' },
@@ -29,14 +34,14 @@ const emit = defineEmits(['update:tab', 'delete', 'back'])
         <div class="col">
           <h1 class="stdh__title">{{ mode === 'create' ? `Add single ${word.toLowerCase()}` : title }}</h1>
           <div v-if="mode === 'create'" class="stdh__sub">
-            Group blocks, reservations, communications, compliance credits and notes appear after the first save.
+            Compliance credits, notes, group blocks and reservations are available after the first save.
           </div>
           <div v-else class="stdh__sub">
             <span class="stdh__label">Event Name:</span> <strong>{{ eventName }}</strong>
           </div>
         </div>
-        <q-btn v-if="mode !== 'create'" outline no-caps color="negative" icon="delete_outline"
-          :label="`Delete ${word}`" class="stdh__delete" @click="emit('delete')" />
+        <std-delete-team-action v-if="mode !== 'create' && (deletePlacement === 'button' || deletePlacement === 'menu')" :variant="deletePlacement"
+          :word="word" class="stdh__delete" @delete="emit('delete')" />
       </div>
       <q-tabs v-if="mode !== 'create'" :model-value="tab" no-caps active-color="primary" indicator-color="primary"
         align="left" class="text-grey-7 stdh__tabs" @update:model-value="(v) => emit('update:tab', v)">
