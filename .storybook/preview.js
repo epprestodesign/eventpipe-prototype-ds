@@ -205,7 +205,7 @@ const preview = {
             'Single-Team Add and Delete', [
               'Overview',
               'Prototype',
-              'Screens', ['01 · Compliance List', '02 · Team Edit · Create Mode', '03 · Team Edit · Delete', '04 · Event Activity Logs'],
+              'Screens', ['01 · Compliance List', '02 · Team Edit · Create Mode', '03 · Team Edit · Delete', '04 · Event Activity Logs', '05 · Event Reconciliation'],
               'Components', [
                 'Add-Update Teams Button', 'Event Field', 'Team Details Form', 'Team Edit Header',
                 'Delete Confirmation Modal', 'Auto-Generated Note', 'Activity Log Entry', 'Delete Success Message',

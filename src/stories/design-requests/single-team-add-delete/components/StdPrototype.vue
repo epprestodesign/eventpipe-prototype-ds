@@ -7,6 +7,8 @@
 //            STA-3 · STA-5 (· STA-6 stored)    STD-1         STD-2   STD-3
 //   ─ Compliance + success message ─ event Activity Logs entry
 //     STD-3                           STD-4 (· STD-5 BigQuery, no UI)
+//   ─ event Reconciliation (Reconciliation tab row, or View in Reconciliation)
+//     STD-3: the deleted team's blocks and reservations wait here
 //
 // The review bar above the app is Storybook-only: it names the tickets the
 // current screen covers and switches the event's Registered Entity, which is
@@ -19,13 +21,14 @@ import AppShell from '../../../../components/AppShell.vue'
 import StdComplianceScreen from './StdComplianceScreen.vue'
 import StdTeamEditScreen from './StdTeamEditScreen.vue'
 import StdActivityLogsScreen from './StdActivityLogsScreen.vue'
+import StdReconciliationScreen from './StdReconciliationScreen.vue'
 import {
-  COMPANY, USER, STD_NAV, EVENTS, TICKETS, FILL_PRESETS, seedTeams, emptyFilters, singleEventId, seedActivity, autoNote, deletedBlurb,
-  displayName, entityWord, eventById, nowStamp,
+  COMPANY, USER, STD_NAV, EVENTS, TICKETS, FILL_PRESETS, RECON_PRESETS, seedTeams, emptyFilters, singleEventId, seedActivity, autoNote, deletedBlurb,
+  displayName, entityWord, eventById, nowStamp, seedRecon, orphansOf,
 } from '../_std'
 
 const props = defineProps({
-  /** Where the prototype opens: compliance | create | team | delete | deleted | log */
+  /** Where the prototype opens: compliance | create | team | delete | deleted | log | recon | recon-res | recon-deleted */
   start: { type: String, default: 'compliance' },
   /** An event id to filter the Compliance list to on load (its Event Name
    *  search is set to that event — STA-2 then preselects it). */
@@ -47,6 +50,8 @@ const events = reactive(EVENTS.map((e) => ({ ...e, entity: props.entity || 'Team
 const teams = reactive(seedTeams())
 const activity = reactive(Object.fromEntries(EVENTS.map((e) => [e.id, seedActivity()])))
 const notes = reactive({})
+const recon = reactive(seedRecon())
+const recTab = ref('blocks')
 const route = ref({ name: 'compliance' })
 const filtersFor = () => emptyFilters(props.filter ? { eventName: eventById(props.filter)?.name || '' } : {})
 const filters = ref(filtersFor())
@@ -68,8 +73,10 @@ function go(name, extra = {}) { route.value = { name, ...extra } }
    Click to fill on; bumping `seq` applies `preset` to the whole form. */
 const autofill = reactive({ click: props.clickFill, preset: null, seq: 0 })
 provide('stdAutofill', autofill)
+const onRecon = computed(() => route.value.name === 'recon')
+const presets = computed(() => (onRecon.value ? RECON_PRESETS : FILL_PRESETS))
 async function fill(key) {
-  if (route.value.name !== 'create') { go('create'); await nextTick() }
+  if (!onRecon.value && route.value.name !== 'create') { go('create'); await nextTick() }
   autofill.preset = key
   autofill.seq++
 }
@@ -89,13 +96,47 @@ function onDeleted(t) {
   if (i > -1) teams.splice(i, 1)
   const w = word(t.eventId)
   // STD-3: what was linked to this team now waits in Reconciliation.
-  const e = evt(t.eventId)
-  if (e) { e.unlinkedBlocks += t.openBlocks; e.unlinkedRes += t.reservations }
+  const r = recon[t.eventId]
+  const orphans = orphansOf(t, r.blocks.length + r.res.length)
+  r.blocks.unshift(...orphans.filter((o) => o.kind === 'block'))
+  r.res.unshift(...orphans.filter((o) => o.kind === 'res'))
+  syncCounts(t.eventId)
   activity[t.eventId].unshift({ when: nowStamp(), user: USER, text: deletedBlurb(w, displayName(t)) })
   newRow.value = 0
   flash.value = { text: `${w} ‘${displayName(t)}’ was deleted.`, eventId: t.eventId }
   compTab.value = 'compliance'
   go('compliance')
+}
+/** The Reconciliation tab's counts are the event's cards. */
+function syncCounts(eventId) {
+  const e = evt(eventId)
+  if (e) { e.unlinkedBlocks = recon[eventId].blocks.length; e.unlinkedRes = recon[eventId].res.length }
+}
+function dropCard(eventId, item) {
+  const arr = recon[eventId][item.kind === 'block' ? 'blocks' : 'res']
+  const i = arr.findIndex((x) => x.id === item.id)
+  if (i > -1) arr.splice(i, 1)
+  syncCounts(eventId)
+}
+function openRecon(eventId, tab = 'blocks') {
+  recTab.value = tab === 'blocks' && !recon[eventId].blocks.length && recon[eventId].res.length ? 'res' : tab
+  go('recon', { eventId })
+}
+/** Link: the card leaves Reconciliation and its nights count toward the team. */
+function onLink({ item, teamId }) {
+  const t = teamById(teamId)
+  if (t) {
+    t.nights += item.nights
+    if (item.kind === 'block') t.nightsBlocks += 1
+    else t.reservations += 1
+    if (t.status === 'Need') { t.need = Math.max(0, t.need - item.nights); if (!t.need) t.status = 'Compliant' }
+  }
+  dropCard(route.value.eventId, item)
+  Notify.create({ message: `${item.name} linked to ${t ? displayName(t) : 'team'}`, icon: 'link', timeout: 2200 })
+}
+function onIgnore({ item }) {
+  dropCard(route.value.eventId, item)
+  Notify.create({ message: `${item.name} ignored`, icon: 'block', timeout: 2200 })
 }
 function onNavigate(key) {
   if (key === 'compliance') go('compliance')
@@ -108,6 +149,8 @@ function reset(startAt = props.start) {
   teams.splice(0, teams.length, ...seedTeams())
   Object.keys(notes).forEach((k) => delete notes[k])
   for (const e of EVENTS) activity[e.id] = seedActivity()
+  Object.assign(recon, seedRecon())
+  recTab.value = 'blocks'
   filters.value = filtersFor()
   compTab.value = 'compliance'
   flash.value = null
@@ -120,6 +163,9 @@ function applyStart(s) {
   else if (s === 'team' || s === 'delete') go('team', { teamId: DELETE_TEAM, confirm: s === 'delete' })
   else if (s === 'deleted') onDeleted(teamById(DELETE_TEAM))
   else if (s === 'log') { onDeleted(teamById(DELETE_TEAM)); go('log', { eventId: 'evt-east' }) }
+  else if (s === 'recon') openRecon('evt-aspire')
+  else if (s === 'recon-res') openRecon('evt-aspire', 'res')
+  else if (s === 'recon-deleted') { onDeleted(teamById(DELETE_TEAM)); compTab.value = 'reconciliation'; openRecon('evt-east') }
   else go('compliance')
 }
 applyStart(props.start)
@@ -130,9 +176,10 @@ const STEP_TICKETS = {
   create: ['STA-2', 'STA-3', 'STA-4'],
   team: ['STA-3', 'STA-5', 'STD-1', 'STD-2'],
   log: ['STD-4'],
+  recon: ['STD-3'],
 }
 const stepTickets = computed(() => (route.value.name === 'compliance' && flash.value ? ['STA-1', 'STD-3'] : STEP_TICKETS[route.value.name]))
-const STEP_LABEL = { compliance: 'Compliance list', create: 'Team Edit · create mode', team: 'Team Edit', log: 'Event Activity Logs' }
+const STEP_LABEL = { compliance: 'Compliance list', create: 'Team Edit · create mode', team: 'Team Edit', log: 'Event Activity Logs', recon: 'Event Reconciliation' }
 const active = computed(() => (route.value.name === 'log' ? 'events' : 'compliance'))
 </script>
 
@@ -149,14 +196,14 @@ const active = computed(() => (route.value.name === 'log' ? 'events' : 'complian
       <q-space />
       <span class="stdp__label">Autofill</span>
       <q-toggle v-model="autofill.click" dense size="sm" color="primary" label="Click to fill" class="stdp__click">
-        <q-tooltip>Click any empty field on the create form to fill it with sample data</q-tooltip>
+        <q-tooltip>Click any empty field to fill it: sample data on the create form, the matching team on Reconciliation</q-tooltip>
       </q-toggle>
       <q-btn-dropdown outline dense no-caps color="primary" icon="bolt" label="Fill" class="stdp__fill"
         menu-anchor="bottom right" menu-self="top right">
         <q-list style="min-width:280px;" class="q-py-xs">
-          <q-item-label header class="stdp__menu-head">Fill the create form</q-item-label>
-          <template v-for="pr in FILL_PRESETS" :key="pr.key">
-            <q-separator v-if="pr.key === 'required' || pr.key === 'clear'" class="q-my-xs" />
+          <q-item-label header class="stdp__menu-head">{{ onRecon ? 'Fill the team selections' : 'Fill the create form' }}</q-item-label>
+          <template v-for="pr in presets" :key="pr.key">
+            <q-separator v-if="pr.key === 'required' || pr.key === 'missing' || pr.key === 'clear'" class="q-my-xs" />
             <q-item v-close-popup clickable dense @click="fill(pr.key)">
               <q-item-section avatar class="stdp__menu-icon"><q-icon :name="pr.icon" size="18px" /></q-item-section>
               <q-item-section>
@@ -179,7 +226,7 @@ const active = computed(() => (route.value.name === 'log' ? 'events' : 'complian
       <app-shell :items="STD_NAV" :active="active" :org="COMPANY" :user="USER" bleed @navigate="onNavigate">
         <std-compliance-screen v-if="route.name === 'compliance'" v-model:filters="filters" v-model:tab="compTab"
           :teams="teams" :events="events" :flash="flash"
-          @open-reconciliation="Notify.create({ message: 'The event’s Reconciliation page isn’t part of this draft', icon: 'info', timeout: 2400 })"
+          @open-reconciliation="(id) => openRecon(id)"
           @open-team="(id) => go('team', { teamId: id })" @add-single="go('create')"
           @upload="Notify.create({ message: 'Opens the Registration Data Uploader (unchanged)', icon: 'upload_file', timeout: 2200 })"
           @view-log="(id) => go('log', { eventId: id })" @dismiss-flash="flash = null" />
@@ -194,6 +241,10 @@ const active = computed(() => (route.value.name === 'log' ? 'events' : 'complian
 
         <std-activity-logs-screen v-else-if="route.name === 'log'" :event="evt(route.eventId)"
           :rows="activity[route.eventId]" :highlight="newRow" @back="go('compliance')" />
+
+        <std-reconciliation-screen v-else-if="route.name === 'recon'" :key="'recon-' + route.eventId" v-model:tab="recTab"
+          :event="evt(route.eventId)" :items="recon[route.eventId]" :teams="teams.filter((t) => t.eventId === route.eventId)"
+          :review="review" @link="onLink" @ignore="onIgnore" />
       </app-shell>
     </div>
   </div>

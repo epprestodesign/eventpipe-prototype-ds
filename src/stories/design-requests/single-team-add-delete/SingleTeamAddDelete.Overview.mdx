@@ -50,6 +50,7 @@ The Prototype's review bar (and the Create Mode screens) carry **Autofill**, rev
 | **02 · Team Edit · Create Mode** | Event "Please select" · Event preselected · Save with errors |
 | **03 · Team Edit · Delete** | Delete Team in the header · the modal · the modal for an Organizations event |
 | **04 · Event Activity Logs** | The entry after a delete · Organizations wording |
+| **05 · Event Reconciliation** | Group Blocks · edge cases (labelled, with Autofill) · Individual Reservations · after a delete |
 
 ## Rules the drafts follow (from the tickets)
 
@@ -61,13 +62,16 @@ The Prototype's review bar (and the Create Mode screens) carry **Autofill**, rev
 
 ## Built from production
 
-The Compliance page and Activity Logs are rebuilt from the TTS production captures (`references/110626`, 6 Nov 2026):
+The Compliance page, the event Reconciliation page and Activity Logs are rebuilt from the TTS production captures (`references/110626`, 6 Nov 2026; Reconciliation 9 Nov 2026):
 
 - **Compliance:** the title, then **Add/Update Teams ▾** (in the Registration Data Uploader's blue spot) and the grey **Export ▾** (Compliance Report · Compliance Credits).
 - **Filtering:** **Filter** opens production's inline panel (Entity Name, Event Start Date, Event Producer Company, Event Manager, Event Name, Event Type, Compliance Status, Show Favorites, Clear All / Apply Filters). Applied filters show as **Filtered By:** chips.
 - **Tabs:** **Reconciliation | Compliance**.
   - The Compliance table has production's columns: Event Name · Event Start Date · Team/Org · Compliance Need (label and colored bar) · Goal · Reservations (n) · Nights Booked (n) · Open Group Blocks · Peak Nights Avail. in Blocks · Notes.
   - The Reconciliation tab lists each event's unlinked group blocks and reservations. A delete adds the team's to its event (STD-3).
+- **Event Reconciliation:** clicking an event on the Reconciliation tab (or **View in Reconciliation** after a delete) opens **Reconciliations for {event}**, with **Group Blocks (n) | Individual Reservations (n)** tabs and a card per item: name + status, Registered Teams / Nights Booked (blocks), **Unlinked Team Name · Registered Team Selection · Location · Phone · Email**, **Link** and **Ignore**, and the Group ID / Pipe ID footer. Registered Team Selection is production's picker: the groups icon, then a menu with **Search…** and the event's teams grouped under their organization. Contact names, phones and emails are invented.
+- **Edge-case group blocks** (Aspire West, 8): exact name match · the same name twice with no nights · placeholder phone and location · booked under a name that doesn't match the registered team · a club block with one team already linked · a staff hold · a team that isn't registered · a cancelled block. The **edge cases** story labels each one.
+- **Autofill on Reconciliation:** **Click to fill** picks the matching team when you click an empty selection. **Fill ▾** offers *Pick a team for every card* (by name; no match stays empty), *Link with no team picked* (shows the error) and *Clear all*.
 - **Event Name:** create mode's event field uses this label, as the Registration Data Uploader does.
 - **Activity Logs:** production's plain **Date/Time · User · Activity** table, with times like "Fri, 11/06/2026 03:15 PM EST".
 
@@ -82,4 +86,6 @@ The Compliance page and Activity Logs are rebuilt from the TTS production captur
 7. **Error summary.** Errors also get an alert above the form ("Check the highlighted fields").
 8. **Success message.** It adds that linked items moved to Reconciliation, with links to the Reconciliation tab and the activity log. The spec only asks for "a success message", and production's success pattern hasn't been captured.
 9. **"Team added" toast** confirms the create save, for the same reason.
-10. **Not built:** the event-level Reconciliation page (group block and reservation cards) and the Registration Data Uploader page. Their entries in the prototype show a note instead.
+10. **Not built:** the Registration Data Uploader page. Its menu option shows a note instead.
+11. **Reconciliation behaviour** isn't captured, only the layout. The draft: picking a team fills Location / Phone / Email; **Link** with no team picked shows "Select a registered team to link." under the selection (production's Link button looks enabled while empty); with a team, it removes the card and adds its nights to the team (a "Need" team can turn Compliant). A club block that already has a registered team still leaves on one link — production's "Registered Teams: n" suggests a block can hold several teams; **Ignore** removes the card with no confirmation. Counts on both tabs and on the Compliance page's Reconciliation tab update.
+12. **After a delete**, the team's cards are listed first with its name under **Unlinked Team Name** (production shows "None" in every capture), and its open blocks read **Open**. The edge-case blocks also put their booked name under Unlinked Team Name, and use **Open** and **Cancelled** statuses — neither seen in production yet. "View in Reconciliation" now opens the event's Reconciliation page rather than the tab.
