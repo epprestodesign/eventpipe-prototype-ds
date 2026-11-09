@@ -81,7 +81,7 @@ export const USER = 'Justin Girard'
 /** `unlinkedBlocks` / `unlinkedRes` feed the Reconciliation tab (STD-3 adds to them). */
 export const EVENTS = [
   { id: 'evt-east', name: '2026 - East Regional Showcase', start: 'Thu, 11/05/2026', isoStart: '2026-11-05', isoEnd: '2026-11-08', entity: 'Team', dates: 'Thu, 11/05/2026 - Sun, 11/08/2026', city: 'Atlanta, GA', producer: 'GA Soccer Events', type: 'Soccer', manager: 'Devanny Boisvert', status: 'Active', roomGoal: '600', peakGoal: '440', stayToPlay: 'True', defaultGoal: 24, unlinkedBlocks: 0, unlinkedRes: 45 },
-  { id: 'evt-aspire', name: '2026 - Aspire West Showcase', start: 'Wed, 11/11/2026', isoStart: '2026-11-11', isoEnd: '2026-11-15', entity: 'Team', dates: 'Wed, 11/11/2026 - Sun, 11/15/2026', city: 'Mesa, AZ', producer: 'Aspire Events', type: 'Soccer', manager: 'Abby Brooks', status: 'Active', roomGoal: '800', peakGoal: '500', stayToPlay: 'True', defaultGoal: 24, unlinkedBlocks: 4, unlinkedRes: 64 },
+  { id: 'evt-aspire', name: '2026 - Aspire West Showcase', start: 'Wed, 11/11/2026', isoStart: '2026-11-11', isoEnd: '2026-11-15', entity: 'Team', dates: 'Wed, 11/11/2026 - Sun, 11/15/2026', city: 'Mesa, AZ', producer: 'Aspire Events', type: 'Soccer', manager: 'Abby Brooks', status: 'Active', roomGoal: '800', peakGoal: '500', stayToPlay: 'True', defaultGoal: 24, unlinkedBlocks: 8, unlinkedRes: 64 },
   { id: 'evt-nations', name: '2026 - Nations Choice - Dance Grand Championship & Cheer Showdown', start: 'Thu, 11/12/2026', isoStart: '2026-11-12', isoEnd: '2026-11-15', entity: 'Organization', dates: 'Thu, 11/12/2026 - Sun, 11/15/2026', city: 'Orlando, FL', producer: 'Nations Choice', type: 'Dance', manager: 'Johnny HoCo', status: 'Active', roomGoal: '1000', peakGoal: '700', stayToPlay: 'False', defaultGoal: 10, unlinkedBlocks: 1, unlinkedRes: 30 },
 ]
 export const eventById = (id) => EVENTS.find((e) => e.id === id)
@@ -92,6 +92,24 @@ export const VENUES = ['Atlanta Silverbacks Park', 'Kennesaw Soccer Complex', 'M
  *  needs that many room nights (Compliance Need reads "24 Room Nights").
  *  `resBlocks` / `nightsBlocks` are the grey (n) beside Reservations / Nights
  *  Booked. `source` is stored, never shown (STA-6). */
+/** More of Aspire West's registered teams, so Reconciliation's Registered Team
+ *  Selection has organizations with several teams to pick from. */
+const ASPIRE_ORGS = [
+  ['7 Elite Academy', ['7 Elite Academy Aspire 09/10', '7 Elite Academy Aspire 10/11', '7 Elite Academy Aspire 11/12', '7 Elite Academy Aspire 12/13', '7 Elite Academy Aspire 13/14'], 'Scottsdale, AZ'],
+  ['AC Grand Rapids Academy', ['AC Grand Rapids Academy Aspire 08/09', 'AC Grand Rapids Academy Aspire 09/10', 'AC Grand Rapids Academy Aspire 10/11'], 'Grand Rapids, MI'],
+  ['Albion CO', ['Albion CO Boulder Aspire U17'], 'Boulder, CO'],
+  ['Arizona Arsenal', ['Arizona Arsenal Aspire 12/13', 'Arizona Arsenal Aspire 13/14'], 'Mesa, AZ'],
+  ['West Coast FC', ['West Coast FC U16'], 'Irvine, CA'],
+]
+const aspireRegistry = () => ASPIRE_ORGS.flatMap(([org, names, location], o) => names.map((name, i) => {
+  const need = (o + i) % 3 === 0 ? 24 - ((o * 5 + i * 7) % 20) : 0
+  const nights = 24 - need
+  return { id: `a${o}${i}`, eventId: 'evt-aspire', name, org, location, teamId: name.replace(/[^A-Za-z0-9]+/g, '-').toUpperCase(),
+    contactName: `${org.split(' ')[0]} Manager`, contactEmail: `team${o}${i}@${org.toLowerCase().replace(/[^a-z0-9]+/g, '')}.example.com`,
+    status: need ? 'Need' : 'Compliant', need, goal: 24, reservations: Math.round(nights / 3), resBlocks: 1, nights, nightsBlocks: 1,
+    openBlocks: 0, peakAvail: 0, notes: 0, source: 'File Upload' }
+}))
+
 export const seedTeams = () => [
   { id: 't1', eventId: 'evt-east', name: 'Albion SC Las Vegas GA 12/13', org: 'Albion SC', teamId: 'ALB-1213', contactName: 'Warne Riker', contactEmail: 'manager@albionsclv.com', status: 'Compliant', need: 0, goal: 24, reservations: 33, resBlocks: 2, nights: 109, nightsBlocks: 3, openBlocks: 0, peakAvail: 0, notes: 0, source: 'File Upload' },
   { id: 't2', eventId: 'evt-east', name: 'Albion SC Las Vegas GA 13/14', org: 'Albion SC', teamId: 'ALB-1314', contactName: 'Warne Riker', contactEmail: 'manager@albionsclv.com', status: 'Compliant', need: 0, goal: 24, reservations: 23, resBlocks: 1, nights: 71, nightsBlocks: 3, openBlocks: 0, peakAvail: 0, notes: 0, source: 'File Upload' },
@@ -101,8 +119,9 @@ export const seedTeams = () => [
   { id: 't6', eventId: 'evt-east', name: 'Baltimore Celtic Soccer Club GA 12/13', org: 'Baltimore Celtic SC', teamId: 'BCSC-1213', contactName: 'Pat Moran', contactEmail: 'pmoran@baltceltic.org', status: 'Not Coming', need: 0, goal: 24, reservations: 0, resBlocks: 0, nights: 0, nightsBlocks: 0, openBlocks: 0, peakAvail: 0, notes: 1, source: 'File Upload' },
   { id: 't7', eventId: 'evt-east', name: 'Bayside FC GA 12/13', org: '', teamId: 'Bayside FC GA 12/13', contactName: 'Lee Huang', contactEmail: 'lee@baysidefc.com', status: 'Exempt', need: 0, goal: 24, reservations: 0, resBlocks: 0, nights: 0, nightsBlocks: 0, openBlocks: 0, peakAvail: 0, notes: 0, source: 'File Upload' },
   { id: 't8', eventId: 'evt-east', name: 'Broomfield Soccer Club GA 2013', org: 'Broomfield SC', teamId: 'BSC-2013', contactName: 'Morgan Pike', contactEmail: 'mpike@broomfieldsc.org', status: 'Compliant', need: 0, goal: 0, reservations: 3, resBlocks: 0, nights: 12, nightsBlocks: 0, openBlocks: 0, peakAvail: 0, notes: 3, source: 'File Upload' },
-  { id: 't9', eventId: 'evt-aspire', name: 'West Coast FC', org: 'West Coast FC', teamId: 'WCFC', contactName: 'Wendell Daniel', contactEmail: 'coachwendell@westcoastfc.com', status: 'Compliant', need: 0, goal: 24, reservations: 12, resBlocks: 1, nights: 41, nightsBlocks: 2, openBlocks: 1, peakAvail: 4, notes: 0, source: 'File Upload' },
-  { id: 't10', eventId: 'evt-aspire', name: 'Albion CO Boulder Aspire U19', org: 'Albion CO', teamId: 'ACB-U19', contactName: 'Karla Scornavacco', contactEmail: 'karla@albionco.org', status: 'Need', need: 1, goal: 24, reservations: 7, resBlocks: 1, nights: 23, nightsBlocks: 1, openBlocks: 1, peakAvail: 2, notes: 0, source: 'API' },
+  { id: 't9', eventId: 'evt-aspire', name: 'West Coast FC', org: 'West Coast FC', teamId: 'WCFC', contactName: 'Wes Danner', contactEmail: 'wes@westcoastfc.com', status: 'Compliant', need: 0, goal: 24, reservations: 12, resBlocks: 1, nights: 41, nightsBlocks: 2, openBlocks: 1, peakAvail: 4, notes: 0, source: 'File Upload' },
+  { id: 't10', eventId: 'evt-aspire', name: 'Albion CO Boulder Aspire U19', org: 'Albion CO', teamId: 'ACB-U19', contactName: 'Kara Sorensen', contactEmail: 'kara@albionco.org', status: 'Need', need: 1, goal: 24, reservations: 7, resBlocks: 1, nights: 23, nightsBlocks: 1, openBlocks: 1, peakAvail: 2, notes: 0, source: 'API' },
+  ...aspireRegistry(),
   { id: 't11', eventId: 'evt-nations', name: '', org: 'Alamo Dance Academy', teamId: 'Alamo Dance Academy', contactName: 'Rosa Medina', contactEmail: 'rosa@alamodance.com', status: 'Need', need: 6, goal: 10, reservations: 1, resBlocks: 1, nights: 4, nightsBlocks: 2, openBlocks: 1, peakAvail: 3, notes: 1, source: 'File Upload' },
 ]
 
@@ -251,4 +270,77 @@ export const FILL_PRESETS = [
   { key: 'duplicate', label: 'Duplicate Team ID', icon: 'content_copy', caption: 'Matches Albion SC (ALB-1213) in this event', values: { ...SAMPLE, name: 'Albion SC GA 12/13', org: 'Albion SC', teamId: 'ALB-1213' }, validate: true },
   { key: 'duplicate-generated', label: 'Duplicate generated ID', icon: 'content_copy', caption: 'Blank ID generates one already used', values: { ...SAMPLE, name: 'Bayside FC GA 12/13', org: '', teamId: '' }, validate: true },
   { key: 'clear', label: 'Clear all', icon: 'backspace', caption: 'Back to an empty form', values: null, validate: false },
+]
+
+/* ── Reconciliation (the event drill-in from the Reconciliation tab) ──────────
+   Each event's unlinked group blocks and individual reservations, as cards.
+   The seeds match the events' unlinkedBlocks / unlinkedRes counts. Names,
+   phones and emails are invented (555 numbers, example.com addresses). */
+const FIRST = ['Maya', 'Jordan', 'Elena', 'Marcus', 'Priya', 'Owen', 'Talia', 'Gabe', 'Nina', 'Reese', 'Caleb', 'Ivy', 'Dario', 'Lena', 'Theo', 'Sofia']
+const LAST = ['Hartley', 'Okafor', 'Lindqvist', 'Moreau', 'Castillo', 'Brennan', 'Nakamura', 'Whitfield', 'Asante', 'Kowalski', 'Delgado', 'Pryor', 'Vance']
+const CITIES = { 'evt-east': ['Atlanta, GA', 'Marietta, GA', 'Augusta, GA', 'Savannah, GA'], 'evt-aspire': ['Mesa, AZ', 'Gilbert, AZ', 'Boulder, CO', 'Henderson, NV'], 'evt-nations': ['Orlando, FL', 'Tampa, FL', 'San Antonio, TX', 'Mobile, AL'] }
+const BLOCK_SEEDS = {
+  // Edge cases: `edge` is a review-only note shown in the Storybook docs.
+  'evt-aspire': [
+    { name: 'West Coast FC', contact: 'Wes Danner', nights: 41, edge: 'Exact name match to a registered team' },
+    { name: 'Albion CO Boulder Aspire U19', contact: 'Kara Sorensen', nights: 0, edge: 'Same name twice · no nights booked yet' },
+    { name: 'Albion CO Boulder Aspire U19', contact: 'Kara Sorensen', nights: 23, phone: '(000) 000-0000', location: '0, AL', edge: 'Placeholder phone and location from the booking' },
+    { name: '7 Elite Aspire 12-13', unlinkedName: '7 Elite Aspire 12-13', contact: 'Jonah Reyes', nights: 18, status: 'Open', edge: 'Booked under a name that doesn’t match the registered team' },
+    { name: 'AC Grand Rapids Academy', unlinkedName: 'AC Grand Rapids Academy', contact: 'Elise Varga', nights: 36, registeredTeams: 1, edge: 'Club block — one of its teams is already linked' },
+    { name: 'HOLD FOR TTS STAFF', contact: 'Avery Lyle', nights: 15, edge: 'Staff hold — not a team; Ignore it' },
+    { name: 'Sereno SC Aspire 11/12', unlinkedName: 'Sereno SC Aspire 11/12', contact: 'Paolo Greco', nights: 9, status: 'Open', edge: 'No registered team to link — not in the registration file' },
+    { name: 'Phoenix Rising Aspire 10/11', contact: 'Tess Calloway', nights: 0, status: 'Cancelled', edge: 'Cancelled block' },
+  ],
+  'evt-nations': [{ name: 'Lone Star Cheer Elite', contact: 'Rosa Medina', nights: 18 }],
+}
+const pad = (n, w) => String(n).padStart(w, '0')
+export const phoneFor = (i) => `(555) ${pad(200 + ((i * 37) % 700), 3)}-${pad(1000 + ((i * 611) % 9000), 4)}`
+const emailFor = (name) => `${name.toLowerCase().replace(/[^a-z]+/g, '.').replace(/^\.|\.$/g, '')}@example.com`
+
+/** A group-block card. `fromTeam` names the deleted team it came from (STD-3). */
+export const makeBlock = (eventId, i, over = {}) => {
+  const s = (BLOCK_SEEDS[eventId] || [])[i] || { name: `Overflow Block ${i + 1}`, contact: `${FIRST[i % FIRST.length]} ${LAST[i % LAST.length]}`, nights: 6 + (i % 5) * 4 }
+  const city = CITIES[eventId][i % 4]
+  return { id: `${eventId}-b${i}`, kind: 'block', name: s.name, status: s.status || 'Closed', registeredTeams: s.registeredTeams || 0, nights: s.nights,
+    ref: `G-00${8112 + i * 497}${pad(i, 2)}`, contact: s.contact, phone: s.phone || phoneFor(i + 3), email: emailFor(s.contact), location: s.location || city,
+    unlinkedName: s.unlinkedName || '', edge: s.edge || '', fromTeam: '', ...over }
+}
+/** An individual-reservation card. */
+export const makeRes = (eventId, i, over = {}) => {
+  const comp = i % 9 === 1
+  const guest = `${FIRST[(i * 5) % FIRST.length]} ${LAST[(i * 7) % LAST.length]}`
+  return { id: `${eventId}-r${i}`, kind: 'res', name: comp ? `${guest} COMP ROOM` : guest, status: 'Processed', nights: 1 + (i % 4),
+    ref: `R-0${6149912 + i * 1307}`, contact: guest, phone: phoneFor(i + 40), email: emailFor(guest), location: CITIES[eventId][(i + 1) % 4],
+    unlinkedName: '', edge: '', fromTeam: '', seq: i, ...over }
+}
+export const seedRecon = () => Object.fromEntries(EVENTS.map((e) => [e.id, {
+  blocks: Array.from({ length: e.unlinkedBlocks }, (_, i) => makeBlock(e.id, i)),
+  res: Array.from({ length: e.unlinkedRes }, (_, i) => makeRes(e.id, i)),
+}]))
+/** What a deleted team leaves in Reconciliation: its open blocks and its reservations. */
+export const orphansOf = (t, startAt) => [
+  ...Array.from({ length: t.openBlocks }, (_, i) => makeBlock(t.eventId, startAt + i, {
+    id: `${t.id}-b${i}`, name: displayName(t), contact: t.contactName, email: t.contactEmail, status: 'Open', nights: 0, fromTeam: displayName(t) })),
+  ...Array.from({ length: t.reservations }, (_, i) => makeRes(t.eventId, startAt + 100 + i, { id: `${t.id}-r${i}`, fromTeam: displayName(t) })),
+]
+/** The contact details a Registered Team Selection fills in. */
+export const teamContact = (t, i = 0) => ({ location: t.location || '', phone: t.phone || phoneFor(i + 90), email: t.contactEmail || '' })
+
+/** The team Autofill picks for a card: the registered team whose name holds
+ *  every word of the card's name (exact or loose match). Reservations, which
+ *  carry a guest's name, get a team by position. Null when nothing fits. */
+const words = (x) => x.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean)
+export function suggestTeam(item, teams) {
+  if (!teams.length) return null
+  if (item.kind === 'res') return teams[(item.seq ?? 0) % teams.length].id
+  const want = words(item.unlinkedName || item.name)
+  const hit = teams.find((t) => { const have = words(displayName(t)); return want.every((w) => have.includes(w)) })
+  return hit ? hit.id : null
+}
+
+/** Fill ▾ presets on the Reconciliation page. */
+export const RECON_PRESETS = [
+  { key: 'suggest', label: 'Pick a team for every card', icon: 'task_alt', caption: 'Matches by name — cards with no match stay empty' },
+  { key: 'missing', label: 'Link with no team picked', icon: 'error_outline', caption: 'Shows the “Select a registered team” error' },
+  { key: 'clear', label: 'Clear all', icon: 'backspace', caption: 'Back to empty selections' },
 ]

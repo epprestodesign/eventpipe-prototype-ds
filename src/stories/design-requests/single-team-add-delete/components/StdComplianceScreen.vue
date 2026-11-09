@@ -133,7 +133,7 @@ const NEED_TONE = { Compliant: 'ok', Exempt: 'exempt', 'Not Coming': 'away', Loc
 
     <ds-alert v-if="flash" severity="success" :title="flash.text" class="q-mt-md">
       Its linked group blocks and reservations were moved to Reconciliation.
-      <ds-link href="#reconciliation" @click.prevent="emit('update:tab', 'reconciliation')">View in Reconciliation</ds-link> ·
+      <ds-link href="#reconciliation" @click.prevent="emit('open-reconciliation', flash.eventId)">View in Reconciliation</ds-link> ·
       <ds-link href="#activity" @click.prevent="emit('view-log', flash.eventId)">View the event activity log</ds-link>
       <template #action><q-btn flat round dense icon="close" aria-label="Dismiss" @click="emit('dismiss-flash')" /></template>
     </ds-alert>
