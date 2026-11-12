@@ -1,9 +1,9 @@
 <script setup>
 // The Team Edit header card.
 //
-// STD-1 · ENG2-110 — Delete Team's placement is under review (11/09): A, a
-// trash-can button here; B, beside Save Changes; C, a ••• overflow menu here;
-// D, a section at the bottom of the page. The screen draws B and D, so the
+// STD-1 · ENG2-110 — Delete Team lives in a ••• overflow menu here (C).
+// Alternatives: A, a trash-can button here; B, beside Save Changes; D, a
+// section at the bottom of the page. The screen draws B and D, so the
 // header shows nothing for them.
 // Never on Compliance list rows. "Team" reads "Organization" for events that
 // register Organizations.

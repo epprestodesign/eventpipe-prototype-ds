@@ -1,6 +1,6 @@
 /** Single-Team Add and Delete (Linear P-ENG2-251) — shared scaffold.
  *
- *  Draft designs for Scott's spec (Teams Management, draft 5 Nov 2026). Two
+ *  Draft designs for the spec (Teams Management, draft 5 Nov 2026). Two
  *  functions built together: add one team from the Compliance page through a
  *  create mode on Team Edit, and delete one team from Team Edit.
  *
@@ -132,7 +132,7 @@ export const complianceNeed = (t) => (t.status === 'Need' ? `${t.need} Room Nigh
 /* ---------------------------------------------------------------------------
  * Compliance page filters — production's inline Filter panel. Entity Name is
  * a text search (4 characters). Event Name is a type-ahead: type 4 characters,
- * pick one event (11/09 review: production's filter selects a single event). Event Start Date keeps events still
+ * pick one event, as production's filter does. Event Start Date keeps events still
  * running on or after the date (production's 2026-11-06 filter still lists
  * events that began 11/05).
  * ------------------------------------------------------------------------- */
@@ -173,8 +173,8 @@ export const eventSearch = (events, q) => {
 
 /** Event activity log rows already present before the prototype runs (STD-4). */
 export const seedActivity = () => [
-  { when: 'Wed, 11/04/2026 02:18 PM EST', user: 'Scott Villemain', text: 'Event Updated' },
-  { when: 'Mon, 10/12/2026 09:05 AM EST', user: 'Devanny Boisvert', text: 'Event Copied From 2025 - East Regional Showcase' },
+  { when: 'Wed, 11/04/2026 02:18 PM EST', user: 'Morgan Ellery', text: 'Event Updated' },
+  { when: 'Mon, 10/12/2026 09:05 AM EST', user: 'Dana Whitcomb', text: 'Event Copied From 2025 - East Regional Showcase' },
 ]
 
 /* ---------------------------------------------------------------------------

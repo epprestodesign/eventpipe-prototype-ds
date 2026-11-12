@@ -1,7 +1,7 @@
 <script setup>
 // Team Edit — the team drill-in from Compliance, in two modes.
 //
-// Both modes follow production's single-column Team Edit (11/09 review).
+// Both modes follow production's single-column Team Edit.
 //
 // create (STA-2 · STA-3 · STA-4 · STA-5): Event Name (type-ahead) with
 //   Cancel / Save Team on top, then the page as it is today — Goals &
@@ -10,7 +10,7 @@
 //   saves nothing. A valid Save emits `created`; the parent then shows the
 //   normal Team Edit with the auto-generated note.
 // edit (STD-1 · STD-2 · STD-3): production's Team Edit plus Delete Team, in
-//   one of three placements under review (`deletePlacement`), and the
+//   the ••• menu (C) or an alternative placement (`deletePlacement`), and the
 //   confirmation modal. Confirming emits `deleted`.
 import { computed, inject, reactive, ref, nextTick, watch } from 'vue'
 import DsAlert from '../../../../components/DsAlert.vue'
@@ -37,7 +37,7 @@ const props = defineProps({
   confirmOpen: { type: Boolean, default: false },
   /** Open with the errors from an empty Save showing (review state). */
   showErrors: { type: Boolean, default: false },
-  /** Delete Team placement under review: button (A) | save (B) | menu (C) | bottom (D). */
+  /** Delete Team placement: menu (C, the design) | button (A) | save (B) | bottom (D). */
   deletePlacement: { type: String, default: 'menu' },
 })
 const emit = defineEmits(['back', 'created', 'deleted'])

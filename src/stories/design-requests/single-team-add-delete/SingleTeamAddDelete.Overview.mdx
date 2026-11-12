@@ -5,19 +5,19 @@ import { Meta } from '@storybook/addon-docs/blocks'
 # Single-Team Add and Delete
 
 **Linear:** [P-ENG2-251](https://linear.app/eventpipe/project/single-team-add-and-delete-84eda936c544) · Teams Management · spec by Scott Villemain (draft 5 Nov 2026) · eng lead Michael Kirby.
-**Status:** draft designs, revised after the 11/09 review with Scott — the project's open item, "Designs for relevant UI components".
+**Status:** draft designs — the project's open item, "Designs for relevant UI components".
 
 Hoco users can add teams today only through the Registration Data Uploader, and remove them only with the event-level batch delete. This adds two functions, built together: **add one team** from the Compliance page through a create mode on Team Edit, and **delete one team** from Team Edit. Both reuse the rules the uploader and batch delete already follow.
 
-## 11/09 review — what changed
+## The design at a glance
 
-- **Team Edit layout** now matches production's single column (no side-by-side inputs), in both modes, from the 11/09 dev captures (`references/110926`).
+- **Team Edit** uses production's single column (no side-by-side inputs) in both modes.
 - **Create mode:** Event Name with Cancel / Save Team on top, then the page as it is today — Goals & Restrictions, Team / Org Information, Communications. Compliance Credits and Notes are left out until the team exists. Save lands on the team's normal page.
-- **Event Name is a type-ahead**, the same control as the Compliance filter: type 4 characters, pick one event. The Compliance filter's Event Name now works that way too, so STA-2's preselect is simply the event picked there.
-- **Delete Team placement** — four options to compare, with a recommendation: A header button · B beside Save Changes · C ••• menu · D bottom section. See **Components › Delete Team Placement**, and the review bar's **Delete Team A / B / C / D** toggle in the Prototype.
-- **Success message** keeps **View in Reconciliation** and drops the activity-log link.
-- **Activity log entry** is a plain row — not bolded.
-- Confirmed as is: the Add/Update Teams button, validation, the auto-generated "Team added" note. **Out of scope:** BigQuery, and the Reconciliation pages (Screens › 05 stays as reference only).
+- **Event Name is a type-ahead**, the same control as the Compliance filter: type 4 characters, pick one event. The Compliance filter's Event Name works that way too, so STA-2's preselect is simply the event picked there.
+- **Delete Team** lives in the header's **•••** menu (C). Alternatives A (header button), B (beside Save Changes) and D (bottom section) are kept for comparison on **Components › Delete Team Placement** and in the Prototype's **Delete Team A / B / C / D** toggle.
+- **Success message** after a delete links to **View in Reconciliation**.
+- **Activity log entry** is a plain row.
+- **Out of scope:** BigQuery, and the Reconciliation pages (Screens › 05 is reference only, with no UI changes).
 
 ## Where it lives in the app
 
@@ -34,7 +34,7 @@ The **Prototype** runs this end to end. Each step, the tickets it covers, and th
 | 3 | Pick the **Event Name** (type-ahead) — preselected if the list was filtered to an event | STA-2 · ENG2-116 | Components › Event Field |
 | 4 | Fill in the Details; **Save** runs the uploader's validation | STA-4 · ENG2-118 | Components › Team Details Form |
 | 5 | Saved → the page becomes the normal Team Edit, with the auto-generated note | STA-3 · STA-5 · ENG2-119 | Components › Auto-Generated Note |
-| 6 | On Team Edit, **Delete Team** — A header button · B beside Save · C ••• menu (recommended) · D bottom section | STD-1 · ENG2-110 | Components › Delete Team Placement |
+| 6 | On Team Edit, **Delete Team** from the header's ••• menu | STD-1 · ENG2-110 | Components › Delete Team Placement |
 | 7 | The confirmation modal — Cancel is the default | STD-2 · ENG2-112 | Components › Delete Confirmation Modal |
 | 8 | Confirmed → back on Compliance with a success message | STD-3 · ENG2-113 | Components › Delete Success Message |
 | 9 | The event's Activity Logs shows the entry | STD-4 · ENG2-114 | Components › Activity Log Entry |
@@ -58,9 +58,9 @@ The Prototype's review bar (and the Create Mode screens) carry **Autofill**, rev
 | --- | --- |
 | **01 · Compliance List** | All events · filtered to an event · after a delete |
 | **02 · Team Edit · Create Mode** | Event Name empty · preselected · Save with errors · click to fill |
-| **03 · Team Edit · Delete** | C ••• menu (recommended) · A header button · B beside Save Changes · D bottom of the page · the modal · Organizations modal |
+| **03 · Team Edit · Delete** | ••• menu (C) · alternatives A header button, B beside Save Changes, D bottom of the page · the modal · Organizations modal |
 | **04 · Event Activity Logs** | The entry after a delete · Organizations wording |
-| **05 · Event Reconciliation** | Reference only — out of scope (11/09). Group Blocks · edge cases · Individual Reservations · after a delete |
+| **05 · Event Reconciliation** | Reference only — out of scope, no UI changes. Group Blocks · edge cases · Individual Reservations · after a delete |
 
 ## Rules the drafts follow (from the tickets)
 
@@ -68,7 +68,7 @@ The Prototype's review bar (and the Create Mode screens) carry **Autofill**, rev
 - **Create mode** shows Event Name, Goals & Restrictions, Team / Org Information and Communications; tabs, Compliance Credits and Notes appear after the first save. Cancel saves nothing.
 - **Validation:** Team Name **or** Organization Name, plus Contact Email. Team ID optional; blank → generated (Team Name, Organization Name, or both concatenated). Uniqueness checked within the event after generation. Every failure is an inline error and creates nothing.
 - **Delete:** never on list rows. Modal copy is static. After the delete, back to Compliance with a success message; the team is gone from the list.
-- **Organizations:** "Team" reads "Organization" in the modal and the log entry.
+- **Organizations:** "Team" reads "Organization" in the Delete Team button and menu item, the modal and the log entry.
 
 ## Built from production
 
@@ -85,15 +85,12 @@ The Compliance page, the event Reconciliation page and Activity Logs are rebuilt
 - **Event Name:** create mode's event field uses this label, as the Registration Data Uploader does.
 - **Activity Logs:** production's plain **Date/Time · User · Activity** table, with times like "Fri, 11/06/2026 03:15 PM EST".
 
-## Assumptions to confirm
+## Design notes
 
-1. **Delete Team placement** — pick A, B, C or D. Recommendation: **C, the ••• menu** (reasons on Components › Delete Team Placement). The prototype opens on C.
-2. **Locked fields on Team Edit** follow the 11/09 dev capture (confirmed): **Organization Name** locked; Team Name and Contact Name editable.
-3. **Create mode's Goals & Restrictions** (confirmed): Calculated reads "—" until the first save; the overrides can be set now. Cancel / Save Team sit beside Event Name, in the first card, as Save Changes sits in production's first card.
-4. **A new team** joins the list needing the event's full goal (e.g. "24 Room Nights") — a guess at what the compliance calculation does for a team with no bookings.
-5. **Generated Team ID** concatenates with no separator ("Augusta LionsGeorgia Elite"). Confirm against the uploader.
-6. **Organization wording** is also applied to the Delete Team label and menu item; the tickets name only the modal and log.
-7. **Error summary.** Errors also get an alert under Event Name ("Check the highlighted fields").
-8. **"Team added" toast** confirms the create save; production's success pattern hasn't been captured.
-9. **Not built:** the Registration Data Uploader page. Its menu option shows a note instead.
-10. **Reconciliation** (out of scope, reference only): its link / ignore behaviour is guessed — see Screens › 05.
+- **Locked fields on Team Edit:** **Organization Name** is locked; Team Name and Contact Name can be edited.
+- **Create mode's Goals & Restrictions:** Calculated reads "—" until the first save; the overrides can be set right away. Cancel / Save Team sit beside Event Name in the first card.
+- **A new team** starts out needing the event's full goal (e.g. "24 Room Nights").
+- **Generated Team ID** joins the names with no separator ("Augusta LionsGeorgia Elite").
+- **Errors:** inline on each field, plus an alert under Event Name ("Check the highlighted fields"). The build follows how the page already handles validation.
+- **"Team added" toast** confirms the create save, as production does.
+- **Not built:** the Registration Data Uploader page. Its menu option shows a note instead.

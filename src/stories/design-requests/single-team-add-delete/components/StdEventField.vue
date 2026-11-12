@@ -1,6 +1,6 @@
 <script setup>
-// STA-2 · ENG2-116 — Event Name, a type-ahead (11/09 review: "the control
-// should work like it does in the filter"). Type 4 characters and the matching
+// STA-2 · ENG2-116 — Event Name, a type-ahead that works like the Compliance
+// filter. Type 4 characters and the matching
 // events drop down; pick one. The picked event shows in the box with a clear
 // (×) button, as production's Event Name filter does.
 //

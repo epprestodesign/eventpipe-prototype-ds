@@ -2,7 +2,7 @@
 // STD-4 · ENG2-114 — the event-level activity log. Existing columns record who
 // and when; the blurb records what: "Team ‘Augusta Lions’ was deleted."
 // Written only when the delete succeeds. A plain row, like every other entry
-// (11/09 review: don't bold it — the log has no "recent" emphasis today).
+// — the log has no "recent" emphasis.
 defineProps({
   rows: { type: Array, default: () => [] },
 })

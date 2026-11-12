@@ -7,7 +7,7 @@ export default {
   component: DsAlert,
   tags: ['autodocs', 'STD-3', 'ENG2-113'],
   decorators: [ticketDecorator('STD-3')],
-  parameters: { layout: 'padded', docs: { description: { component: docText('After a confirmed delete the user returns to the Compliance list with this success message (DsAlert, success). It names the team, says its linked group blocks and reservations went to Reconciliation, and links there (11/09 review: no activity-log link).', 'STD-3') } } },
+  parameters: { layout: 'padded', docs: { description: { component: docText('After a confirmed delete the user returns to the Compliance list with this success message (DsAlert, success). It names the team, says its linked group blocks and reservations went to Reconciliation, and links there.', 'STD-3') } } },
 }
 
 export const Default = {

@@ -6,7 +6,7 @@ export default {
   component: StdTeamEditHeader,
   tags: ['autodocs', 'STD-1', 'ENG2-110', 'STA-3', 'ENG2-117'],
   decorators: [ticketDecorator('STD-1', 'STA-3')],
-  parameters: { layout: 'padded', docs: { description: { component: docText('The Team Edit header. **Delete Team** sits here in placements A (trash-can button) and C (••• menu, recommended) — see **Delete Team Placement**. It never appears on Compliance list rows. In create mode the header names the task and the tabs are hidden until the first save.', 'STD-1', 'STA-3') } } },
+  parameters: { layout: 'padded', docs: { description: { component: docText('The Team Edit header. **Delete Team** sits here in the ••• menu (C), or as a trash-can button in alternative A — see **Delete Team Placement**. It never appears on Compliance list rows. In create mode the header names the task and the tabs are hidden until the first save.', 'STD-1', 'STA-3') } } },
 }
 
 const header = (args) => ({ args, render: (a) => ({ components: { StdTeamEditHeader }, setup: () => ({ a }), template: '<std-team-edit-header v-bind="a" />' }) })

@@ -10,7 +10,7 @@ export default {
   parameters: {
     layout: 'padded',
     docs: { description: { component: docText(`
-Four places for **Delete Team** on Team Edit, from the 11/09 review. The goal: deleting is possible, but never tempting or easy to hit by accident. Every option opens the same confirmation modal (STD-2).
+Four places for **Delete Team** on Team Edit. The goal: deleting is possible, but never tempting or easy to hit by accident. Every option opens the same confirmation modal (STD-2).
 
 | | Placement | Trade-off |
 |---|---|---|
@@ -19,9 +19,9 @@ Four places for **Delete Team** on Team Edit, from the 11/09 review. The goal: d
 | **C** | **•••** overflow button in the header; its menu holds only **Delete Team** | One extra, deliberate click. Out of the main row of actions, and room for more actions later. |
 | **D** | A **Delete Team** section at the very bottom of the page, with a description and a delete button | Far from Save and explains itself, but a long scroll — and it sits under Compliance Credits and Notes, which have their own delete icons, so it can get lost. |
 
-**Recommendation: C, the ••• menu.** It keeps delete one deliberate step away and off the header's main line, it isn't next to Save Changes, and it's a pattern users already know: the event page puts **•••** beside **Edit Event**. It also leaves room for other advanced team actions later.
+**The design uses C, the ••• menu.** It keeps delete one deliberate step away and off the header's main line, it isn't next to Save Changes, and it's a pattern users already know: the event page puts **•••** beside **Edit Event**. It also leaves room for other advanced team actions later.
 
-Switch between them in the prototype with the review bar's **Delete Team A / B / C / D** toggle.`, 'STD-1') } },
+A, B and D are kept for comparison. Switch between them in the prototype with the review bar's **Delete Team A / B / C / D** toggle.`, 'STD-1') } },
   },
 }
 
@@ -41,12 +41,12 @@ const view = (placement, body, word = 'Team') => ({
   }),
 })
 
-/** A · the first draft: a trash-can button, always visible in the header. */
+/** A · a trash-can button, always visible in the header. */
 export const OptionA = { name: 'A · Header button', ...view('button', '') }
 /** B · an icon-only trash button beside Cancel / Save Changes. */
 export const OptionB = { name: 'B · Beside Save Changes', ...view('save', SAVE_ROW) }
-/** C · recommended: a ••• overflow button; click it to see Delete Team. */
-export const OptionC = { name: 'C · ••• menu (recommended)', ...view('menu', '') }
+/** C · the design: a ••• overflow button; click it to see Delete Team. */
+export const OptionC = { name: 'C · ••• menu', ...view('menu', '') }
 /** D · a Delete Team section, with a description, at the very bottom of the page. */
 export const OptionD = { name: 'D · Bottom section', ...view('bottom', `${REST}<std-delete-team-action variant="bottom" :word="word" />`) }
 /** C for an Organizations event: the menu item reads “Delete Organization”. */

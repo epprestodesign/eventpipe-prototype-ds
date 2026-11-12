@@ -7,7 +7,7 @@ export default {
   component: StdEventField,
   tags: ['autodocs', 'STA-2', 'ENG2-116'],
   decorators: [ticketDecorator('STA-2')],
-  parameters: { layout: 'padded', docs: { description: { component: docText('**Event Name**, a type-ahead — the same control as the Compliance page’s Event Name filter (11/09 review). Type 4 characters and matching events drop down; pick one, clear it with ×. Required at the top of create-mode Team Edit, and preselected when the Compliance list is filtered to an event. Saving without one shows an inline error. Registration System Event ID is not asked for.', 'STA-2') } } },
+  parameters: { layout: 'padded', docs: { description: { component: docText('**Event Name**, a type-ahead — the same control as the Compliance page’s Event Name filter. Type 4 characters and matching events drop down; pick one, clear it with ×. Required at the top of create-mode Team Edit, and preselected when the Compliance list is filtered to an event. Saving without one shows an inline error. Registration System Event ID is not asked for.', 'STA-2') } } },
 }
 
 const field = (initial, error = '') => ({
