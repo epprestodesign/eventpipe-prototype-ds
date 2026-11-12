@@ -5,7 +5,7 @@
 // create — every field editable. Required: Team Name OR Organization Name,
 //          plus Contact Email. Team ID is optional; left blank it is generated
 //          from the names, and the field says what it will be.
-// edit   — production's Team Edit (11/09 capture): Organization Name locked.
+// edit   — production's Team Edit: Organization Name locked.
 //
 // Each field carries data-field="<key>" so the prototype's Click to fill can
 // tell which field was clicked.
@@ -31,7 +31,7 @@ const idHint = computed(() => {
 </script>
 
 <template>
-  <!-- One column, as production (11/09 review: no side-by-side inputs). -->
+  <!-- One column, as production, no side-by-side inputs. -->
   <div class="stdf">
     <template v-if="create">
       <ds-input v-model="form.name" data-field="name" label="Team Name" :error="errors.name" />

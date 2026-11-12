@@ -41,7 +41,7 @@ const props = defineProps({
   review: { type: Boolean, default: true },
   /** Start with Click to fill on. */
   clickFill: { type: Boolean, default: false },
-  /** Delete Team placement under review: button (A) | save (B) | menu (C, recommended) | bottom (D). */
+  /** Delete Team placement: menu (C, the design) | button (A) | save (B) | bottom (D). */
   deletePlacement: { type: String, default: 'menu' },
 })
 
@@ -67,7 +67,7 @@ const placement = ref(props.deletePlacement)
 const PLACEMENTS = [
   { label: 'A', value: 'button', slot: 'button', title: 'A · Trash-can button in the header' },
   { label: 'B', value: 'save', slot: 'save', title: 'B · Trash beside Cancel / Save Changes' },
-  { label: 'C', value: 'menu', slot: 'menu', title: 'C · ••• menu in the header (recommended)' },
+  { label: 'C', value: 'menu', slot: 'menu', title: 'C · ••• menu in the header' },
   { label: 'D', value: 'bottom', slot: 'bottom', title: 'D · Section at the bottom of the page' },
 ]
 

@@ -1,8 +1,8 @@
 <script setup>
-// STD-1 · ENG2-110 — where "Delete Team" lives on Team Edit. Four placements
-// from the 11/09 review, so delete is possible but never tempting:
+// STD-1 · ENG2-110 — where "Delete Team" lives on Team Edit. Four placements,
+// so delete is possible but never tempting:
 //
-//   button — A. a trash-can "Delete Team" button in the header (the first draft)
+//   button — A. a trash-can "Delete Team" button in the header
 //   save   — B. an icon-only trash button beside Cancel / Save Changes
 //   menu   — C. a ••• overflow button in the header; its menu holds only
 //                "Delete Team" for now (room for more actions later). Same

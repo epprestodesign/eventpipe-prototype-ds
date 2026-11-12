@@ -1,7 +1,7 @@
 <script setup>
-// Goals & Restrictions — production's layout (11/09 capture): three blocks,
-// each a grey caption, then Calculated | Override. Shown in both modes (11/09
-// review: overrides can be set while adding a team). In create mode nothing is
+// Goals & Restrictions — production's layout: three blocks, each a grey
+// caption, then Calculated | Override. Shown in both modes, so overrides can
+// be set while adding a team. In create mode nothing is
 // calculated yet, so Calculated reads "—" until the first save.
 import { computed } from 'vue'
 import DsSelect from '../../../../components/DsSelect.vue'

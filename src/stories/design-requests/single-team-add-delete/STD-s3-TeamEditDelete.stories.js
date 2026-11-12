@@ -7,12 +7,12 @@ export default {
   title: 'Design Requests/Single-Team Add and Delete/Screens/03 · Team Edit · Delete',
   component: StdPrototype,
   tags: ['autodocs', 'STD-1', 'ENG2-110', 'STD-2', 'ENG2-112', 'STA-5', 'ENG2-119'],
-  parameters: { layout: 'fullscreen', docs: { description: { component: docText('Team Edit for a registered team, in production’s single-column layout, with **Delete Team** in one of four placements under review: A, a trash-can button in the header; B, a trash button beside Cancel / Save Changes; C, a ••• menu in the header (recommended); D, a section at the bottom of the page. Each opens the confirmation modal; nothing is deleted until the user confirms. A team added through Add single team shows its auto-generated note here.', 'STD-1', 'STD-2', 'STA-5') } } },
+  parameters: { layout: 'fullscreen', docs: { description: { component: docText('Team Edit for a registered team, in production’s single-column layout, with **Delete Team** in the header’s ••• menu (C). Alternatives for comparison: A, a trash-can button in the header; B, a trash button beside Cancel / Save Changes; D, a section at the bottom of the page. Each opens the confirmation modal; nothing is deleted until the user confirms. A team added through Add single team shows its auto-generated note here.', 'STD-1', 'STD-2', 'STA-5') } } },
 }
 
-/** C (recommended): Delete Team inside the header's ••• menu. */
+/** C: Delete Team inside the header's ••• menu. */
 export const TeamEdit = screen({ start: 'team' })
-TeamEdit.storyName = 'C · ••• menu (recommended)'
+TeamEdit.storyName = 'C · ••• menu'
 /** A: a trash-can Delete Team button in the header. */
 export const OptionA = screen({ start: 'team', deletePlacement: 'button' })
 OptionA.storyName = 'A · Trash-can button'

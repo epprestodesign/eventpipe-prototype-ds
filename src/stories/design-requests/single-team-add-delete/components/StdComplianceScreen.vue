@@ -9,7 +9,7 @@
 //        preselects that event.
 // STD-1: rows open Team Edit; no delete on rows.
 // STD-3: after a delete the user lands here with a success message linking
-//        to Reconciliation (11/09 review: no activity-log link).
+//        to Reconciliation.
 import { computed, reactive, ref, watch } from 'vue'
 import DsSelect from '../../../../components/DsSelect.vue'
 import DsInput from '../../../../components/DsInput.vue'
