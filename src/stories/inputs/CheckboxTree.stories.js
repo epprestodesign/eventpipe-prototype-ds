@@ -10,7 +10,7 @@ const brands = [
 ]
 
 export default {
-  title: 'Components/Forms/Checkbox Tree',
+  id: 'components-forms-checkbox-tree', title: 'Design System/Components/Forms/Checkbox Tree',
   component: DsCheckboxTree,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

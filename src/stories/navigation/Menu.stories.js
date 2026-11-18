@@ -1,6 +1,6 @@
 /** NAVIGATION / Menu → Quasar: QMenu (+ QList) (wrap as EpMenu) */
 export default {
-  title: 'Components/Actions/Menu',
+  id: 'components-actions-menu', title: 'Design System/Components/Actions/Menu',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

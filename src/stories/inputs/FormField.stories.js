@@ -4,7 +4,7 @@ import DsField from '../../components/DsField.vue'
 import DsInput from '../../components/DsInput.vue'
 
 export default {
-  title: 'Components/Forms/Form Field',
+  id: 'components-forms-form-field', title: 'Design System/Components/Forms/Form Field',
   component: DsField,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

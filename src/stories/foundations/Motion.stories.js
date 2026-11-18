@@ -6,8 +6,9 @@ import { ref } from 'vue'
  * transition props (transition-show / transition-hide) on overlays.
  */
 const meta = {
-  title: 'Foundations/Motion',
-  tags: ['autodocs'],
+  id: 'foundations-motion', title: 'Design System/Foundations/Motion',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: {
     docs: {
       description: {

@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsInput from '../../components/DsInput.vue'
 
 export default {
-  title: 'Components/Forms/Input Date',
+  id: 'components-forms-input-date', title: 'Design System/Components/Forms/Input Date',
   component: DsInput,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

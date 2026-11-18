@@ -4,7 +4,7 @@ import DsPageHeader from '../../components/DsPageHeader.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
 
 export default {
-  title: 'App Chrome/Page Header',
+  id: 'app-chrome-page-header', title: 'Design System/App Chrome/Page Header',
   component: DsPageHeader,
   tags: ['autodocs'],
   parameters: {

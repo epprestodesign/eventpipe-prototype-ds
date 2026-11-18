@@ -4,7 +4,7 @@ import DsSectionHeader from '../../components/DsSectionHeader.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
 import logo365 from '../../assets/logo/365Logo_Horizontal.png'
 
-export default { title: 'Pages/17 Company Settings', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-17-company-settings', title: 'App Screens/Admin Pages/17 Company Settings', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const sectionsTop = [
   { title: 'Company Details', items: [

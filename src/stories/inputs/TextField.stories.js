@@ -3,7 +3,7 @@
 import { ref } from 'vue'
 
 export default {
-  title: 'Components/Forms/Text Field',
+  id: 'components-forms-text-field', title: 'Design System/Components/Forms/Text Field',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

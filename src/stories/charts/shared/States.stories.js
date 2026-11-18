@@ -3,7 +3,7 @@ import DsChartState from '../../../components/charts/DsChartState.vue'
 import { DARK } from '../_shared.js'
 
 export default {
-  title: 'Components/Charts/Shared Elements/States',
+  id: 'components-charts-shared-elements-states', title: 'Design System/Components/Charts/Shared Elements/States',
   component: DsChartState,
   tags: ['autodocs'],
   parameters: {

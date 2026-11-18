@@ -3,7 +3,7 @@ import AccountMfaPreview from './components/AccountMfaPreview.vue'
 export default {
   // ASCII id: the title's "∕" (U+2215) would otherwise end up in the URL.
   id: 'sign-up-login-full-flow',
-  title: 'Sign up ∕ Login/Full flow',
+  title: 'App Screens/Sign up ∕ Login/Full flow',
   parameters: {
     layout: 'fullscreen',
     docs: { description: { component: 'The whole sign-in, end to end: log in → email code → completion, with **Try another way** → authenticator one step away. Use **Preview state** to start at log in, the email code or the authenticator; **Restart preview** resets the form and timer. These controls are Storybook-only. Any valid email and password, then any six digits, completes the preview; nothing is sent.' } },

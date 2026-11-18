@@ -1,6 +1,6 @@
 /** FEEDBACK / Progress → Quasar: QLinearProgress / QCircularProgress / QSpinner (native) */
 export default {
-  title: 'Components/Feedback & Status/Progress',
+  id: 'components-feedback-status-progress', title: 'Design System/Components/Feedback & Status/Progress',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

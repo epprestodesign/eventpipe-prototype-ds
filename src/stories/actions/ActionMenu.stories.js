@@ -2,7 +2,7 @@
 import DsActionMenu from '../../components/DsActionMenu.vue'
 
 export default {
-  title: 'Components/Actions/Action Menu',
+  id: 'components-actions-action-menu', title: 'Design System/Components/Actions/Action Menu',
   component: DsActionMenu,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

@@ -2,7 +2,7 @@
 import DsStat from '../../components/DsStat.vue'
 
 export default {
-  title: 'Components/Layout & Structure/Stat',
+  id: 'components-layout-structure-stat', title: 'Design System/Components/Layout & Structure/Stat',
   component: DsStat,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: 'A single KPI metric — a large value over a muted label. Lay several in a grid for a stat block (the Events card metrics).' } } },

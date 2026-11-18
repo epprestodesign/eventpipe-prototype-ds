@@ -2,7 +2,7 @@
 import DsText from '../../components/DsText.vue'
 
 export default {
-  title: 'Components/Typography & Content/Heading',
+  id: 'components-typography-content-heading', title: 'Design System/Components/Typography & Content/Heading',
   component: DsText,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: 'Hierarchical titles via **DsText** — `variant="display|h1|h2|h3|h4"`, rendered as the matching semantic tag.' } } },

@@ -6,7 +6,7 @@ import { DARK } from '../_shared.js'
 import { CHECKINS_MISSING } from '../fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Shared Elements/Tooltip',
+  id: 'components-charts-shared-elements-tooltip', title: 'Design System/Components/Charts/Shared Elements/Tooltip',
   component: DsChartTooltip,
   tags: ['autodocs'],
   parameters: {

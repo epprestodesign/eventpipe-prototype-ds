@@ -4,7 +4,7 @@ import DsPinInput from '../../components/DsPinInput.vue'
 import DsField from '../../components/DsField.vue'
 
 export default {
-  title: 'Components/Forms/Pin Input',
+  id: 'components-forms-pin-input', title: 'Design System/Components/Forms/Pin Input',
   component: DsPinInput,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

@@ -5,7 +5,7 @@ import { ref } from 'vue'
  * DATA DISPLAY / Chip  →  Quasar: QChip  (direct usage)
  */
 const meta = {
-  title: 'Components/Typography & Content/Chip',
+  id: 'components-typography-content-chip', title: 'Design System/Components/Typography & Content/Chip',
   component: QChip,
   tags: ['autodocs'],
   parameters: {

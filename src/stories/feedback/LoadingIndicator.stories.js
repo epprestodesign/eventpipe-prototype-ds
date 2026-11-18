@@ -1,6 +1,6 @@
 /** APPLICATION COMPONENTS / Loading Indicator → QSpinner + inline loading states. */
 export default {
-  title: 'Components/Feedback & Status/Loading Indicator',
+  id: 'components-feedback-status-loading-indicator', title: 'Design System/Components/Feedback & Status/Loading Indicator',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 Signals in-progress work — spinners for indeterminate waits and inline

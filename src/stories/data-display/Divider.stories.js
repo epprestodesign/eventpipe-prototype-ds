@@ -1,6 +1,6 @@
 /** DATA DISPLAY / Divider → Quasar: QSeparator (native alias) */
 export default {
-  title: 'Components/Layout & Structure/Divider',
+  id: 'components-layout-structure-divider', title: 'Design System/Components/Layout & Structure/Divider',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

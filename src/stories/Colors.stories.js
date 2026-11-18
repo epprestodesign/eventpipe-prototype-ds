@@ -2,8 +2,9 @@
 import { semanticGroups } from './_tokens-data.js'
 
 export default {
-  title: 'Foundations/Colors',
-  tags: ['autodocs'],
+  id: 'foundations-colors', title: 'Design System/Foundations/Colors',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: { docs: { description: { component: `
 ## Overview
 The **semantic color tokens** (Tailwind-based, light theme) — the roles

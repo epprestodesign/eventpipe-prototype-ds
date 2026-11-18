@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 export default {
-  title: 'Components/Actions/Popover',
+  id: 'components-actions-popover', title: 'Design System/Components/Actions/Popover',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 A **Popover** — an anchored overlay that (unlike a Tooltip) can hold *interactive*

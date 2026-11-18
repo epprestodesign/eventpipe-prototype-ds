@@ -1,0 +1,61 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Go, Browser } from '../start-here/_blocks'
+import tileCubes from '../start-here/patterns/tile-cubes.svg'
+import epPay from '../start-here/screens/lab-ep-pay.jpg'
+import accountV2 from '../start-here/screens/lab-account-v2.jpg'
+import bulkEdit from '../start-here/screens/lab-bulk-edit.jpg'
+import producerPortal from '../start-here/screens/lab-producer-portal.jpg'
+
+<Meta title="Eventpipe Labs/Overview" />
+
+<div className="sh">
+
+<div className="sh-band" style={{ '--sh-art': `url("${tileCubes}")` }}>
+  <div className="sh-eyebrow">Eventpipe Labs</div>
+  <h1 className="sh-h1">Experiments and early concepts</h1>
+  <p className="sh-lede">Work that is being explored on the design system but isn't specified product yet. Treat everything here as a concept until it moves into Design Requests.</p>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">What's in Labs</h2>
+  <p className="sh-sub">Four explorations. Every screen uses sample data.</p>
+  <div className="sh-grid sh-grid--2">
+    <div className="sh-card">
+      <Browser src={epPay} alt="The EP Pay dashboard" />
+      <h3 className="sh-card__title">EP Pay</h3>
+      <p className="sh-card__text">A payments product: login, dashboard, balances, transactions, disputes, developer tools and the merchant application. The Unbuilt Areas folder holds concepts with no requirements yet.</p>
+      <div className="sh-links">
+        <Go to="eventpipe-labs-ep-pay-screens-02-·-dashboard--default" story className="sh-link">Dashboard</Go>
+        <Go to="eventpipe-labs-ep-pay-screens-01-·-login--docs" className="sh-link">Login</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={accountV2} alt="The Account V2 staff sign in" />
+      <h3 className="sh-card__title">Account V2</h3>
+      <p className="sh-card__text">The platform staff sign-in and account security: sign in, email code, password reset and the emails. Authenticator app screens are kept apart as later work.</p>
+      <div className="sh-links">
+        <Go to="eventpipe-labs-account-v2-flows-01-·-sign-in--sign-in" story className="sh-link">Sign in</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={bulkEdit} alt="Bulk Reservation Edit, the reservations list" />
+      <h3 className="sh-card__title">Bulk Reservation Edit</h3>
+      <p className="sh-card__text">Select many reservations, change their fields together, confirm and review the results.</p>
+      <div className="sh-links">
+        <Go to="eventpipe-labs-bulk-reservation-edit-overview--docs" className="sh-link">Overview</Go>
+        <Go to="eventpipe-labs-bulk-reservation-edit--reservations-list" story className="sh-link">Reservations list</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={producerPortal} alt="The Event Producer Portal, Hotels tab" />
+      <h3 className="sh-card__title">Event Producer Portal</h3>
+      <p className="sh-card__text">The client-facing portal an event producer sees for their event: hotels, group blocks and reservations.</p>
+      <div className="sh-links">
+        <Go to="eventpipe-labs-event-producer-portal-overview--docs" className="sh-link">Overview</Go>
+        <Go to="event-producer-portal-event-producer-portal--prototype" story className="sh-link">Prototype</Go>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>

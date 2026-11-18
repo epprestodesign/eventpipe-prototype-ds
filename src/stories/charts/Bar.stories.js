@@ -8,7 +8,7 @@ import { cartesianArgTypes, hiddenSeriesControl, frame, mobileFrame, DARK, LIGHT
 import { CHANNEL_BOOKINGS, CHANNEL_PERIODS, LONG_LABELS, BARS_MISSING, EMPTY } from './fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Bar',
+  id: 'components-charts-bar', title: 'Design System/Components/Charts/Bar',
   component: DsBarChart,
   tags: ['autodocs'],
   parameters: {

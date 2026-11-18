@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsInput from '../../components/DsInput.vue'
 
 export default {
-  title: 'Components/Forms/Input Payment',
+  id: 'components-forms-input-payment', title: 'Design System/Components/Forms/Input Payment',
   component: DsInput,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

@@ -2,7 +2,7 @@
 import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 
-export default { title: 'Pages/16 Webhooks', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-16-webhooks', title: 'App Screens/Admin Pages/16 Webhooks', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 export const Webhooks = page({
   active: 'webhooks',

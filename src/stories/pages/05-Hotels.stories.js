@@ -4,7 +4,7 @@ import DsPageToolbar from '../../components/DsPageToolbar.vue'
 import DsStatus from '../../components/DsStatus.vue'
 import DsThumbnail from '../../components/DsThumbnail.vue'
 
-export default { title: 'Pages/05 Hotels', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-05-hotels', title: 'App Screens/Admin Pages/05 Hotels', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 // Hotel imagery pulled from the hosted imagery repo (github.com/epprestodesign/presto-ds-imagery).
 const IMG = 'https://epprestodesign.github.io/presto-ds-imagery'

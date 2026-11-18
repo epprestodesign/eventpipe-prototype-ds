@@ -4,7 +4,7 @@ import { VALUE_FORMATS, LABEL_FORMATS } from '../../../components/charts/chartFo
 import { CHECKINS_MISSING, CHANNEL_PERIODS } from '../fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Shared Elements/Data Table',
+  id: 'components-charts-shared-elements-data-table', title: 'Design System/Components/Charts/Shared Elements/Data Table',
   component: DsChartDataTable,
   tags: ['autodocs'],
   parameters: {

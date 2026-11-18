@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import DsPagination from '../../components/DsPagination.vue'
 export default {
-  title: 'Components/Navigation/Pagination',
+  id: 'components-navigation-pagination', title: 'Design System/Components/Navigation/Pagination',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

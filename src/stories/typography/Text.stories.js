@@ -2,7 +2,7 @@
 import DsText from '../../components/DsText.vue'
 
 export default {
-  title: 'Components/Typography & Content/Text',
+  id: 'components-typography-content-text', title: 'Design System/Components/Typography & Content/Text',
   component: DsText,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

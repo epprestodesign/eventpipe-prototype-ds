@@ -2,7 +2,7 @@
 import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 
-export default { title: 'Pages/07 Amenities', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-07-amenities', title: 'App Screens/Admin Pages/07 Amenities', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const amenities = [
   { name: '100% Smoke-Free Hotel', icon: 'smoke_free' },

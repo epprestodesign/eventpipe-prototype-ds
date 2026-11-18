@@ -6,7 +6,7 @@ import { cartesianArgTypes, hiddenSeriesControl, frame, mobileFrame, DARK } from
 import { REVENUE_DAILY, GROWTH_WEEKLY, ROOM_TYPES_MONTHLY, CHECKINS_MISSING, ALL_ZERO } from './fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Area',
+  id: 'components-charts-area', title: 'Design System/Components/Charts/Area',
   component: DsAreaChart,
   tags: ['autodocs'],
   parameters: {

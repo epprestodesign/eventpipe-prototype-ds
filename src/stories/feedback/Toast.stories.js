@@ -4,7 +4,7 @@
 import { useQuasar } from 'quasar'
 
 export default {
-  title: 'Components/Feedback & Status/Toast',
+  id: 'components-feedback-status-toast', title: 'Design System/Components/Feedback & Status/Toast',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

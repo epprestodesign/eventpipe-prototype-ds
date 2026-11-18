@@ -2,7 +2,7 @@
 import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 
-export default { title: 'Pages/09 Venues', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-09-venues', title: 'App Screens/Admin Pages/09 Venues', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const venues = [
   { name: '60 Acres Soccer Complex', address: '15200 NE 116th St, Redmond, WA 98052', phone: '' },

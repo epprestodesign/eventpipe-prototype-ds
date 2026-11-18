@@ -2,8 +2,9 @@
 import { ramps } from '../_tokens-data.js'
 
 export default {
-  title: 'Foundations/Palette',
-  tags: ['autodocs'],
+  id: 'foundations-palette', title: 'Design System/Foundations/Palette',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: { docs: { description: { component: `
 ## Overview
 The **primitive color palette** (Tailwind-based) — the raw hue ramps every

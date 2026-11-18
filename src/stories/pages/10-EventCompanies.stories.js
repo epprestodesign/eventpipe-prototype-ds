@@ -4,7 +4,7 @@ import DsPageToolbar from '../../components/DsPageToolbar.vue'
 import DsThumbnail from '../../components/DsThumbnail.vue'
 import logo365 from '../../assets/logo/365Logo_Horizontal.png'
 
-export default { title: 'Pages/10 Event Companies', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-10-event-companies', title: 'App Screens/Admin Pages/10 Event Companies', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const companies = [
   { name: '365 Sports Travel', location: 'Browns Summit, NC', contact: 'Kristen Sasso, (execute@365sportstravel.com), (000) 000-0000', logo: logo365 },

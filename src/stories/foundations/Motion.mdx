@@ -1,0 +1,46 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './Motion.stories.js'
+import { Go } from '../start-here/_blocks'
+import { Band, Ramp, Role, TokenValue, TypeRow, MotionDemo } from './_specimens'
+import art from '../start-here/patterns/tile-arcs.svg'
+
+export const DURATIONS = [
+  { token: '--ds-duration-instant', label: 'Instant', use: 'Hover, ripple' },
+  { token: '--ds-duration-fast', label: 'Fast', use: 'Toggles, small reveals' },
+  { token: '--ds-duration-base', label: 'Base', use: 'Menus, dialogs, tabs' },
+  { token: '--ds-duration-slow', label: 'Slow', use: 'Drawers, full-screen changes' },
+]
+export const EASINGS = [
+  { token: '--ds-ease-standard', label: 'Standard', use: 'Most transitions' },
+  { token: '--ds-ease-emphasized', label: 'Emphasized', use: 'Confirmations, with a slight overshoot' },
+  { token: '--ds-ease-decelerate', label: 'Decelerate', use: 'Elements entering' },
+  { token: '--ds-ease-accelerate', label: 'Accelerate', use: 'Elements leaving' },
+]
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Motion">Quick and purposeful. Four durations and four easing curves cover every transition, so nothing is timed by hand.</Band>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Durations</h2>
+  <p className="sh-sub">Press Play. Each dot crosses its track in that token's time.</p>
+  <MotionDemo kind="duration" rows={DURATIONS} />
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Easing</h2>
+  <p className="sh-sub">The same distance and time, with each curve. Slowed down here so the difference shows.</p>
+  <MotionDemo kind="easing" rows={EASINGS} />
+  <p className="fd-note">Quasar overlays take named transitions, such as <code>transition-show="jump-up"</code>. Motion is switched off for people who ask their system to reduce it.</p>
+</div>
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="design-system-foundations-overview--docs" className="sh-link">Back to the overview</Go>
+</div>
+
+</div>
+</Unstyled>

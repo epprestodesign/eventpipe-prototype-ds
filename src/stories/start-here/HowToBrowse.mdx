@@ -1,0 +1,120 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Go } from './_blocks'
+import heroHex from './patterns/hero-hex.svg'
+
+<Meta title="Start Here/How to browse" />
+
+<div className="sh">
+
+<div className="sh-band" style={{ '--sh-art': `url("${heroHex}")` }}>
+  <div className="sh-eyebrow">Start Here</div>
+  <h1 className="sh-h1">How to browse</h1>
+  <p className="sh-lede">The sidebar reads top to bottom in the order you'd need things: orientation, the system, the product, the work in review, then experiments.</p>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Where things are</h2>
+  <p className="sh-sub">Five folders in the sidebar, in this order.</p>
+  <div className="sh-grid sh-grid--5">
+    <div className="sh-card sh-card--flat">
+      <div className="sh-eyebrow"><span className="sh-num">1</span>You are here</div>
+      <h3 className="sh-card__title">Start Here</h3>
+      <p className="sh-card__text">The overview, this page, and the architecture and conventions for anyone building.</p>
+      <div className="sh-links"><Go to="start-here-overview--docs" className="sh-link">Overview</Go></div>
+    </div>
+    <div className="sh-card sh-card--flat">
+      <div className="sh-eyebrow"><span className="sh-num">2</span></div>
+      <h3 className="sh-card__title">Design System</h3>
+      <p className="sh-card__text">Foundations (tokens), Components (by function) and App Chrome (the app frame).</p>
+      <div className="sh-links"><Go to="design-system-components-overview--docs" className="sh-link">Components</Go></div>
+    </div>
+    <div className="sh-card sh-card--flat">
+      <div className="sh-eyebrow"><span className="sh-num">3</span></div>
+      <h3 className="sh-card__title">App Screens</h3>
+      <p className="sh-card__text">Admin Pages, numbered in the app's own menu order, and the Sign up ∕ Login flow.</p>
+      <div className="sh-links"><Go to="pages-02-events--events" story className="sh-link">Events page</Go></div>
+    </div>
+    <div className="sh-card sh-card--flat">
+      <div className="sh-eyebrow"><span className="sh-num">4</span></div>
+      <h3 className="sh-card__title">Design Requests</h3>
+      <p className="sh-card__text">Ticket-scoped design work. The newest request is at the top.</p>
+      <div className="sh-links"><Go to="design-requests-overview--docs" className="sh-link">All requests</Go></div>
+    </div>
+    <div className="sh-card sh-card--flat">
+      <div className="sh-eyebrow"><span className="sh-num">5</span></div>
+      <h3 className="sh-card__title">Eventpipe Labs</h3>
+      <p className="sh-card__text">Experiments and concepts that aren't specified product yet.</p>
+      <div className="sh-links"><Go to="eventpipe-labs-overview--docs" className="sh-link">Open Labs</Go></div>
+    </div>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Three ways to find something</h2>
+  <p className="sh-sub">Fastest first.</p>
+  <div className="sh-steps">
+    <div className="sh-step">
+      <span className="sh-step__n">1</span>
+      <div className="sh-step__title">Search by name</div>
+      <div className="sh-step__text">Press <kbd>⌘K</kbd> (or <kbd>Ctrl K</kbd>) and type a component, page or request: "table", "events", "single-team".</div>
+    </div>
+    <div className="sh-step">
+      <span className="sh-step__n">2</span>
+      <div className="sh-step__title">Filter by ticket</div>
+      <div className="sh-step__text">Design request stories are tagged with their requirement and Linear ID, such as <code>STA-1</code> or <code>ENG2-111</code>. Open the filter beside the search box and pick a tag to see everything for one ticket.</div>
+    </div>
+    <div className="sh-step">
+      <span className="sh-step__n">3</span>
+      <div className="sh-step__title">Follow the folder order</div>
+      <div className="sh-step__text">Folders are ordered on purpose, not alphabetically. An Overview is always first, numbered screens follow the flow, and the newest request sits at the top of Design Requests.</div>
+    </div>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">How a design request is laid out</h2>
+  <p className="sh-sub">Every request uses the same folders, so you always know where to look.</p>
+  <div className="sh-grid">
+    <div className="sh-card">
+      <div className="sh-eyebrow">First</div>
+      <h3 className="sh-card__title">Overview</h3>
+      <p className="sh-card__text">What was asked, what was designed, and where each requirement is covered. Older requests call this Requirements Coverage or Introduction.</p>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">Then</div>
+      <h3 className="sh-card__title">Prototype</h3>
+      <p className="sh-card__text">The whole flow, clickable end to end. Concepts sit here too when a decision is still open.</p>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">Then</div>
+      <h3 className="sh-card__title">Screens</h3>
+      <p className="sh-card__text">One numbered folder per screen, with a story for each state worth reviewing.</p>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">Last</div>
+      <h3 className="sh-card__title">Components</h3>
+      <p className="sh-card__text">The pieces built for the request, each on its own, plus References for today's production screens.</p>
+    </div>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Reading a page</h2>
+  <p className="sh-sub">Each component and screen has a Docs page and a Canvas.</p>
+  <div className="sh-grid sh-grid--3">
+    <div className="sh-card">
+      <h3 className="sh-card__title">Docs</h3>
+      <p className="sh-card__text">The page icon in the sidebar. Usage notes, every variant on one page, and the props table.</p>
+    </div>
+    <div className="sh-card">
+      <h3 className="sh-card__title">Canvas</h3>
+      <p className="sh-card__text">One story on its own. Use Controls underneath to change props, and the toolbar to switch the background or the light and dark theme.</p>
+    </div>
+    <div className="sh-card">
+      <h3 className="sh-card__title">Links</h3>
+      <p className="sh-card__text">Copy the address bar to share any page. Story links keep working when folders move, and links to moved overview pages are redirected.</p>
+    </div>
+  </div>
+</div>
+
+</div>

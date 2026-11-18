@@ -2,7 +2,7 @@
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
 
 export default {
-  title: 'Components/Layout & Structure/Info Grid',
+  id: 'components-layout-structure-info-grid', title: 'Design System/Components/Layout & Structure/Info Grid',
   component: DsInfoGrid,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

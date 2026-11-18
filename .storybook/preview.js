@@ -60,111 +60,74 @@ const preview = {
     // "Catalog" at the bottom for reference during migration.
     options: {
       storySort: {
+        // Five roots, in reading order: orientation, the system, the product
+        // built from it, the in-flight ticket work, then experiments. Folders
+        // moved here on 2026-11-18 keep their original story ids (each CSF
+        // meta pins `id`), so links shared before the move still resolve.
         order: [
-          'Getting Started',
-          'Foundations',
-          'Components', [
-            'Overview',
-            'Actions', 'Navigation', 'Forms', 'Feedback & Status',
-            'Layout & Structure', 'Media & Visuals', 'Typography & Content',
-            // Charts: ordered by chart type, then shared building blocks, then
-            // the renderer research (experimental) last.
-            'Charts', [
-              'Overview', 'Line', 'Area', 'Bar', 'Bar List', 'Stacked Bar', 'Donut', 'Sparkline', 'Metric Card',
-              'Shared Elements', ['Chart Card', 'Header', 'Legend', 'Tooltip', 'States', 'Data Table'],
-              'Research', ['Renderer Comparison'],
+          'Start Here', ['Overview', 'How to browse', 'Architecture & Conventions'],
+          'Design System', [
+            // Tokens in the order a screen is built: colour, type, symbols,
+            // then space and shape, then behaviour.
+            'Foundations', [
+              'Overview',
+              'Palette', 'Colors', 'Typography', 'Icons', 'Logos', 'Imagery',
+              'Spacing', 'Border Radius', 'Elevation', 'Breakpoints', 'Motion',
+            ],
+            'Components', [
+              'Overview',
+              'Actions', 'Navigation', 'Forms', 'Feedback & Status',
+              'Layout & Structure', 'Media & Visuals', 'Typography & Content',
+              // Charts: ordered by chart type, then shared building blocks, then
+              // the renderer research (experimental) last.
+              'Charts', [
+                'Overview', 'Line', 'Area', 'Bar', 'Bar List', 'Stacked Bar', 'Donut', 'Sparkline', 'Metric Card',
+                'Shared Elements', ['Chart Card', 'Header', 'Legend', 'Tooltip', 'States', 'Data Table'],
+                'Research', ['Renderer Comparison'],
+              ],
+            ],
+            'App Chrome', ['App Shell', 'App Bar', 'Page Header', 'Save Bar'],
+          ],
+          'App Screens', [
+            'Admin Pages', [
+              '01 Users', '02 Events', '03 Pickup Reports', '04 Reports', '05 Hotels',
+              '06 Hotel Brands', '07 Amenities', '08 Room Types', '09 Venues', '10 Event Companies',
+              '11 Companies', '12 Requests', '14 Admin Tools', '15 Pipe Tools', '16 Webhooks',
+              '17 Company Settings', 'Drafts',
+            ],
+            // Sign up ∕ Login (formerly Account) — the EventPipe log in, merged with
+            // Account V1 on 2026-10-01; renamed the same day. The "∕" is U+2215, not
+            // "/", which Storybook would read as a folder separator.
+            // The full flow first, then the left-rail treatments, then every
+            // right-panel screen. Account V2 (staff login) is separate, in Labs.
+            'Sign up ∕ Login', [
+              'Overview',
+              'Full flow',
+              'Left rail',
+              'Right panel', ['Sign up', 'Log in', 'MFA methods', 'Forgot password'],
             ],
           ],
-          'App Chrome',
-          // Sign up ∕ Login (formerly Account) — the EventPipe log in, merged with
-          // Account V1 on 2026-10-01; renamed the same day. The "∕" is U+2215, not
-          // "/", which Storybook would read as a folder separator.
-          // The full flow first, then the left-rail treatments, then every
-          // right-panel screen. Account V2 (staff login) is separate, below.
-          'Sign up ∕ Login', [
-            'Overview',
-            'Full flow',
-            'Left rail',
-            'Right panel', ['Sign up', 'Log in', 'MFA methods', 'Forgot password'],
-          ],
-          'Pages', [
-            '01 Users', '02 Events', '03 Pickup Reports', '04 Reports', '05 Hotels',
-            '06 Hotel Brands', '07 Amenities', '08 Room Types', '09 Venues', '10 Event Companies',
-            '11 Companies', '12 Requests', '14 Admin Tools', '15 Pipe Tools', '16 Webhooks',
-            '17 Company Settings', 'Drafts',
-          ],
+          // Most recent request first, oldest last, by the date each one started.
           'Design Requests', [
-            // Phase 1 (formerly "DES-207 Communications | Email Template
-            // Editor") sits above Phase 2 so the two read in the order the work
-            // happened.
-            'Teams Mgmt Comms Phase 1', [
-              'V1 · Notifications Preferences',
-              'V2 · Configured Template',
-              'Components',
-            ],
-            'Teams Mgmt Comms Phase 2', [
-              'Requirements Coverage',
-              'First-Time Setup', [
-                'Notification Preferences',
-                'Default Emails',
-              ],
-              'Screens', [
-                'Notification Preferences',
-                'Company Settings',
-                'Event Registration Settings',
-                'Team Detail',
-              ],
-              // Components are grouped by the screen they belong to, in the same
-              // order as Screens above, so the two halves of the sidebar read
-              // against each other.
+            'Overview',
+            // Single-Team Add and Delete (P-ENG2-251) — started 2026-11-07.
+            'Single-Team Add and Delete', [
+              'Overview',
+              'Prototype',
+              'Screens', ['01 · Compliance List', '02 · Team Edit · Create Mode', '03 · Team Edit · Delete', '04 · Event Activity Logs', '05 · Event Reconciliation'],
               'Components', [
-                'Notification Preferences',
-                'Company Settings',
-                'Event Registration Settings',
-                'Team Detail',
+                'Add-Update Teams Button', 'Event Field', 'Team Details Form', 'Team Edit Header',
+                'Delete Team Placement', 'Delete Confirmation Modal', 'Auto-Generated Note', 'Activity Log Entry', 'Delete Success Message',
               ],
             ],
-            // Aug 19 · full duplicate of Phase 2, taken at 55e7672, kept as a
-            // separate sandbox so edits there cannot disturb the delivered
-            // Phase 2 screens. Same internal ordering as Phase 2 above.
-            'Aug 19', [
-              'Requirements Coverage',
-              // Concepts sit above the built screens: they are the open
-              // questions, and burying them under the settled work is how they
-              // stop getting looked at.
-              'Concepts',
-              'First-Time Setup', [
-                'Notification Preferences',
-                'Default Emails',
-              ],
-              'Screens', [
-                'Notification Preferences',
-                'Company Settings',
-                'Event Registration Settings',
-                'Team Detail',
-              ],
-              'Components', [
-                // Shared first: it holds the reusable pieces the screen-specific
-                // groups below all draw on.
-                'Shared',
-                'Notification Preferences',
-                'Company Settings',
-                'Event Registration Settings',
-                'Team Detail',
-              ],
+            // Team Name Qualifiers — started 2026-10-07. The admin Registration Settings
+            // half of the request; the guest checkout is built in another repo.
+            'Team Name Qualifiers', [
+              'Overview',
+              'Screens', ['Registration Settings'],
+              'Components', ['Qualifier Panel', 'Expiration Field'],
             ],
-            'Multiple Secondary Fees', [
-              'Requirements Coverage',
-              // Screens first (the proposal), then the current-state baseline
-              // they're read against.
-              'Screens', [
-                '01 · Event Fees',
-                '02 · Hotel Sync Settings',
-                '03 · Housing Company Policies',
-                '04 · Reservation Summary',
-              ],
-              'References',
-            ],
+            // GB Reminder Controls (PP-42/43/44) — started 2026-09-09.
             'GB Reminder Controls', [
               'Introduction',
               'Requirements Coverage',
@@ -201,23 +164,72 @@ const preview = {
                 'References',
               ],
             ],
-            // Single-Team Add and Delete (P-ENG2-251, 2026-11-06) — draft designs.
-            'Single-Team Add and Delete', [
-              'Overview',
-              'Prototype',
-              'Screens', ['01 · Compliance List', '02 · Team Edit · Create Mode', '03 · Team Edit · Delete', '04 · Event Activity Logs', '05 · Event Reconciliation'],
+            // Aug 19 — started 2026-08-19. A full duplicate of Teams Mgmt Comms Phase 2,
+            // taken at 55e7672 and kept as a separate sandbox so edits there cannot
+            // disturb the delivered Phase 2 screens. Same internal ordering as Phase 2.
+            'Aug 19', [
+              'Requirements Coverage',
+              // Concepts sit above the built screens: they are the open
+              // questions, and burying them under the settled work is how they
+              // stop getting looked at.
+              'Concepts',
+              'First-Time Setup', [
+                'Notification Preferences',
+                'Default Emails',
+              ],
+              'Screens', [
+                'Notification Preferences',
+                'Company Settings',
+                'Event Registration Settings',
+                'Team Detail',
+              ],
               'Components', [
-                'Add-Update Teams Button', 'Event Field', 'Team Details Form', 'Team Edit Header',
-                'Delete Team Placement', 'Delete Confirmation Modal', 'Auto-Generated Note', 'Activity Log Entry', 'Delete Success Message',
+                // Shared first: it holds the reusable pieces the screen-specific
+                // groups below all draw on.
+                'Shared',
+                'Notification Preferences',
+                'Company Settings',
+                'Event Registration Settings',
+                'Team Detail',
               ],
             ],
-            // Team Name Qualifiers (2026-10-07) — the admin Registration Settings
-            // half of the request; the guest checkout is built in another repo.
-            'Team Name Qualifiers', [
-              'Overview',
-              'Screens', ['Registration Settings'],
-              'Components', ['Qualifier Panel', 'Expiration Field'],
+            // Multiple Secondary Fees (DES-451/452/456) — started 2026-08-11.
+            'Multiple Secondary Fees', [
+              'Requirements Coverage',
+              // Screens first (the proposal), then the current-state baseline
+              // they're read against.
+              'Screens', [
+                '01 · Event Fees',
+                '02 · Hotel Sync Settings',
+                '03 · Housing Company Policies',
+                '04 · Reservation Summary',
+              ],
+              'References',
             ],
+            // Teams Mgmt Comms Phase 2 — started 2026-08-05.
+            'Teams Mgmt Comms Phase 2', [
+              'Requirements Coverage',
+              'First-Time Setup', [
+                'Notification Preferences',
+                'Default Emails',
+              ],
+              'Screens', [
+                'Notification Preferences',
+                'Company Settings',
+                'Event Registration Settings',
+                'Team Detail',
+              ],
+              // Components are grouped by the screen they belong to, in the same
+              // order as Screens above, so the two halves of the sidebar read
+              // against each other.
+              'Components', [
+                'Notification Preferences',
+                'Company Settings',
+                'Event Registration Settings',
+                'Team Detail',
+              ],
+            ],
+            // DES-95 Customized Page Revamp — started 2026-07-16.
             'DES-95 Customized Page Revamp', [
               'Customized Event Site Edits 072426',
               'References', [
@@ -230,13 +242,19 @@ const preview = {
                 'Rob Concept #1',
               ],
             ],
+            // Teams Mgmt Comms Phase 1 — started 2026-07-07. Formerly "DES-207
+            // Communications | Email Template Editor".
+            'Teams Mgmt Comms Phase 1', [
+              'V1 · Notifications Preferences',
+              'V2 · Configured Template',
+              'Components',
+            ],
           ],
           '*',
-          // Experimental workspaces — pinned to the very bottom (after the wildcard).
-          'Event Producer Portal',
           // Experimental work lives under Eventpipe Labs: Account V2 and EP Pay
           // joined Bulk Reservation Edit here on 2026-10-01.
           'Eventpipe Labs', [
+            'Overview',
             'Bulk Reservation Edit',
             // Account V2 — the platform staff sign-in and account security from
             // Linear P-ENG-228 (Auth: Login Refactor to Blitz + MFA). Flows are
@@ -282,6 +300,8 @@ const preview = {
               ],
               'Components',
             ],
+            // Event Producer Portal — moved into Eventpipe Labs on 2026-11-18.
+            'Event Producer Portal', ['Overview'],
           ],
         ],
       },

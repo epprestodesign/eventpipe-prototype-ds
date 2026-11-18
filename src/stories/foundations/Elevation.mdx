@@ -1,0 +1,53 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './Elevation.stories.js'
+import { Go } from '../start-here/_blocks'
+import { Band, Ramp, Role, TokenValue, TypeRow, MotionDemo } from './_specimens'
+import art from '../start-here/patterns/tile-cubes.svg'
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Elevation">Shadows show what sits above what. Four levels, plus the soft glow production cards use.</Band>
+
+<div className="sh-section">
+  <h2 className="sh-h2">The levels</h2>
+  <p className="sh-sub">Pick the level by what the surface is, and keep it consistent.</p>
+  <div className="fd-stage">
+    <div className="fd-lift" style={{ boxShadow: 'var(--ds-shadow-1)' }}>
+      <span className="fd-type__label">Level 1</span>
+      <code>--ds-shadow-1</code>
+      <span className="fd-lift__use">Resting cards, list rows</span>
+    </div>
+    <div className="fd-lift" style={{ boxShadow: 'var(--ds-shadow-2)' }}>
+      <span className="fd-type__label">Level 2</span>
+      <code>--ds-shadow-2</code>
+      <span className="fd-lift__use">Raised cards, menus, popovers</span>
+    </div>
+    <div className="fd-lift" style={{ boxShadow: 'var(--ds-shadow-3)' }}>
+      <span className="fd-type__label">Level 3</span>
+      <code>--ds-shadow-3</code>
+      <span className="fd-lift__use">Dialogs, drawers</span>
+    </div>
+    <div className="fd-lift" style={{ boxShadow: 'var(--ds-shadow-4)' }}>
+      <span className="fd-type__label">Level 4</span>
+      <code>--ds-shadow-4</code>
+      <span className="fd-lift__use">Modals over content</span>
+    </div>
+    <div className="fd-lift" style={{ boxShadow: 'var(--ds-shadow-card)' }}>
+      <span className="fd-type__label">Card glow</span>
+      <code>--ds-shadow-card</code>
+      <span className="fd-lift__use">The soft, even glow on production cards</span>
+    </div>
+  </div>
+  <p className="fd-note">Quasar's <code>.shadow-1</code> to <code>.shadow-24</code> classes still work for edge cases. Prefer these tokens.</p>
+</div>
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="foundations-breakpoints--docs" className="sh-link">Next: Breakpoints</Go>
+</div>
+
+</div>
+</Unstyled>

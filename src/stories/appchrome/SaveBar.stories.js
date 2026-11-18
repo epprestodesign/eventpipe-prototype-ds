@@ -2,7 +2,7 @@
 import DsSaveBar from '../../components/DsSaveBar.vue'
 
 export default {
-  title: 'App Chrome/Save Bar',
+  id: 'app-chrome-save-bar', title: 'Design System/App Chrome/Save Bar',
   component: DsSaveBar,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

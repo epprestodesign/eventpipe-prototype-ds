@@ -1,0 +1,189 @@
+/* The hand-designed docs pages: Start Here, and the Design Requests and Labs
+ * overviews. Everything is scoped under .sh so no story or other docs page is
+ * touched. Brand values mirror the DS tokens (Azure, EventPipe navy, teal).
+ *
+ * Every rule is written ".sh .sh-x" on purpose: Storybook's docs wrapper styles
+ * bare tags (div, h2, img, a) with one class of specificity, and a single
+ * ".sh-x" would lose to it. */
+.sh {
+  --sh-navy: #01113E;
+  --sh-azure: #2561FA;
+  --sh-teal: #15AEB3;
+  --sh-teal-ink: #0A7C80;        /* teal dark enough for small text on white */
+  --sh-ink: #1B2437;
+  --sh-muted: #566074;
+  --sh-line: #E1E7F2;
+  --sh-tint: #F8FAFF;
+  font-family: 'Product Sans', 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--sh-ink);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.sh *, .sh *::before, .sh *::after { box-sizing: border-box; }
+.sh p { margin: 0; }
+.sh a { text-decoration: none; }
+.sh img { display: block; max-width: 100%; }
+
+/* ---- Type ------------------------------------------------------------- */
+.sh .sh-eyebrow {
+  font-size: 12.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--sh-teal-ink);
+}
+.sh .sh-h1 {
+  margin: 10px 0 14px; font-size: clamp(30px, 3.8vw, 42px); line-height: 1.1; font-weight: 700;
+  letter-spacing: -0.01em; color: var(--sh-navy); border: 0; padding: 0;
+}
+.sh .sh-lede { font-size: 17.5px; line-height: 1.6; color: var(--sh-muted); max-width: 34em; }
+.sh .sh-section { margin-top: 56px; }
+.sh .sh-h2 {
+  margin: 0 0 6px; font-size: 26px; line-height: 1.2; font-weight: 700; color: var(--sh-navy);
+  border: 0; padding: 0;
+}
+.sh .sh-sub { font-size: 16px; color: var(--sh-muted); max-width: 44em; margin-bottom: 22px !important; }
+
+/* ---- Links & buttons --------------------------------------------------- */
+.sh .sh-link {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 14.5px; font-weight: 700;
+  color: var(--sh-azure);
+}
+.sh .sh-link::after { content: '→'; transition: transform 0.15s ease; }
+.sh .sh-link:hover::after { transform: translateX(3px); }
+.sh .sh-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; }
+.sh .sh-btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 20px;
+  border-radius: 999px; font-size: 15px; font-weight: 700; border: 1px solid transparent;
+  transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.sh .sh-btn--primary { background: var(--sh-azure); color: #fff !important; }
+.sh .sh-btn--primary:hover { background: #1B4FDB; box-shadow: 0 6px 16px rgba(37, 97, 250, 0.28); }
+.sh .sh-btn--ghost { background: #fff; color: var(--sh-navy) !important; border-color: #C9D3E6; }
+.sh .sh-btn--ghost:hover { border-color: var(--sh-navy); }
+.sh .sh-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+
+/* ---- Chips ------------------------------------------------------------- */
+.sh .sh-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.sh .sh-chip {
+  display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 999px;
+  background: #fff; border: 1px solid #CFD8EA; font-size: 13.5px; font-weight: 600; color: var(--sh-navy);
+}
+.sh .sh-chip--teal { background: #E6F6F6; border-color: #BFE7E8; color: #075E61; }
+.sh .sh-chip--azure { background: #EAF0FF; border-color: #C9D7FE; color: #1B47C2; }
+.sh .sh-chip--quiet { background: #F1F3F8; border-color: #E1E5EE; color: #4A5468; }
+
+/* ---- Hero --------------------------------------------------------------- */
+.sh .sh-hero {
+  position: relative; overflow: hidden; border: 1px solid var(--sh-line); border-radius: 20px;
+  background-color: var(--sh-tint);
+}
+.sh .sh-hero__art {
+  position: absolute; top: 0; right: 0; width: 100%; aspect-ratio: 21 / 9;
+  background-repeat: no-repeat; background-position: right top; background-size: cover;
+}
+.sh .sh-hero__text, .sh .sh-stage { position: relative; }
+.sh .sh-hero__text { padding: 48px 44px 0; max-width: 540px; z-index: 1; }
+.sh .sh-hero__note {
+  margin: 0 !important; padding: 14px 44px; border-top: 1px solid var(--sh-line); background: #fff;
+  font-size: 14px; color: var(--sh-muted);
+}
+/* A smaller band for inner pages. */
+.sh .sh-band {
+  position: relative; overflow: hidden; border-radius: 20px; border: 1px solid var(--sh-line);
+  background-color: var(--sh-tint); padding: 40px 44px; min-height: 230px;
+}
+/* The pattern (--sh-art, set inline) sits on the right and fades in, so it
+   never runs behind the text. */
+.sh .sh-band::before {
+  content: ''; position: absolute; inset: 0 0 0 auto; width: 46%;
+  background: var(--sh-art) right center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 45%);
+  mask-image: linear-gradient(90deg, transparent, #000 45%);
+}
+.sh .sh-band > * { position: relative; max-width: 560px; }
+
+/* ---- Devices ------------------------------------------------------------ */
+.sh .sh-shot { width: 100%; height: auto; margin: 0; border: 0; }
+.sh .sh-browser .sh-shot { aspect-ratio: 16 / 10; object-fit: cover; object-position: left top; }
+.sh .sh-stage { padding: 44px 44px 40px; }
+.sh .sh-stage__row { display: flex; align-items: flex-end; justify-content: center; }
+/* The hero's device: one laptop, centred. */
+.sh .sh-stage .sh-laptop { flex: 0 0 80%; }
+
+/* Photoreal frame: the screenshot sits behind the frame's cut-out screen. */
+.sh .sh-device { position: relative; }
+.sh .sh-device__frame { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; pointer-events: none; }
+.sh .sh-device__screen { position: absolute; margin: 0; object-fit: cover; object-position: center top; background: #fff; }
+.sh .sh-laptop { filter: drop-shadow(0 22px 24px rgba(1, 17, 62, 0.18)); }
+
+.sh .sh-browser {
+  border-radius: 10px; overflow: hidden; background: #fff; border: 1px solid #DCE2EE;
+  box-shadow: 0 10px 26px rgba(1, 17, 62, 0.09);
+}
+.sh .sh-browser__bar { display: flex; gap: 5px; align-items: center; height: 22px; padding: 0 10px; background: #F4F6FA; border-bottom: 1px solid #E4E9F2; }
+.sh .sh-browser__bar i { width: 7px; height: 7px; border-radius: 50%; background: #CBD2E0; }
+
+/* ---- Cards -------------------------------------------------------------- */
+.sh .sh-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.sh .sh-grid--2 { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; }
+.sh .sh-grid--5 { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.sh .sh-grid--3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.sh .sh-card {
+  display: flex; flex-direction: column; padding: 22px; border: 1px solid var(--sh-line); border-radius: 14px;
+  background: #fff; transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+.sh .sh-card:hover { border-color: #C5D0E6; box-shadow: 0 10px 26px rgba(1, 17, 62, 0.08); transform: translateY(-2px); }
+.sh .sh-card__title { margin: 6px 0 6px !important; font-size: 19px; line-height: 1.3; font-weight: 700; color: var(--sh-navy); }
+.sh .sh-card__text { font-size: 15px; color: var(--sh-muted); }
+.sh .sh-card .sh-links { margin-top: auto; padding-top: 14px; }
+.sh .sh-card--flat { background: var(--sh-tint); }
+.sh .sh-card > .sh-browser { margin-bottom: 4px; box-shadow: 0 8px 20px rgba(1, 17, 62, 0.1); }
+.sh .sh-card > .sh-chips { margin-top: 14px; }
+.sh .sh-card > .sh-chips + .sh-card__title { margin-top: 10px !important; }
+
+/* Area card: a pattern strip with a framed screenshot lifted over it. */
+.sh .sh-area { padding: 0; overflow: hidden; }
+.sh .sh-area__art { height: 176px; background-size: cover; background-position: center; }
+.sh .sh-area__screen { margin: -96px 28px 0; }
+.sh .sh-area__body { display: flex; flex-direction: column; flex: 1; padding: 20px 24px 24px; }
+.sh .sh-num {
+  display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; margin-right: 8px;
+  border-radius: 50%; background: var(--sh-navy); color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 0;
+}
+
+/* ---- Pills: a compact index of links (the Components overview) ---------- */
+.sh .sh-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.sh .sh-pill {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid #D5DDEC; background: #fff; font-size: 14px; font-weight: 600; color: var(--sh-navy);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.sh .sh-pill:hover { background: #EAF0FF; border-color: #B7C8FD; color: #1B47C2; }
+
+/* ---- Steps / list rows --------------------------------------------------- */
+.sh .sh-steps { display: grid; gap: 0; border: 1px solid var(--sh-line); border-radius: 14px; overflow: hidden; background: #fff; }
+.sh .sh-step { display: grid; grid-template-columns: 44px 1fr; gap: 4px 12px; padding: 18px 22px; }
+.sh .sh-step + .sh-step { border-top: 1px solid var(--sh-line); }
+.sh .sh-step__n {
+  grid-row: span 2; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: #EAF0FF; color: #1B47C2; font-weight: 700; font-size: 14px;
+}
+.sh .sh-step__title { font-weight: 700; color: var(--sh-navy); font-size: 16.5px; }
+.sh .sh-step__text { font-size: 15px; color: var(--sh-muted); }
+.sh kbd, .sh code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.86em; padding: 1px 6px; border-radius: 5px;
+  background: #EEF1F7; border: 1px solid #DDE3EE; color: var(--sh-navy);
+}
+
+/* ---- Brand swatches ------------------------------------------------------- */
+.sh .sh-swatches { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.sh .sh-swatch { border: 1px solid var(--sh-line); border-radius: 12px; overflow: hidden; background: #fff; }
+.sh .sh-swatch__chip { height: 64px; }
+.sh .sh-swatch__meta { padding: 10px 12px 12px; }
+.sh .sh-swatch__name { font-weight: 700; font-size: 14.5px; color: var(--sh-navy); }
+.sh .sh-swatch__val { font-size: 13.5px; color: var(--sh-muted); }
+
+@media (max-width: 720px) {
+  .sh .sh-hero__text, .sh .sh-stage, .sh .sh-band { padding-left: 24px; padding-right: 24px; }
+  .sh .sh-hero { background-size: auto 34%; }
+  .sh .sh-hero__note { padding-left: 24px; padding-right: 24px; }
+  .sh .sh-grid--2 { grid-template-columns: 1fr; }
+}

@@ -69,27 +69,38 @@ node scripts/gen-tokens-data.mjs
 The sidebar is ordered the way product & design think (set in `.storybook/preview.js`
 `storySort`). Top-level sections:
 
-- **Getting Started** — Introduction, Architecture & Conventions, Components Overview.
-- **Foundations** — tokens made visible: Palette, Colors, Typography, Icons, Logos,
-  Imagery, Elevation, Spacing, Border Radius, Breakpoints, Motion.
-- **Components** — the reusable library, grouped by **function** (Polaris-style):
-  Actions · Navigation · Forms · Feedback & Status · Layout & Structure ·
-  Media & Visuals · Typography & Content.
-- **App Chrome** — full-screen scaffolds: App Bar, App Shell, Page Header, Save Bar.
-- **Account** — auth surfaces: Log in, Sign up, Forgot password, Verification.
-- **Pages** — complete admin screens composed from the library: Users, Events,
-  Pickup Reports, Reports, Hotels, Hotel Brands, Amenities, Room Types, Venues,
-  Event Companies, Companies, Requests, Admin Tools, Pipe Tools, Webhooks,
-  Company Settings.
-- **Design Requests** — ticket-scoped design work: Teams Mgmt Comms (Phase 1 &
-  2), Aug 19, DES-95 Customized Page Revamp, Multiple Secondary Fees
-  (DES-451/452/456), and GB Reminder Controls (PP-42/43/44).
-- **Account V2** — the EventPipe platform staff sign-in and account security,
+- **Start Here** — Overview, How to browse, Architecture & Conventions.
+- **Design System**
+  - **Foundations** — tokens made visible: Palette, Colors, Typography, Icons,
+    Logos, Imagery, Spacing, Border Radius, Elevation, Breakpoints, Motion.
+  - **Components** — the reusable library, grouped by **function**
+    (Polaris-style): Actions · Navigation · Forms · Feedback & Status ·
+    Layout & Structure · Media & Visuals · Typography & Content · Charts.
+  - **App Chrome** — full-screen scaffolds: App Shell, App Bar, Page Header,
+    Save Bar.
+- **App Screens**
+  - **Admin Pages** — complete admin screens composed from the library: Users,
+    Events, Pickup Reports, Reports, Hotels, Hotel Brands, Amenities, Room Types,
+    Venues, Event Companies, Companies, Requests, Admin Tools, Pipe Tools,
+    Webhooks, Company Settings.
+  - **Sign up ∕ Login** — the EventPipe log in, sign up, MFA and forgot password.
+- **Design Requests** — ticket-scoped design work, newest first: Single-Team Add
+  and Delete (P-ENG2-251), Team Name Qualifiers, GB Reminder Controls
+  (PP-42/43/44), Multiple Secondary Fees (DES-451/452/456), Teams Mgmt Comms
+  (Phase 2, its Aug 19 copy, and Phase 1), DES-95 Customized Page Revamp.
+- **Eventpipe Labs** — experiments: Bulk Reservation Edit, Account V2, EP Pay and
+  the Event Producer Portal.
+
+Folders were regrouped on 2026-11-18. Every story pins its original `id`, so
+links shared before then still open; the few standalone overview pages that
+moved are redirected (`MOVED` in `.storybook/manager.js`).
+
+- **Account V2** (in Eventpipe Labs) — the EventPipe platform staff sign-in and account security,
   designed against Linear P-ENG-228 (Auth: Login Refactor to Blitz + MFA):
   sign in, the emailed MFA code, forgot/set password (reset + invite), account
   security, the "MFA is coming" banner and the six auth emails. Authenticator
   apps (ENG-3033) sit in a separate "Later" group. Desktop web only.
-- **EP Pay** — the payments product: dashboard, balances, transactions,
+- **EP Pay** (in Eventpipe Labs) — the payments product: dashboard, balances, transactions,
   disputes, developer tools and the merchant application wizard, plus concept
   designs for five areas with no requirements yet (Customers, Payment Links,
   Products, Subscriptions, Invoicing). A clickable prototype is published at
@@ -103,7 +114,7 @@ The sidebar is ordered the way product & design think (set in `.storybook/previe
 > *structure* of each screen and nothing else; colour, type, spacing and
 > components come from the design system.
 
-> A story's sidebar placement comes from its `title` (e.g. `Components/Forms/Input`),
+> A story's sidebar placement comes from its `title` (e.g. `Design System/Components/Forms/Input`),
 > not its source folder.
 
 ## Imagery — using it in Claude prototypes

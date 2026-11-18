@@ -10,7 +10,7 @@
 import EventProducerPortalFlow from '../../components/EventProducerPortalFlow.vue'
 
 export default {
-  title: 'Event Producer Portal/Event Producer Portal',
+  id: 'event-producer-portal-event-producer-portal', title: 'Eventpipe Labs/Event Producer Portal/Event Producer Portal',
   component: EventProducerPortalFlow,
   parameters: { layout: 'fullscreen' },
 }

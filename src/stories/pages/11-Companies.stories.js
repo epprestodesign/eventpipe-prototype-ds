@@ -9,7 +9,7 @@ const companyLogos = Object.entries(import.meta.glob('../../assets/logo/batch_07
   .filter(([path]) => !path.includes('TTS-Logo-e1749152469615'))
   .map(([, src]) => src)
 
-export default { title: 'Pages/11 Companies', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-11-companies', title: 'App Screens/Admin Pages/11 Companies', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const companies = [
   { name: '288 Sports Group LLC', location: 'Richmond, VA', website: 'https://www.288travel.com' },

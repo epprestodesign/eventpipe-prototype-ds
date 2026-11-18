@@ -10,7 +10,7 @@ import {
 } from './fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Line',
+  id: 'components-charts-line', title: 'Design System/Components/Charts/Line',
   component: DsLineChart,
   tags: ['autodocs'],
   parameters: {

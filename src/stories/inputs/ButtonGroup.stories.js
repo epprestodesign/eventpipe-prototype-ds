@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 export default {
-  title: 'Components/Actions/Button Group',
+  id: 'components-actions-button-group', title: 'Design System/Components/Actions/Button Group',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 A set of related actions or a segmented toggle, joined into a single control.

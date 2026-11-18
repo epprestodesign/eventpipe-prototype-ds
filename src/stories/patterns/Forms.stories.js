@@ -1,7 +1,7 @@
 /** PATTERNS / Forms → QForm + inputs + validation (composition) */
 import { ref } from 'vue'
 export default {
-  title: 'Components/Forms/Form Example',
+  id: 'components-forms-form-example', title: 'Design System/Components/Forms/Form Example',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

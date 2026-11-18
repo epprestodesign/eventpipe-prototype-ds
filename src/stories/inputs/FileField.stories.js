@@ -6,7 +6,7 @@ import { ref } from 'vue'
 import DsFileField from '../../components/DsFileField.vue'
 
 export default {
-  title: 'Components/Forms/File Field',
+  id: 'components-forms-file-field', title: 'Design System/Components/Forms/File Field',
   component: DsFileField,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

@@ -1,6 +1,6 @@
 /** NAVIGATION / Breadcrumbs → Quasar: QBreadcrumbs + QBreadcrumbsEl (native) */
 export default {
-  title: 'Components/Navigation/Breadcrumbs',
+  id: 'components-navigation-breadcrumbs', title: 'Design System/Components/Navigation/Breadcrumbs',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

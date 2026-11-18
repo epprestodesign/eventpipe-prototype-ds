@@ -2,7 +2,7 @@
 import DsSectionHeader from '../../components/DsSectionHeader.vue'
 
 export default {
-  title: 'Components/Layout & Structure/Card Headers',
+  id: 'components-layout-structure-card-headers', title: 'Design System/Components/Layout & Structure/Card Headers',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 Header rows for cards and panels — title (+ optional subtitle) with trailing

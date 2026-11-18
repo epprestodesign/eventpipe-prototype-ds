@@ -1,7 +1,7 @@
 /** LAYOUT / Box → custom DsBox (no Quasar equivalent) */
 import DsBox from '../../components/DsBox.vue'
 export default {
-  title: 'Components/Layout & Structure/Box',
+  id: 'components-layout-structure-box', title: 'Design System/Components/Layout & Structure/Box',
   component: DsBox,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

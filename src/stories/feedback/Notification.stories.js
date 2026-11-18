@@ -6,7 +6,7 @@ import { ref } from 'vue'
 import DsNotification from '../../components/DsNotification.vue'
 
 export default {
-  title: 'Components/Feedback & Status/Notification',
+  id: 'components-feedback-status-notification', title: 'Design System/Components/Feedback & Status/Notification',
   component: DsNotification,
   tags: ['autodocs'],
   argTypes: {

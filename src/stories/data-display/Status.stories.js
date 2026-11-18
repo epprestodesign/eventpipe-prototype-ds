@@ -2,7 +2,7 @@
 import DsStatus from '../../components/DsStatus.vue'
 
 export default {
-  title: 'Components/Feedback & Status/Status',
+  id: 'components-feedback-status-status', title: 'Design System/Components/Feedback & Status/Status',
   component: DsStatus,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

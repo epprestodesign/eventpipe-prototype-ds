@@ -6,7 +6,7 @@ import { frame, DARK } from '../_shared.js'
 import { CHANNEL_PERIODS } from '../fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Shared Elements/Chart Card',
+  id: 'components-charts-shared-elements-chart-card', title: 'Design System/Components/Charts/Shared Elements/Chart Card',
   component: DsChartCard,
   tags: ['autodocs'],
   parameters: {

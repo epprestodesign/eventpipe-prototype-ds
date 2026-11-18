@@ -15,7 +15,7 @@ import { REVENUE_MONTHLY, CHECKINS_MISSING, CHANNEL_PERIODS, DENSE_DAILY } from 
 const BRIEF = 'Brief: DS tokens only · categorical slot 1 for the current series · neutral dashed comparison series · 2px lines · recessive grid · compact currency axis · tooltip with every series, "No data" for gaps · missing values as gaps · 280px plot height, container width.'
 
 export default {
-  title: 'Components/Charts/Research/Renderer Comparison',
+  id: 'components-charts-research-renderer-comparison', title: 'Design System/Components/Charts/Research/Renderer Comparison',
   tags: ['autodocs', 'experimental'],
   parameters: {
     layout: 'padded',

@@ -1,6 +1,6 @@
 /** DATA DISPLAY / Badge → Quasar: QBadge (native) */
 export default {
-  title: 'Components/Feedback & Status/Badge',
+  id: 'components-feedback-status-badge', title: 'Design System/Components/Feedback & Status/Badge',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

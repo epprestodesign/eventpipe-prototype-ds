@@ -2,7 +2,7 @@
 import AppBar from '../../components/AppBar.vue'
 
 export default {
-  title: 'App Chrome/App Bar',
+  id: 'app-chrome-app-bar', title: 'Design System/App Chrome/App Bar',
   component: AppBar,
   tags: ['autodocs'],
   parameters: {

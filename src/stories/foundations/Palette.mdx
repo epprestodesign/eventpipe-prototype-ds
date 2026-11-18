@@ -1,0 +1,46 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './Palette.stories.js'
+import { Go } from '../start-here/_blocks'
+import { Band, Ramp, Role, TokenValue, TypeRow, MotionDemo } from './_specimens'
+import art from '../start-here/patterns/tile-hex.svg'
+import { ramps } from '../_tokens-data.js'
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Palette">The raw colour ramps every colour role is built from. Each family runs from 50 to 950. Click any step to copy its variable.</Band>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Brand and neutrals</h2>
+  <p className="sh-sub">Azure carries actions and links, Navy is the app chrome, and Graphite is every text, border and surface grey.</p>
+  <div className="fd-ramps">
+    {['Azure', 'Navy', 'Graphite'].map((f) => <Ramp key={f} big ramp={ramps.find((r) => r.family === f)} />)}
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Status</h2>
+  <p className="sh-sub">The ramps behind danger, warning, success, information and discovery.</p>
+  <div className="fd-ramps">
+    {['Red', 'Yellow', 'Green', 'Blue', 'Violet'].map((f) => <Ramp key={f} ramp={ramps.find((r) => r.family === f)} />)}
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Every other hue</h2>
+  <p className="sh-sub">Available for charts, tags and illustration. They aren't mapped to a role.</p>
+  <div className="fd-ramps">
+    {ramps.filter((r) => !['Azure', 'Navy', 'Graphite', 'Red', 'Yellow', 'Green', 'Blue', 'Violet'].includes(r.family)).map((r) => <Ramp key={r.family} ramp={r} />)}
+  </div>
+  <p className="fd-note">Don't use these directly in components. Use the roles on the Colors page, which point at these steps, so a theme change lands everywhere at once.</p>
+</div>
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="foundations-colors--docs" className="sh-link">Next: Colors</Go>
+</div>
+
+</div>
+</Unstyled>

@@ -4,8 +4,9 @@
  * xs=4 sm=8 md=16 lg=24 xl=48. Use tokens in CSS, classes in templates.
  */
 const meta = {
-  title: 'Foundations/Spacing',
-  tags: ['autodocs'],
+  id: 'foundations-spacing', title: 'Design System/Foundations/Spacing',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: {
     docs: {
       description: {

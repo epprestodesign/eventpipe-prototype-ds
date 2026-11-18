@@ -1,6 +1,6 @@
 /** BASE COMPONENTS / Dropdown → QBtnDropdown + QMenu (action/menu dropdown). */
 export default {
-  title: 'Components/Actions/Dropdown',
+  id: 'components-actions-dropdown', title: 'Design System/Components/Actions/Dropdown',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 A button that opens a menu of actions or options. Distinct from **Select** (a
