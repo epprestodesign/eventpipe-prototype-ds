@@ -27,25 +27,42 @@ addons.setConfig({
 })
 
 /* ---------------------------------------------------------------------------
- * Moved pages. Story ids are pinned in each CSF meta, so stories kept their
- * links through the 2026-11-18 sidebar reorganisation. Standalone MDX pages
- * take their id from their title and so did move; old links to them are sent
- * to the new page on load. */
+ * Moved and retired pages. Story ids are pinned in each CSF meta, so stories
+ * kept their links through the 2026-11-18 sidebar reorganisation. The entries
+ * below are links that are already out in Linear (or elsewhere) and point at a
+ * page that has since moved or been retired; each is sent to its current page
+ * on load. Keys are old ids; values are the new `docs/…` or `story/…` path.
+ * Add an entry whenever a page that has been shared is renamed or removed. */
 const MOVED = {
-  'getting-started-introduction--docs': 'start-here-overview--docs',
-  'getting-started-architecture-conventions--docs': 'start-here-architecture-conventions--docs',
-  'components-overview--docs': 'design-system-components-overview--docs',
-  'components-charts-overview--docs': 'design-system-components-charts-overview--docs',
-  'sign-up-∕-login-overview--docs': 'app-screens-sign-up-∕-login-overview--docs',
-  'event-producer-portal-overview--docs': 'eventpipe-labs-event-producer-portal-overview--docs',
+  // 2026-11-18 sidebar reorganisation: standalone MDX pages take their id from the title.
+  'getting-started-introduction--docs': 'docs/start-here-overview--docs',
+  'getting-started-architecture-conventions--docs': 'docs/start-here-architecture-conventions--docs',
+  'components-overview--docs': 'docs/design-system-components-overview--docs',
+  'components-charts-overview--docs': 'docs/design-system-components-charts-overview--docs',
+  'sign-up-∕-login-overview--docs': 'docs/app-screens-sign-up-∕-login-overview--docs',
+  'event-producer-portal-overview--docs': 'docs/eventpipe-labs-event-producer-portal-overview--docs',
+  // DES-95: the first concepts moved into the request's Archive folder (linked from DES-95).
+  'design-requests-des-95-customized-page-revamp-rob-concept-1--default': 'story/design-requests-des-95-customized-page-revamp-archive-rob-concept-1--default',
+  'design-requests-des-95-customized-page-revamp-customize-event-site--default': 'story/design-requests-des-95-customized-page-revamp-archive-customize-event-site--default',
+  // DES-207 was renamed Teams Mgmt Comms Phase 1 (linked from DES-435).
+  'design-requests-des-207-communications-email-template-editor-v1-·-notifications-preferences--locked-upsell': 'story/design-requests-teams-mgmt-comms-phase-1-v1-·-notifications-preferences--locked-upsell',
+  // Teams Mgmt Comms Phase 2, August review rounds (linked from DES-425, DES-428, DES-429):
+  // V1/V2 were merged into one standard screen, and the event level now shows one
+  // Compliance Reminder row instead of the tiers.
+  'design-requests-teams-mgmt-comms-phase-2-screens-event-registration-settings--configured-with-tiers': 'story/design-requests-teams-mgmt-comms-phase-2-screens-event-registration-settings--configured',
+  'design-requests-teams-mgmt-comms-phase-2-screens-notification-preferences--v-1': 'story/design-requests-teams-mgmt-comms-phase-2-screens-notification-preferences--notification-preferences',
+  'design-requests-teams-mgmt-comms-phase-2-screens-notification-preferences--v-2': 'story/design-requests-teams-mgmt-comms-phase-2-screens-notification-preferences--notification-preferences',
+  'design-requests-teams-mgmt-comms-phase-2-first-time-setup-notification-preferences--first-run-v-2': 'story/design-requests-teams-mgmt-comms-phase-2-first-time-setup-notification-preferences--first-run',
 }
 try {
   const url = new URL(window.location.href)
   const path = url.searchParams.get('path') || ''
   const match = path.match(/^\/(?:docs|story)\/(.+)$/)
-  if (match && MOVED[match[1]]) {
-    const rest = url.search.replace(/[?&]path=[^&]*/, '').replace(/^&/, '?')
-    window.history.replaceState(null, '', `${url.pathname}?path=/docs/${MOVED[match[1]]}${rest ? `&${rest.replace(/^\?/, '')}` : ''}${url.hash}`)
+  const target = match && MOVED[decodeURIComponent(match[1])]
+  if (target) {
+    url.searchParams.set('path', `/${target}`)
+    // Keep the path readable (Storybook writes it unencoded).
+    window.history.replaceState(null, '', url.toString().replace(/path=[^&]*/, `path=/${target}`))
   }
 } catch { /* a malformed URL just loads as it is */ }
 
