@@ -10,29 +10,25 @@ app and host/admin surfaces. Stack: Vue 3 · Quasar · Storybook · Vite.
 Order is enforced via `options.storySort` in `.storybook/preview.js`.
 
 ```
-Getting Started   Introduction · Architecture & Conventions · Components → Overview
-Foundations       Palette · Colors · Typography · Icons · Logos · Imagery ·
-                  Elevation · Spacing · Border Radius · Breakpoints · Motion
-Components        (Polaris-style, grouped by function)
-  Actions         Button · Button Group · Link · Dropdown · Menu · Popover · Modal · Dialog · Backdrop · Side Panel
-  Navigation      Breadcrumbs · Tabs · Pagination · Stepper · Search
-  Forms           Form Field · Input (Number/Payment/Date/File/Tags/Group) · Pin Input · Text Field · Text Area ·
-                  URL Field · Search · Autocomplete · Select · Multi-Select · Time Picker · Date Picker ·
-                  Checkbox · Checkbox Tree · Radio Group · Switch · Choice Chips · Slider · Range ·
-                  Transfer List · File Upload · Rating
-  Feedback & Status  Badge · Badge Group · Status · Alert · Banner · Progress · Skeleton ·
-                     Loading Indicator · Loading States · Snackbar · Toast · Empty States
-  Layout & Structure Box · Container · Grid · Stack · Divider · Table · Card · Card Headers ·
-                     Accordion · Section Header · List · List Item · Info Grid · Stat
-  Media & Visuals    Avatar · Icon · Thumbnail · Image List · Carousel
-  Typography & Content  Text · Heading · Paragraph · Chip · Tooltip
-App Chrome        App Bar · App Shell · Page Header · Save Bar
-Account           Log in · Sign up · Forgot password · Verification
-Pages             01 Users · 02 Events · 03 Pickup Reports · 04 Reports · 05 Hotels · 06 Hotel Brands ·
+Start Here        Overview · How to browse · Architecture & Conventions
+Design System
+  Foundations     Palette · Colors · Typography · Icons · Logos · Imagery ·
+                  Spacing · Border Radius · Elevation · Breakpoints · Motion
+  Components      Polaris-style, grouped by function: Actions · Navigation · Forms ·
+                  Feedback & Status · Layout & Structure · Media & Visuals ·
+                  Typography & Content · Charts (every component is listed on
+                  Components → Overview)
+  App Chrome      App Shell · App Bar · Page Header · Save Bar
+App Screens
+  Admin Pages     01 Users · 02 Events · 03 Pickup Reports · 04 Reports · 05 Hotels · 06 Hotel Brands ·
                   07 Amenities · 08 Room Types · 09 Venues · 10 Event Companies · 11 Companies ·
                   12 Requests · 14 Admin Tools · 15 Pipe Tools · 16 Webhooks · 17 Company Settings
-Design Requests   🟢 DES-207 Communications | Email Template Editor (+ its components)
+  Sign up ∕ Login Full flow · Left rail · Right panel (Sign up · Log in · MFA methods · Forgot password)
+Design Requests   Newest first, one folder per Linear project (Overview · Prototype · Screens · Components)
+Eventpipe Labs    Bulk Reservation Edit · Account V2 · EP Pay · Event Producer Portal
 ```
+
+Folders were regrouped on 2026-11-18; stories pin their original `id` so earlier links still open.
 
 ## Brand & tokens
 

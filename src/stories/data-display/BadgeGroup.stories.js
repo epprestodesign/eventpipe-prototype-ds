@@ -1,6 +1,6 @@
 /** BASE COMPONENTS / Badge Group → a row of QBadges with a leading label. */
 export default {
-  title: 'Components/Feedback & Status/Badge Group',
+  id: 'components-feedback-status-badge-group', title: 'Design System/Components/Feedback & Status/Badge Group',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 A cluster of related badges — status sets, counts, or category tags shown

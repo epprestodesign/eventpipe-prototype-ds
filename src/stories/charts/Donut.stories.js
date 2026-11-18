@@ -7,7 +7,7 @@ import { frame, mobileFrame, DARK, LIGHT } from './_shared.js'
 import { CHANNEL_SEGMENTS, MANY_SEGMENTS, SEGMENTS_MISSING, SEGMENTS_ZERO, SEGMENTS_ALL_MISSING } from './fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Donut',
+  id: 'components-charts-donut', title: 'Design System/Components/Charts/Donut',
   component: DsDonutChart,
   tags: ['autodocs'],
   parameters: {

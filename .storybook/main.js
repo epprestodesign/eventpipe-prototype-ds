@@ -17,7 +17,7 @@ const config = {
     '@storybook/addon-themes',
     {
       // MDX ships without GFM, so every markdown TABLE in a .mdx file rendered
-      // as raw `| --- |` pipes — the Getting Started pages and every design
+      // as raw `| --- |` pipes — the Start Here pages and every design
       // request's coverage doc included. remark-gfm restores tables (plus
       // strikethrough, task lists and autolinks). Docblock markdown inside
       // .stories.js was never affected; Storybook renders that separately.
@@ -34,6 +34,13 @@ const config = {
     options: {},
   },
   docs: {},
+  // The sidebar logo and the favicon (see manager.js and manager-head.html).
+  staticDirs: ['./static'],
+  // Storybook's "Become an expert" checklist sits above the sidebar tree and
+  // pushes the navigation down; this is a design library, not a tutorial.
+  features: { sidebarOnboardingChecklist: false },
+  // What's-new toasts are about Storybook itself, not this library.
+  core: { disableWhatsNewNotifications: true },
   async viteFinal(baseConfig) {
     // Note: @storybook/vue3-vite already provides the @vitejs/plugin-vue
     // ('vite:vue') plugin. We must NOT add a second one — a duplicate Vue

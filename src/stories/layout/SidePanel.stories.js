@@ -4,7 +4,7 @@ import DsSidePanel from '../../components/DsSidePanel.vue'
 import DsListItem from '../../components/DsListItem.vue'
 
 export default {
-  title: 'Components/Actions/Side Panel',
+  id: 'components-actions-side-panel', title: 'Design System/Components/Actions/Side Panel',
   component: DsSidePanel,
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen', docs: { description: { component: `

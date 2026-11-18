@@ -11,7 +11,7 @@ import DsInfoGrid from '../../components/DsInfoGrid.vue'
 // Event logos from src/assets/events (auto-imported).
 const eventLogos = Object.values(import.meta.glob('../../assets/events/*.{png,jpg,jpeg}', { eager: true, import: 'default' }))
 
-export default { title: 'Pages/02 Events', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-02-events', title: 'App Screens/Admin Pages/02 Events', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const events = [
   { title: 'Bend Premier Cup | 2026', status: 'Active', location: 'Bend, OR', producer: '365 Sports Travel', dates: 'Fri, 07/10/2026 - Sun, 07/12/2026', release: 'All Closed', cutoff: 'Sat, 06/27/2026',

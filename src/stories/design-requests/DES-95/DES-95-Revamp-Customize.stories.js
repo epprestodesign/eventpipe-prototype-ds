@@ -21,7 +21,7 @@ import DsInfoGrid from '../../../components/DsInfoGrid.vue'
 import { attachField, checkRow } from './_des95'
 
 export default {
-  title: 'Pages/Drafts/Customized Page (Edits)',
+  id: 'pages-drafts-customized-page-edits', title: 'App Screens/Admin Pages/Drafts/Customized Page (Edits)',
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',

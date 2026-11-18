@@ -1,0 +1,59 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './Typography.stories.js'
+import { Go } from '../start-here/_blocks'
+import { Band, Ramp, Role, TokenValue, TypeRow, MotionDemo } from './_specimens'
+import art from '../start-here/patterns/tile-pipes.svg'
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Typography">One typeface, a fixed scale and three weights. Sizes below are measured from the live styles, so they always match what ships.</Band>
+
+<div className="sh-section">
+  <h2 className="sh-h2">The typeface</h2>
+  <p className="sh-sub">Product Sans everywhere, with the system font as its fallback.</p>
+  <div className="fd-specimen">
+    <div className="fd-specimen__aa">Aa</div>
+    <div>
+      <div className="fd-specimen__name">Product Sans</div>
+      <p className="fd-specimen__glyphs">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 &amp; @ # $ % ? !</p>
+      <div className="fd-weights">
+        <div className="fd-weight"><div className="fd-weight__sample" style={{ fontWeight: 400 }}>Regular</div><div className="fd-weight__label">400 · body, buttons</div></div>
+        <div className="fd-weight"><div className="fd-weight__sample" style={{ fontWeight: 500 }}>Medium</div><div className="fd-weight__label">500 · subtitles, labels</div></div>
+        <div className="fd-weight"><div className="fd-weight__sample" style={{ fontWeight: 700 }}>Bold</div><div className="fd-weight__label">700 · headings</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">The scale</h2>
+  <p className="sh-sub">Apply a style with its class. Each row shows the size, line height and weight.</p>
+  <div className="fd-types">
+    <TypeRow cls="text-display" label="Display" sample="Event housing" />
+    <TypeRow cls="text-h1" label="Heading 1" sample="Room blocks" />
+    <TypeRow cls="text-h2" label="Heading 2" sample="Room blocks, booked" />
+    <TypeRow cls="text-h3" label="Heading 3" sample="Room blocks for every event" />
+    <TypeRow cls="text-h4" label="Heading 4" sample="Room blocks for every event" />
+    <TypeRow cls="text-h5" label="Heading 5" sample="Room blocks for every event" />
+    <TypeRow cls="text-h6" label="Heading 6" sample="Room blocks for every event" />
+    <TypeRow cls="text-lead" label="Lead" sample="An intro paragraph that sets up the page." />
+    <TypeRow cls="text-subtitle1" label="Subtitle 1" sample="Section subtitle" />
+    <TypeRow cls="text-subtitle2" label="Subtitle 2" sample="Section subtitle" />
+    <TypeRow cls="text-body1" label="Body 1" sample="The default paragraph size for most copy." />
+    <TypeRow cls="text-body2" label="Body 2" sample="Smaller copy for dense tables and cards." />
+    <TypeRow cls="text-caption" label="Caption" sample="Helper text and metadata" />
+    <TypeRow cls="text-overline" label="Overline" sample="EYEBROW LABEL" />
+  </div>
+  <p className="fd-note">Styles are defined in <code>src/css/typography.scss</code>. Weights are also available as <code>.text-weight-regular</code>, <code>.text-weight-medium</code> and <code>.text-weight-bold</code>.</p>
+</div>
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="foundations-icons--docs" className="sh-link">Next: Icons</Go>
+</div>
+
+</div>
+</Unstyled>

@@ -10,7 +10,7 @@ import { sampleUpdate } from './_stories'
 export default {
   // ASCII id: the title's "∕" (U+2215) would otherwise end up in the URL.
   id: 'sign-up-login-left-rail',
-  title: 'Sign up ∕ Login/Left rail',
+  title: 'App Screens/Sign up ∕ Login/Left rail',
   parameters: { layout: 'fullscreen', docs: { description: { component: 'Every treatment for the navy left rail, each beside any right-panel screen. **Brand only** is the default; the others add product news for existing customers, which Rob supported but did not commit to the first release. Article concepts use real EventPipe blog posts with their original publication dates; they are not new-release claims or a live feed. Controls above the canvas are review-only: **Right panel** swaps the screen beside the rail, **Component only** isolates the rail content, **Read more link** and **Image unavailable** check optional states. Spotlight rotation is manual. Read-more links open the article separately to preserve the session.' } } },
 }
 

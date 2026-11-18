@@ -5,8 +5,9 @@
  * available for edge cases.
  */
 const meta = {
-  title: 'Foundations/Elevation',
-  tags: ['autodocs'],
+  id: 'foundations-elevation', title: 'Design System/Foundations/Elevation',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: {
     docs: {
       description: {

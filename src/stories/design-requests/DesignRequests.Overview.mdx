@@ -1,0 +1,114 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Go, Browser } from '../start-here/_blocks'
+import tileArcs from '../start-here/patterns/tile-arcs.svg'
+import singleTeam from '../start-here/screens/dr-single-team.jpg'
+import qualifiers from '../start-here/screens/dr-team-name-qualifiers.jpg'
+import gbReminders from '../start-here/screens/dr-gb-reminders.jpg'
+import secondaryFees from '../start-here/screens/dr-secondary-fees.jpg'
+import commsPhase2 from '../start-here/screens/dr-comms-phase-2.jpg'
+import commsAug19 from '../start-here/screens/dr-comms-aug-19.jpg'
+import commsPhase1 from '../start-here/screens/dr-comms-phase-1.jpg'
+import des95 from '../start-here/screens/dr-des-95.jpg'
+
+<Meta title="Design Requests/Overview" />
+
+<div className="sh">
+
+<div className="sh-band" style={{ '--sh-art': `url("${tileArcs}")` }}>
+  <div className="sh-eyebrow">Design Requests</div>
+  <h1 className="sh-h1">Ticket work, most recent first</h1>
+  <p className="sh-lede">Each request is tied to a Linear project and built as a working prototype on the design system. Open one to see its overview, then click through the flow.</p>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">All requests</h2>
+  <p className="sh-sub">Most recent to oldest, by the date each one started. The sidebar uses the same order. Every screen uses sample data.</p>
+  <div className="sh-grid sh-grid--3">
+    <div className="sh-card">
+      <Browser src={singleTeam} alt="Single-Team Add and Delete, the Compliance list" />
+      <div className="sh-chips"><span className="sh-chip sh-chip--azure">Most recent</span><span className="sh-chip sh-chip--quiet">Nov 7, 2026</span><span className="sh-chip sh-chip--quiet">P-ENG2-251</span></div>
+      <h3 className="sh-card__title">Single-Team Add and Delete</h3>
+      <p className="sh-card__text">Add one team from the Compliance page, and delete one team from Team Edit.</p>
+      <div className="sh-links">
+        <Go to="design-requests-single-team-add-and-delete-overview--docs" className="sh-link">Overview</Go>
+        <Go to="design-requests-single-team-add-and-delete-prototype--full-flow" story className="sh-link">Prototype</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={qualifiers} alt="Team Name Qualifiers on the Registration settings tab" />
+      <div className="sh-chips"><span className="sh-chip sh-chip--quiet">Oct 7, 2026</span></div>
+      <h3 className="sh-card__title">Team Name Qualifiers</h3>
+      <p className="sh-card__text">Choose which custom fields a guest fills in when they type a team name. The admin Registration tab.</p>
+      <div className="sh-links">
+        <Go to="design-requests-team-name-qualifiers-overview--docs" className="sh-link">Overview</Go>
+        <Go to="design-requests-team-name-qualifiers-screens-registration-settings--default" story className="sh-link">Screen</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={gbReminders} alt="Group Block Reminder Controls on Registration Settings" />
+      <div className="sh-chips"><span className="sh-chip sh-chip--quiet">Sept 9, 2026</span><span className="sh-chip sh-chip--quiet">PP-42 · 43 · 44</span></div>
+      <h3 className="sh-card__title">GB Reminder Controls</h3>
+      <p className="sh-card__text">Group block reminder settings on Edit Event and Registration Settings, with the conflict modal. Its Sept 10 folder keeps the version reviewed that day.</p>
+      <div className="sh-links">
+        <Go to="design-requests-gb-reminder-controls-introduction--docs" className="sh-link">Introduction</Go>
+        <Go to="design-requests-gb-reminder-controls-screens-02-·-registration-settings--default" story className="sh-link">Screen</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={commsAug19} alt="The Aug 19 copy of Teams Mgmt Comms Phase 2, Notification Preferences" />
+      <div className="sh-chips"><span className="sh-chip sh-chip--quiet">Aug 19, 2026</span><span className="sh-chip sh-chip--quiet">STP Comms</span></div>
+      <h3 className="sh-card__title">Aug 19</h3>
+      <p className="sh-card__text">A full copy of Teams Mgmt Comms Phase 2, kept as a separate sandbox so changes here cannot disturb the Phase 2 screens.</p>
+      <div className="sh-links">
+        <Go to="design-requests-aug-19-requirements-coverage--docs" className="sh-link">Coverage</Go>
+        <Go to="design-requests-aug-19-screens-notification-preferences--notification-preferences" story className="sh-link">Screen</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={secondaryFees} alt="Multiple Secondary Fees on Event Fees" />
+      <div className="sh-chips"><span className="sh-chip sh-chip--quiet">Aug 11, 2026</span><span className="sh-chip sh-chip--quiet">DES-451 · 452 · 456</span></div>
+      <h3 className="sh-card__title">Multiple Secondary Fees</h3>
+      <p className="sh-card__text">Secondary custom fees go from one to up to three, across four admin screens.</p>
+      <div className="sh-links">
+        <Go to="design-requests-multiple-secondary-fees-requirements-coverage--docs" className="sh-link">Coverage</Go>
+        <Go to="design-requests-multiple-secondary-fees-screens-01-·-event-fees--two-fees" story className="sh-link">Screen</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={commsPhase2} alt="Teams Mgmt Comms Phase 2, Notification Preferences" />
+      <div className="sh-chips"><span className="sh-chip sh-chip--quiet">Aug 5, 2026</span><span className="sh-chip sh-chip--quiet">STP Comms</span></div>
+      <h3 className="sh-card__title">Teams Mgmt Comms Phase 2</h3>
+      <p className="sh-card__text">First-time setup, notification preferences and compliance reminder tiers.</p>
+      <div className="sh-links">
+        <Go to="design-requests-teams-mgmt-comms-phase-2-requirements-coverage--docs" className="sh-link">Coverage</Go>
+        <Go to="design-requests-teams-mgmt-comms-phase-2-screens-notification-preferences--notification-preferences" story className="sh-link">Screen</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={des95} alt="DES-95, the customized event site edit page" />
+      <div className="sh-chips"><span className="sh-chip sh-chip--quiet">Jul 16, 2026</span><span className="sh-chip sh-chip--quiet">DES-95</span></div>
+      <h3 className="sh-card__title">DES-95 Customized Page Revamp</h3>
+      <p className="sh-card__text">The customized event site edit page, with today's screens as references and earlier concepts in its archive.</p>
+      <div className="sh-links">
+        <Go to="design-requests-des-95-customized-page-revamp-customized-event-site-edits-072426--docs" className="sh-link">Open</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <Browser src={commsPhase1} alt="Teams Mgmt Comms Phase 1, Notifications Preferences" />
+      <div className="sh-chips"><span className="sh-chip sh-chip--quiet">Oldest</span><span className="sh-chip sh-chip--quiet">Jul 7, 2026</span><span className="sh-chip sh-chip--quiet">DES-207</span></div>
+      <h3 className="sh-card__title">Teams Mgmt Comms Phase 1</h3>
+      <p className="sh-card__text">The communications and email template editor: two versions, and the components built for it.</p>
+      <div className="sh-links">
+        <Go to="design-requests-teams-mgmt-comms-phase-1-v1-·-notifications-preferences--docs" className="sh-link">V1</Go>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Finding one ticket's design</h2>
+  <p className="sh-sub">Stories are tagged with their requirement and Linear ID. Open the filter beside the sidebar search and pick a tag, such as <code>ENG2-111</code>, to see everything for that ticket.</p>
+  <div className="sh-links"><Go to="start-here-how-to-browse--docs" className="sh-link">How to browse</Go></div>
+</div>
+
+</div>

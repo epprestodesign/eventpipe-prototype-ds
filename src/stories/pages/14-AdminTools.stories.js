@@ -1,7 +1,7 @@
 /** PAGES / 14 Admin Tools → action-card list archetype, recreated from production. */
 import { page } from './_shell'
 
-export default { title: 'Pages/14 Admin Tools', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-14-admin-tools', title: 'App Screens/Admin Pages/14 Admin Tools', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const tools = [
   { title: 'Hotel Loading Tool', desc: 'This tool searches external sources for hotel metadata and compares it to hotels already in EventPipe.', icon: 'apartment', action: 'Find Hotels' },

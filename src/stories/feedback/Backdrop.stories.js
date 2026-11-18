@@ -2,7 +2,7 @@
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 export default {
-  title: 'Components/Actions/Backdrop',
+  id: 'components-actions-backdrop', title: 'Design System/Components/Actions/Backdrop',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

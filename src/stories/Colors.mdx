@@ -1,0 +1,45 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './Colors.stories.js'
+import { Go } from './start-here/_blocks'
+import { Band, Ramp, Role, TokenValue, TypeRow, MotionDemo } from './foundations/_specimens'
+import art from './start-here/patterns/tile-arcs.svg'
+import { semanticGroups } from './_tokens-data.js'
+
+export const NOTES = {
+  'Text': 'Body copy, labels and the status colours for text.',
+  'Link': 'Links, before and after a visit.',
+  'Icon': 'Icons on their own, without a label carrying the meaning.',
+  'Border': 'Dividers, field outlines and the focus ring.',
+  'Background · neutral': 'Greys behind chips, hovers and inputs.',
+  'Background · brand & selected': 'Primary actions and the selected state.',
+  'Background · status': 'A soft and a bold fill for each status.',
+  'Surface': 'The layers a page is built from: page, card, overlay.',
+}
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Colors">The colour roles components actually use: what a colour is for, not what it looks like. Each one points at a step in the Palette. Click a role to copy its variable.</Band>
+
+{Object.entries(semanticGroups).map(([group, tokens]) => (
+  <div className="sh-section" key={group}>
+    <h2 className="sh-h2">{group}</h2>
+    <p className="sh-sub">{NOTES[group]}</p>
+    <div className="fd-roles">{tokens.map((t) => <Role key={t.name} token={t} />)}</div>
+  </div>
+))}
+
+<div className="sh-section">
+  <h2 className="sh-h2">Using a role</h2>
+  <p className="sh-sub">In CSS, use the custom property: <code>var(--ds-color-background-brand-bold)</code>. In templates, the helper classes do the same: <code>.bg-ds-brand-bold</code>, <code>.text-ds-subtle</code>, <code>.border-ds-bold</code>.</p>
+</div>
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="foundations-typography--docs" className="sh-link">Next: Typography</Go>
+</div>
+
+</div>
+</Unstyled>

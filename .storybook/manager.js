@@ -7,6 +7,47 @@ import React, { useState } from 'react'
 import { addons, types, useArgs, useParameter } from 'storybook/manager-api'
 import { WithTooltip, IconButton, SyntaxHighlighter } from 'storybook/internal/components'
 import content from '../src/stories/design-requests/des207-content.json'
+import { create } from 'storybook/theming'
+
+/* ---------------------------------------------------------------------------
+ * Brand — the EventPipe logo in the sidebar in place of Storybook's, and the
+ * Azure primary on the selected item. The logo is served from
+ * .storybook/static (main.js `staticDirs`); the path is relative so it also
+ * resolves under GitHub Pages' /eventpipe-prototype-ds/ prefix. */
+addons.setConfig({
+  theme: create({
+    base: 'light',
+    brandTitle: 'EventPipe Design System',
+    brandImage: './eventpipe-logo.svg',
+    brandUrl: './',
+    brandTarget: '_self',
+    colorPrimary: '#2561FA',
+    colorSecondary: '#2561FA',
+  }),
+})
+
+/* ---------------------------------------------------------------------------
+ * Moved pages. Story ids are pinned in each CSF meta, so stories kept their
+ * links through the 2026-11-18 sidebar reorganisation. Standalone MDX pages
+ * take their id from their title and so did move; old links to them are sent
+ * to the new page on load. */
+const MOVED = {
+  'getting-started-introduction--docs': 'start-here-overview--docs',
+  'getting-started-architecture-conventions--docs': 'start-here-architecture-conventions--docs',
+  'components-overview--docs': 'design-system-components-overview--docs',
+  'components-charts-overview--docs': 'design-system-components-charts-overview--docs',
+  'sign-up-∕-login-overview--docs': 'app-screens-sign-up-∕-login-overview--docs',
+  'event-producer-portal-overview--docs': 'eventpipe-labs-event-producer-portal-overview--docs',
+}
+try {
+  const url = new URL(window.location.href)
+  const path = url.searchParams.get('path') || ''
+  const match = path.match(/^\/(?:docs|story)\/(.+)$/)
+  if (match && MOVED[match[1]]) {
+    const rest = url.search.replace(/[?&]path=[^&]*/, '').replace(/^&/, '?')
+    window.history.replaceState(null, '', `${url.pathname}?path=/docs/${MOVED[match[1]]}${rest ? `&${rest.replace(/^\?/, '')}` : ''}${url.hash}`)
+  }
+} catch { /* a malformed URL just loads as it is */ }
 
 const ADDON_ID = 'des207-publish'
 const TOOL_ID = `${ADDON_ID}/tool`

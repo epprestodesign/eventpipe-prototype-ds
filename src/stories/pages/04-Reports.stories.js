@@ -1,7 +1,7 @@
 /** PAGES / 04 Reports → action-card list archetype, recreated from production. */
 import { page } from './_shell'
 
-export default { title: 'Pages/04 Reports', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-04-reports', title: 'App Screens/Admin Pages/04 Reports', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const reports = [
   { title: 'Company Event Results Report', desc: 'This fully detailed report includes the list of events with valuable information like: reservations details, income details, expenses, contracting and more.' },

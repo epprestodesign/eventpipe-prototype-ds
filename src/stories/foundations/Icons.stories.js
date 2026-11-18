@@ -3,8 +3,9 @@
  * Curated for a consumer HOTEL BOOKING & RESERVATION experience.
  */
 export default {
-  title: 'Foundations/Icons',
-  tags: ['autodocs'],
+  id: 'foundations-icons', title: 'Design System/Foundations/Icons',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: { docs: { description: { component: `
 ## Overview
 Icons are rendered with **QIcon** using **Material Icons** (self-hosted via

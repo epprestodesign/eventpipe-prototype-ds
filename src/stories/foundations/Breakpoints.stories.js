@@ -7,8 +7,9 @@ import { computed } from 'vue'
  * Critical for spanning mobile booking app, desktop web, and lobby kiosks.
  */
 const meta = {
-  title: 'Foundations/Breakpoints',
-  tags: ['autodocs'],
+  id: 'foundations-breakpoints', title: 'Design System/Foundations/Breakpoints',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: {
     docs: {
       description: {

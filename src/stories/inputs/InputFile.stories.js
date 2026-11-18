@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsField from '../../components/DsField.vue'
 
 export default {
-  title: 'Components/Forms/Input File',
+  id: 'components-forms-input-file', title: 'Design System/Components/Forms/Input File',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 Compact file-picker field — a single outlined control showing the chosen file(s).

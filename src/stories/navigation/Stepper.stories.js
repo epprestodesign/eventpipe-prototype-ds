@@ -1,7 +1,7 @@
 /** NAVIGATION / Stepper → Quasar: QStepper + QStep (wrap as EpStepper) */
 import { ref } from 'vue'
 export default {
-  title: 'Components/Navigation/Stepper',
+  id: 'components-navigation-stepper', title: 'Design System/Components/Navigation/Stepper',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

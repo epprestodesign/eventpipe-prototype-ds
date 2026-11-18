@@ -10,7 +10,7 @@ function useAutoFocus() {
 }
 
 export default {
-  title: 'Components/Navigation/Search',
+  id: 'components-navigation-search', title: 'Design System/Components/Navigation/Search',
   component: DsSearch,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

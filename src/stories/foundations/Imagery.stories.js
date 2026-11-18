@@ -4,8 +4,9 @@ import DsUnsplashImage from '../../components/DsUnsplashImage.vue'
 import { loadImagery } from '../../lib/imagery.js'
 
 export default {
-  title: 'Foundations/Imagery',
-  tags: ['autodocs'],
+  id: 'foundations-imagery', title: 'Design System/Foundations/Imagery',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: { docs: { description: { component: `
 ## Overview
 A **separately-hosted hotel image library**, loaded at **runtime** from the

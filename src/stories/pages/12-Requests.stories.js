@@ -4,7 +4,7 @@ import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 import DsStatus from '../../components/DsStatus.vue'
 
-export default { title: 'Pages/12 Requests', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-12-requests', title: 'App Screens/Admin Pages/12 Requests', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const requests = [
   { hotel: 'Embassy Suites Greensboro-Airport', loc: '204 Centreport Drive, NC - 13.39 Miles from primary venue.', event: 'Adidas Clash | Boys 2026', rfp: 'Adidas Clash | Boys 2026', manager: 'Scott Gartner', status: 'Negotiating', tone: 'warning', contact: 'Damara Gomez, (damara.gomez@atriumhos…', received: 'Wed, 07/09/2025 - 2…' },

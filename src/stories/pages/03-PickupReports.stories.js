@@ -4,7 +4,7 @@ import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 import DsStatus from '../../components/DsStatus.vue'
 
-export default { title: 'Pages/03 Pickup Reports', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-03-pickup-reports', title: 'App Screens/Admin Pages/03 Pickup Reports', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const columns = [
   { name: 'hotel', label: 'Hotel Name', field: 'hotel', align: 'left', sortable: true },

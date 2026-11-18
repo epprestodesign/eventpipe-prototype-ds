@@ -1,0 +1,152 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Go, Browser, Laptop } from './_blocks'
+import heroGlow from './patterns/hero-glow.jpg'
+import tileHex from './patterns/tile-hex.svg'
+import tileDots from './patterns/tile-dots.svg'
+import tileArcs from './patterns/tile-arcs.svg'
+import tileCubes from './patterns/tile-cubes.svg'
+import events from './screens/events.jpg'
+import palette from './screens/palette.jpg'
+import singleTeam from './screens/dr-single-team.jpg'
+import epPay from './screens/lab-ep-pay.jpg'
+import hotels from './screens/hotels.jpg'
+
+<Meta title="Start Here/Overview" />
+
+<div className="sh">
+
+<div className="sh-hero">
+  <div className="sh-hero__art" style={{ backgroundImage: `url("${heroGlow}")` }} />
+  <div className="sh-hero__text">
+    <div className="sh-eyebrow">EventPipe Design System</div>
+    <h1 className="sh-h1">One library for every EventPipe screen.</h1>
+    <p className="sh-lede">The tokens, components and full pages behind the EventPipe admin — the platform teams use to manage event hotel room blocks. Designed, reviewed and agreed here, before anything is built.</p>
+    <div className="sh-chips">
+      <span className="sh-chip">97 components</span>
+      <span className="sh-chip">16 admin pages</span>
+      <span className="sh-chip">8 design requests</span>
+      <span className="sh-chip">Vue 3 + Quasar</span>
+    </div>
+    <div className="sh-actions">
+      <Go to="design-system-components-overview--docs" className="sh-btn sh-btn--primary">Browse the components</Go>
+      <Go to="design-requests-overview--docs" className="sh-btn sh-btn--ghost">See what's in review</Go>
+    </div>
+  </div>
+  <div className="sh-stage">
+    <div className="sh-stage__row">
+      <Laptop src={events} alt="The Events page of the EventPipe admin" />
+    </div>
+  </div>
+  <p className="sh-hero__note">A live screen from this library: the Events page of the admin. All data is sample data.</p>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Start with what you need</h2>
+  <p className="sh-sub">Four ways in, depending on why you're here.</p>
+  <div className="sh-grid">
+    <div className="sh-card">
+      <div className="sh-eyebrow">Reviewing a design</div>
+      <h3 className="sh-card__title">Design Requests</h3>
+      <p className="sh-card__text">Ticket work in review, newest first. Each one opens on an overview, then a clickable prototype.</p>
+      <div className="sh-links"><Go to="design-requests-overview--docs" className="sh-link">Open the requests</Go></div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">Designing a screen</div>
+      <h3 className="sh-card__title">Design System</h3>
+      <p className="sh-card__text">Colour, type and spacing tokens, then every component with its states and guidance.</p>
+      <div className="sh-links"><Go to="design-system-foundations-overview--docs" className="sh-link">Start with Foundations</Go></div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">Building it</div>
+      <h3 className="sh-card__title">Architecture & Conventions</h3>
+      <p className="sh-card__text">Where each file lives, the shared components to reuse, and how to run and deploy the library.</p>
+      <div className="sh-links"><Go to="start-here-architecture-conventions--docs" className="sh-link">Read the conventions</Go></div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">Finding something</div>
+      <h3 className="sh-card__title">How to browse</h3>
+      <p className="sh-card__text">The sidebar's order, search, ticket tags, and how links stay stable when things move.</p>
+      <div className="sh-links"><Go to="start-here-how-to-browse--docs" className="sh-link">Learn the layout</Go></div>
+    </div>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">What's in the library</h2>
+  <p className="sh-sub">Four areas, in the sidebar's order: the system, the product built from it, the work in review, and experiments.</p>
+  <div className="sh-grid sh-grid--2">
+    <div className="sh-card sh-area">
+      <div className="sh-area__art" style={{ backgroundImage: `url("${tileHex}")` }} />
+      <Browser src={palette} alt="The colour palette in Foundations" className="sh-area__screen" />
+      <div className="sh-area__body">
+        <div className="sh-eyebrow"><span className="sh-num">1</span>Design System</div>
+        <h3 className="sh-card__title">Tokens, components and the app frame</h3>
+        <p className="sh-card__text">Foundations hold the tokens. Components are grouped by what they do: actions, navigation, forms, feedback, layout, media, content and charts. App Chrome is the sidebar, app bar and page header every page sits in.</p>
+        <div className="sh-links">
+          <Go to="design-system-foundations-overview--docs" className="sh-link">Foundations</Go>
+          <Go to="design-system-components-overview--docs" className="sh-link">Components</Go>
+          <Go to="app-chrome-app-shell--docs" className="sh-link">App Chrome</Go>
+        </div>
+      </div>
+    </div>
+    <div className="sh-card sh-area">
+      <div className="sh-area__art" style={{ backgroundImage: `url("${tileDots}")` }} />
+      <Browser src={hotels} alt="The Hotels page of the EventPipe admin" className="sh-area__screen" />
+      <div className="sh-area__body">
+        <div className="sh-eyebrow"><span className="sh-num">2</span>App Screens</div>
+        <h3 className="sh-card__title">Whole pages, built from the system</h3>
+        <p className="sh-card__text">Sixteen admin pages in the app's own menu order, from Users to Company Settings, plus the sign up and log in flow. They show the components holding together at page scale.</p>
+        <div className="sh-links">
+          <Go to="pages-02-events--events" story className="sh-link">Admin Pages</Go>
+          <Go to="sign-up-login-full-flow--interactive-flow" story className="sh-link">Sign up ∕ Login</Go>
+        </div>
+      </div>
+    </div>
+    <div className="sh-card sh-area">
+      <div className="sh-area__art" style={{ backgroundImage: `url("${tileArcs}")` }} />
+      <Browser src={singleTeam} alt="The Single-Team Add and Delete prototype" className="sh-area__screen" />
+      <div className="sh-area__body">
+        <div className="sh-eyebrow"><span className="sh-num">3</span>Design Requests</div>
+        <h3 className="sh-card__title">Ticket work, most recent first</h3>
+        <p className="sh-card__text">Each request is tied to a Linear project and keeps the same layout: an overview, a prototype, the screens, then the components built for it.</p>
+        <div className="sh-links">
+          <Go to="design-requests-overview--docs" className="sh-link">All requests</Go>
+          <Go to="design-requests-single-team-add-and-delete-overview--docs" className="sh-link">The most recent</Go>
+        </div>
+      </div>
+    </div>
+    <div className="sh-card sh-area">
+      <div className="sh-area__art" style={{ backgroundImage: `url("${tileCubes}")` }} />
+      <Browser src={epPay} alt="The EP Pay dashboard concept" className="sh-area__screen" />
+      <div className="sh-area__body">
+        <div className="sh-eyebrow"><span className="sh-num">4</span>Eventpipe Labs</div>
+        <h3 className="sh-card__title">Experiments and early concepts</h3>
+        <p className="sh-card__text">Work that isn't specified product yet: EP Pay, the staff login (Account V2), bulk reservation edit and the Event Producer Portal.</p>
+        <div className="sh-links">
+          <Go to="eventpipe-labs-overview--docs" className="sh-link">Open Labs</Go>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">The brand, at a glance</h2>
+  <p className="sh-sub">Every component carries these. The full set lives in Foundations.</p>
+  <div className="sh-swatches">
+    <div className="sh-swatch"><div className="sh-swatch__chip" style={{ background: '#2561FA' }} /><div className="sh-swatch__meta"><div className="sh-swatch__name">Azure</div><div className="sh-swatch__val">#2561FA · actions, links</div></div></div>
+    <div className="sh-swatch"><div className="sh-swatch__chip" style={{ background: '#01113E' }} /><div className="sh-swatch__meta"><div className="sh-swatch__name">EventPipe navy</div><div className="sh-swatch__val">#01113E · sidebar, app bar</div></div></div>
+    <div className="sh-swatch"><div className="sh-swatch__chip" style={{ background: '#15AEB3' }} /><div className="sh-swatch__meta"><div className="sh-swatch__name">Teal</div><div className="sh-swatch__val">#15AEB3 · logo, highlights</div></div></div>
+    <div className="sh-swatch"><div className="sh-swatch__chip" style={{ background: 'linear-gradient(90deg, #212529, #6C757D 55%, #DEE2E6)' }} /><div className="sh-swatch__meta"><div className="sh-swatch__name">Graphite</div><div className="sh-swatch__val">Text, borders, surfaces</div></div></div>
+    <div className="sh-swatch"><div className="sh-swatch__chip" style={{ background: '#F6F8FE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 700, color: '#01113E' }}>Aa</div><div className="sh-swatch__meta"><div className="sh-swatch__name">Product Sans</div><div className="sh-swatch__val">One typeface</div></div></div>
+    <div className="sh-swatch"><div className="sh-swatch__chip" style={{ background: '#F6F8FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ display: 'inline-flex', alignItems: 'center', height: 40, padding: '0 16px', borderRadius: 4, background: '#2561FA', color: '#fff', fontSize: 14, fontWeight: 700 }}>Button</span></div><div className="sh-swatch__meta"><div className="sh-swatch__name">Shape</div><div className="sh-swatch__val">4px radius · 40px controls</div></div></div>
+  </div>
+  <div className="sh-links">
+    <Go to="foundations-palette--docs" className="sh-link">Palette</Go>
+    <Go to="foundations-colors--docs" className="sh-link">Colour roles</Go>
+    <Go to="foundations-typography--docs" className="sh-link">Typography</Go>
+    <Go to="foundations-icons--docs" className="sh-link">Icons</Go>
+  </div>
+</div>
+
+</div>

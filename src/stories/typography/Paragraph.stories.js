@@ -2,7 +2,7 @@
 import DsText from '../../components/DsText.vue'
 
 export default {
-  title: 'Components/Typography & Content/Paragraph',
+  id: 'components-typography-content-paragraph', title: 'Design System/Components/Typography & Content/Paragraph',
   component: DsText,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: 'A block of body copy via **DsText** `as="p"` — `body-lg`, `body`, and `caption` sizes.' } } },

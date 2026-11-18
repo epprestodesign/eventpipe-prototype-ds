@@ -1,7 +1,7 @@
 /** INPUTS / Transfer List → custom DsTransferList (no Quasar equivalent) */
 import DsTransferList from '../../components/DsTransferList.vue'
 export default {
-  title: 'Components/Forms/Transfer List',
+  id: 'components-forms-transfer-list', title: 'Design System/Components/Forms/Transfer List',
   component: DsTransferList,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

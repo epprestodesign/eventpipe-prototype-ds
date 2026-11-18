@@ -4,7 +4,7 @@ import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 import DsStatus from '../../components/DsStatus.vue'
 
-export default { title: 'Pages/01 Users', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-01-users', title: 'App Screens/Admin Pages/01 Users', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const columns = [
   { name: 'name', label: 'User Name', field: 'name', align: 'left', sortable: true },

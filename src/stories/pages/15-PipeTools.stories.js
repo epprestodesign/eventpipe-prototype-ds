@@ -2,7 +2,7 @@
 import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 
-export default { title: 'Pages/15 Pipe Tools', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-15-pipe-tools', title: 'App Screens/Admin Pages/15 Pipe Tools', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const tools = [
   { title: 'Contract Template Management', icon: 'description' },

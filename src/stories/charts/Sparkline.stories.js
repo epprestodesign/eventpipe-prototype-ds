@@ -4,7 +4,7 @@ import DsSparkline from '../../components/charts/DsSparkline.vue'
 import { SPARK_UP, SPARK_DOWN, SPARK_FLAT, SPARK_MISSING, SPARK_PREV } from './fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Sparkline',
+  id: 'components-charts-sparkline', title: 'Design System/Components/Charts/Sparkline',
   component: DsSparkline,
   tags: ['autodocs'],
   parameters: {

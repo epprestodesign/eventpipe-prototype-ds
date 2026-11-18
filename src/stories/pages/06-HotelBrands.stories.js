@@ -3,7 +3,7 @@ import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 import DsStatus from '../../components/DsStatus.vue'
 
-export default { title: 'Pages/06 Hotel Brands', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-06-hotel-brands', title: 'App Screens/Admin Pages/06 Hotel Brands', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const brands = [
   { name: "1840's Carrollton Inn", parent: 'INDEPENDENT OWNED PROPERTIES', subsidiary: true },

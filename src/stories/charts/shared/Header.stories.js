@@ -4,7 +4,7 @@ import DsChartHeader from '../../../components/charts/DsChartHeader.vue'
 import DsChoiceChips from '../../../components/DsChoiceChips.vue'
 
 export default {
-  title: 'Components/Charts/Shared Elements/Header',
+  id: 'components-charts-shared-elements-header', title: 'Design System/Components/Charts/Shared Elements/Header',
   component: DsChartHeader,
   tags: ['autodocs'],
   parameters: {

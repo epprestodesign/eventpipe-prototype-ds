@@ -1,7 +1,7 @@
 /** NAVIGATION / Tabs → Quasar: QTabs + QTab + QTabPanels (wrap as EpTabs) */
 import { ref } from 'vue'
 export default {
-  title: 'Components/Navigation/Tabs',
+  id: 'components-navigation-tabs', title: 'Design System/Components/Navigation/Tabs',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

@@ -2,7 +2,7 @@
 import DsThumbnail from '../../components/DsThumbnail.vue'
 
 export default {
-  title: 'Components/Media & Visuals/Thumbnail',
+  id: 'components-media-visuals-thumbnail', title: 'Design System/Components/Media & Visuals/Thumbnail',
   component: DsThumbnail,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

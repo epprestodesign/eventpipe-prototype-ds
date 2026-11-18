@@ -1,7 +1,7 @@
 /** INPUTS / Switch → Quasar: QToggle (native) */
 import { ref } from 'vue'
 export default {
-  title: 'Components/Forms/Switch',
+  id: 'components-forms-switch', title: 'Design System/Components/Forms/Switch',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

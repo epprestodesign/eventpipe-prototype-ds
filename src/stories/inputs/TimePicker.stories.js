@@ -1,7 +1,7 @@
 /** INPUTS / Time Picker → Quasar: QTime (native) */
 import { ref } from 'vue'
 export default {
-  title: 'Components/Forms/Time Picker',
+  id: 'components-forms-time-picker', title: 'Design System/Components/Forms/Time Picker',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

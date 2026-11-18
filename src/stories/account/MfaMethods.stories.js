@@ -3,7 +3,7 @@ import AccountMfaPreview from './components/AccountMfaPreview.vue'
 export default {
   // ASCII id: the title's "∕" (U+2215) would otherwise end up in the URL.
   id: 'sign-up-login-right-panel-mfa-methods',
-  title: 'Sign up ∕ Login/Right panel/MFA methods',
+  title: 'App Screens/Sign up ∕ Login/Right panel/MFA methods',
   parameters: {
     layout: 'fullscreen',
     docs: { description: { component: 'Phase 2 (MFA): one story per verification method, email first. The end-to-end click-through is Sign up ∕ Login › Full flow. Use the Preview state selector above the screen to inspect related edge cases; Restart preview resets the form and timer. These controls are Storybook-only. Six digits and the masked email are illustrative. Any six digits completes the local preview; authentication and email are simulated. Verifying is frozen for review.' } },

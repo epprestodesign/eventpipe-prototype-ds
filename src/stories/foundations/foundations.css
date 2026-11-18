@@ -1,0 +1,119 @@
+/* Foundations specimen pages. Scoped under .sh (see start-here/start-here.css
+ * for the shared page pieces: bands, cards, links). */
+
+/* ---- Palette ramps -------------------------------------------------------- */
+.sh .fd-ramps { display: grid; gap: 22px; }
+.sh .fd-ramp__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.sh .fd-ramp__name { font-size: 16px; font-weight: 700; color: var(--sh-navy); }
+.sh .fd-ramp__strip { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); border-radius: 12px; overflow: hidden; border: 1px solid rgba(1, 17, 62, 0.08); }
+.sh .fd-ramp__cell {
+  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; height: 58px; padding: 8px 9px;
+  border: 0; margin: 0; font: inherit; text-align: left; cursor: pointer; transition: transform 0.12s ease;
+}
+.sh .fd-ramp__cell:hover { transform: scaleY(1.08); }
+.sh .fd-ramp__cell:focus-visible { outline: 2px solid var(--sh-azure); outline-offset: -2px; }
+.sh .fd-ramp__step { font-size: 12.5px; font-weight: 700; }
+.sh .fd-ramp__hex { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10.5px; opacity: 0.85; }
+.sh .fd-ramp--big .fd-ramp__cell { height: 92px; padding: 12px; }
+.sh .fd-ramp--big .fd-ramp__step { font-size: 14px; }
+.sh .fd-ramp--big .fd-ramp__hex { font-size: 11.5px; }
+
+/* ---- Semantic colour roles ------------------------------------------------- */
+.sh .fd-roles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+.sh .fd-role {
+  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 14px; width: 100%; padding: 12px 14px;
+  border: 1px solid var(--sh-line); border-radius: 12px; background: #fff; font: inherit; text-align: left; cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.sh .fd-role:hover { border-color: #C5D0E6; box-shadow: 0 6px 16px rgba(1, 17, 62, 0.06); }
+.sh .fd-role__chip { width: 44px; height: 44px; border-radius: 10px; border: 1px solid rgba(1, 17, 62, 0.1); }
+.sh .fd-role__chip--none { background: repeating-conic-gradient(#E9EDF4 0% 25%, #fff 0% 50%) 50% / 12px 12px; }
+.sh .fd-role__body { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
+.sh .fd-role__desc { font-size: 14px; color: var(--sh-muted); }
+.sh .fd-role__meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--sh-navy); }
+.sh .fd-role__prim { font-family: inherit; font-size: 12px; color: var(--sh-muted); }
+
+/* ---- Type ------------------------------------------------------------------ */
+.sh .fd-specimen {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 28px; align-items: center; padding: 32px;
+  border: 1px solid var(--sh-line); border-radius: 16px; background: var(--sh-tint);
+}
+.sh .fd-specimen__aa { font-size: 132px; line-height: 1; font-weight: 700; color: var(--sh-navy); letter-spacing: -0.03em; }
+.sh .fd-specimen__name { font-size: 22px; font-weight: 700; color: var(--sh-navy); }
+.sh .fd-specimen__glyphs { margin-top: 10px !important; font-size: 17px; line-height: 1.7; color: var(--sh-muted); word-break: break-all; }
+.sh .fd-weights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+.sh .fd-weight { padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid var(--sh-line); }
+.sh .fd-weight__sample { font-size: 26px; color: var(--sh-navy); line-height: 1.2; }
+.sh .fd-weight__label { font-size: 13.5px; color: var(--sh-muted); }
+.sh .fd-types { border: 1px solid var(--sh-line); border-radius: 16px; overflow: hidden; background: #fff; }
+.sh .fd-type { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 24px; align-items: center; padding: 18px 24px; }
+.sh .fd-type + .fd-type { border-top: 1px solid var(--sh-line); }
+.sh .fd-type__meta { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.sh .fd-type__label { font-size: 14.5px; font-weight: 700; color: var(--sh-navy); }
+.sh .fd-type__nums { font-size: 13px; color: var(--sh-muted); font-variant-numeric: tabular-nums; }
+.sh .fd-type__sample { min-width: 0; color: var(--ds-color-text, #212529); overflow: hidden; }
+.sh .fd-type__sample > div { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sh .fd-value { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--sh-navy); }
+
+/* ---- Token rows (spacing, radius, elevation, breakpoints) -------------------- */
+.sh .fd-rows { border: 1px solid var(--sh-line); border-radius: 16px; overflow: hidden; background: #fff; }
+.sh .fd-row { display: grid; grid-template-columns: 200px 90px minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: center; padding: 16px 24px; }
+.sh .fd-row + .fd-row { border-top: 1px solid var(--sh-line); }
+.sh .fd-row__use { font-size: 14.5px; color: var(--sh-muted); }
+.sh .fd-bar { height: 18px; border-radius: 4px; background: var(--sh-azure); }
+.sh .fd-gap { display: flex; align-items: center; }
+.sh .fd-gap i { width: 34px; height: 34px; border-radius: 6px; background: #DCE6FF; }
+.sh .fd-gap b { height: 34px; background: repeating-linear-gradient(135deg, rgba(37, 97, 250, 0.9) 0 2px, rgba(37, 97, 250, 0.18) 2px 6px); }
+.sh .fd-tiles { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.sh .fd-shape-tile { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 22px; border: 1px solid var(--sh-line); border-radius: 14px; background: #fff; }
+.sh .fd-shape { width: 100%; height: 86px; background: #EAF0FF; border: 2px solid var(--sh-azure); }
+.sh .fd-stage { display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); padding: 40px 32px; border-radius: 16px; background: #F1F4FA; border: 1px solid var(--sh-line); }
+.sh .fd-lift { display: flex; flex-direction: column; gap: 6px; padding: 18px; min-height: 124px; border-radius: 10px; background: #fff; }
+.sh .fd-lift__use { font-size: 14px; color: var(--sh-muted); }
+
+/* Breakpoints ruler */
+.sh .fd-ruler { display: grid; grid-template-columns: 0.9fr 1fr 1.15fr 1.3fr 1.2fr; border: 1px solid var(--sh-line); border-radius: 16px; overflow: hidden; background: #fff; }
+.sh .fd-bp { padding: 20px 18px 22px; border-left: 1px solid var(--sh-line); }
+.sh .fd-bp:first-child { border-left: 0; }
+.sh .fd-bp__name { font-size: 26px; font-weight: 700; color: var(--sh-navy); line-height: 1; }
+.sh .fd-bp__range { margin-top: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--sh-navy); }
+.sh .fd-bp__use { margin-top: 10px; font-size: 14px; color: var(--sh-muted); }
+.sh .fd-bp__bar { height: 6px; margin: 16px 0 0; border-radius: 3px; background: var(--sh-azure); }
+.sh .fd-bp:nth-child(1) .fd-bp__bar { opacity: 0.25; } .sh .fd-bp:nth-child(2) .fd-bp__bar { opacity: 0.4; }
+.sh .fd-bp:nth-child(3) .fd-bp__bar { opacity: 0.6; } .sh .fd-bp:nth-child(4) .fd-bp__bar { opacity: 0.8; }
+
+/* ---- Motion ------------------------------------------------------------------ */
+.sh .fd-motion { border: 1px solid var(--sh-line); border-radius: 16px; background: #fff; padding: 20px 24px 8px; }
+.sh .fd-motion__play { min-height: 36px; padding: 0 16px; font-size: 14px; cursor: pointer; margin-bottom: 6px; }
+.sh .fd-motion__row { display: grid; grid-template-columns: 210px minmax(0, 1fr) 190px; gap: 22px; align-items: center; padding: 14px 0; border-top: 1px solid var(--sh-line); }
+.sh .fd-motion__meta { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.sh .fd-motion__track { position: relative; height: 28px; border-radius: 999px; background: #EEF2FA; }
+.sh .fd-motion__dot { position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: var(--sh-azure); transition-property: left; }
+.sh .fd-motion__dot.is-on { left: calc(100% - 24px); }
+.sh .fd-motion__use { font-size: 14px; color: var(--sh-muted); }
+@media (prefers-reduced-motion: reduce) { .sh .fd-motion__dot { transition-duration: 0ms !important; } }
+
+/* ---- Overview tiles ------------------------------------------------------------ */
+.sh .fd-bento { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.sh .fd-bento--2 { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+.sh a.fd-tile { padding: 0; overflow: hidden; color: inherit; }
+.sh .fd-tile__art { display: flex; align-items: center; justify-content: center; height: 150px; padding: 20px; background: var(--sh-tint); border-bottom: 1px solid var(--sh-line); }
+.sh .fd-tile__body { display: flex; flex-direction: column; gap: 4px; padding: 18px 20px 20px; }
+.sh .fd-tile__title { font-size: 18px; font-weight: 700; color: var(--sh-navy); }
+.sh .fd-tile__text { font-size: 14.5px; color: var(--sh-muted); }
+.sh .fd-mini-ramps { display: grid; gap: 5px; width: 100%; }
+.sh .fd-mini-ramp { display: grid; grid-template-columns: repeat(11, 1fr); height: 18px; border-radius: 5px; overflow: hidden; }
+.sh .fd-dots { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.sh .fd-dots span { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(1, 17, 62, 0.1); }
+.sh .fd-icons { display: flex; gap: 16px; color: var(--sh-navy); }
+.sh .fd-icons .material-icons { font-size: 30px; }
+
+.sh .fd-note { margin-top: 18px !important; font-size: 14.5px; color: var(--sh-muted); }
+.sh .fd-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--sh-line); }
+
+@media (max-width: 760px) {
+  .sh .fd-specimen, .sh .fd-type, .sh .fd-row, .sh .fd-motion__row { grid-template-columns: 1fr; gap: 10px; }
+  .sh .fd-ruler { grid-template-columns: 1fr; }
+  .sh .fd-roles { grid-template-columns: 1fr; }
+  .sh .fd-ramp__hex { display: none; }
+}

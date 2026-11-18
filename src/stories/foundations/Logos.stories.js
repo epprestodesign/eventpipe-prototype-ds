@@ -13,8 +13,9 @@ const batchPartners = Object.entries(batchLogos)
   .map(([, src]) => src)
 
 export default {
-  title: 'Foundations/Logos',
-  tags: ['autodocs'],
+  id: 'foundations-logos', title: 'Design System/Foundations/Logos',
+  // The Docs page is the hand-written MDX beside this file, not autodocs.
+  tags: [],
   parameters: {
     docs: { description: { component: `
 ## Logos

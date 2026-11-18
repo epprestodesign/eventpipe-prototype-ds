@@ -1,0 +1,46 @@
+<svg viewBox="0 0 1024 688" xmlns="http://www.w3.org/2000/svg" width="1024" height="688">
+  <rect width="1024" height="688" fill="#F8FAFF" />
+  <g fill="#DDE4F2">
+    <g id="row-1">
+      <circle cx="38" cy="33" r="3" /><circle cx="93.75" cy="33" r="3" /><circle cx="149.5" cy="33" r="3" /><circle cx="205.25" cy="33" r="3" /><circle cx="261" cy="33" r="3" /><circle cx="316.75" cy="33" r="3" /><circle cx="372.5" cy="33" r="3" /><circle cx="428.25" cy="33" r="3" /><circle cx="484" cy="33" r="3" /><circle cx="539.75" cy="33" r="3" /><circle cx="595.5" cy="33" r="3" /><circle cx="651.25" cy="33" r="3" /><circle cx="707" cy="33" r="3" /><circle cx="762.75" cy="33" r="3" /><circle cx="818.5" cy="33" r="3" /><circle cx="874.25" cy="33" r="3" /><circle cx="930" cy="33" r="3" /><circle cx="985.75" cy="33" r="3" />
+    </g>
+    <g id="row-2">
+      <circle cx="38" cy="88.1" r="3" /><circle cx="93.75" cy="88.1" r="3" /><circle cx="149.5" cy="88.1" r="3" /><circle cx="205.25" cy="88.1" r="3" /><circle cx="261" cy="88.1" r="3" /><circle cx="316.75" cy="88.1" r="3" /><circle cx="372.5" cy="88.1" r="3" /><circle cx="428.25" cy="88.1" r="3" /><circle cx="484" cy="88.1" r="3" /><circle cx="539.75" cy="88.1" r="3" /><circle cx="595.5" cy="88.1" r="3" /><circle cx="651.25" cy="88.1" r="3" /><circle cx="707" cy="88.1" r="3" /><circle cx="762.75" cy="88.1" r="3" /><circle cx="818.5" cy="88.1" r="3" /><circle cx="874.25" cy="88.1" r="3" /><circle cx="930" cy="88.1" r="3" /><circle cx="985.75" cy="88.1" r="3" />
+    </g>
+    <g id="row-3">
+      <circle cx="38" cy="143.2" r="3" /><circle cx="93.75" cy="143.2" r="3" /><circle cx="149.5" cy="143.2" r="3" /><circle cx="205.25" cy="143.2" r="3" /><circle cx="261" cy="143.2" r="3" /><circle cx="316.75" cy="143.2" r="3" /><circle cx="372.5" cy="143.2" r="3" /><circle cx="428.25" cy="143.2" r="3" /><circle cx="484" cy="143.2" r="3" /><circle cx="539.75" cy="143.2" r="3" /><circle cx="595.5" cy="143.2" r="3" /><circle cx="651.25" cy="143.2" r="3" /><circle cx="707" cy="143.2" r="3" /><circle cx="762.75" cy="143.2" r="3" /><circle cx="818.5" cy="143.2" r="3" /><circle cx="874.25" cy="143.2" r="3" /><circle cx="930" cy="143.2" r="3" /><circle cx="985.75" cy="143.2" r="3" />
+    </g>
+    <g id="row-4">
+      <circle cx="38" cy="198.3" r="3" /><circle cx="93.75" cy="198.3" r="3" /><circle cx="149.5" cy="198.3" r="3" /><circle cx="205.25" cy="198.3" r="3" /><circle cx="261" cy="198.3" r="3" /><circle cx="316.75" cy="198.3" r="3" /><circle cx="372.5" cy="198.3" r="3" /><circle cx="428.25" cy="198.3" r="3" /><circle cx="484" cy="198.3" r="3" /><circle cx="539.75" cy="198.3" r="3" /><circle cx="595.5" cy="198.3" r="3" /><circle cx="651.25" cy="198.3" r="3" /><circle cx="707" cy="198.3" r="3" /><circle cx="762.75" cy="198.3" r="3" /><circle cx="818.5" cy="198.3" r="3" /><circle cx="874.25" cy="198.3" r="3" /><circle cx="930" cy="198.3" r="3" /><circle cx="985.75" cy="198.3" r="3" />
+    </g>
+    <g id="row-5">
+      <circle cx="38" cy="253.4" r="3" /><circle cx="93.75" cy="253.4" r="3" /><circle cx="149.5" cy="253.4" r="3" /><circle cx="205.25" cy="253.4" r="3" /><circle cx="261" cy="253.4" r="3" /><circle cx="316.75" cy="253.4" r="3" /><circle cx="372.5" cy="253.4" r="3" /><circle cx="428.25" cy="253.4" r="3" /><circle cx="484" cy="253.4" r="3" /><circle cx="539.75" cy="253.4" r="3" /><circle cx="595.5" cy="253.4" r="3" /><circle cx="651.25" cy="253.4" r="3" /><circle cx="707" cy="253.4" r="3" /><circle cx="762.75" cy="253.4" r="3" /><circle cx="818.5" cy="253.4" r="3" /><circle cx="874.25" cy="253.4" r="3" /><circle cx="930" cy="253.4" r="3" /><circle cx="985.75" cy="253.4" r="3" />
+    </g>
+    <g id="row-6">
+      <circle cx="38" cy="308.5" r="3" /><circle cx="93.75" cy="308.5" r="3" /><circle cx="149.5" cy="308.5" r="3" /><circle cx="205.25" cy="308.5" r="3" /><circle cx="261" cy="308.5" r="3" /><circle cx="316.75" cy="308.5" r="3" /><circle cx="372.5" cy="308.5" r="3" /><circle cx="428.25" cy="308.5" r="3" /><circle cx="484" cy="308.5" r="3" /><circle cx="539.75" cy="308.5" r="3" /><circle cx="595.5" cy="308.5" r="3" /><circle cx="651.25" cy="308.5" r="3" /><circle cx="707" cy="308.5" r="3" /><circle cx="762.75" cy="308.5" r="3" /><circle cx="818.5" cy="308.5" r="3" /><circle cx="874.25" cy="308.5" r="3" /><circle cx="930" cy="308.5" r="3" /><circle cx="985.75" cy="308.5" r="3" />
+    </g>
+    <g id="row-7">
+      <circle cx="38" cy="363.6" r="3" /><circle cx="93.75" cy="363.6" r="3" /><circle cx="149.5" cy="363.6" r="3" /><circle cx="205.25" cy="363.6" r="3" /><circle cx="261" cy="363.6" r="3" /><circle cx="316.75" cy="363.6" r="3" /><circle cx="372.5" cy="363.6" r="3" /><circle cx="428.25" cy="363.6" r="3" /><circle cx="484" cy="363.6" r="3" /><circle cx="539.75" cy="363.6" r="3" /><circle cx="595.5" cy="363.6" r="3" /><circle cx="651.25" cy="363.6" r="3" /><circle cx="707" cy="363.6" r="3" /><circle cx="762.75" cy="363.6" r="3" /><circle cx="818.5" cy="363.6" r="3" /><circle cx="874.25" cy="363.6" r="3" /><circle cx="930" cy="363.6" r="3" /><circle cx="985.75" cy="363.6" r="3" />
+    </g>
+    <g id="row-8">
+      <circle cx="38" cy="418.7" r="3" /><circle cx="93.75" cy="418.7" r="3" /><circle cx="149.5" cy="418.7" r="3" /><circle cx="205.25" cy="418.7" r="3" /><circle cx="261" cy="418.7" r="3" /><circle cx="316.75" cy="418.7" r="3" /><circle cx="372.5" cy="418.7" r="3" /><circle cx="428.25" cy="418.7" r="3" /><circle cx="484" cy="418.7" r="3" /><circle cx="539.75" cy="418.7" r="3" /><circle cx="595.5" cy="418.7" r="3" /><circle cx="651.25" cy="418.7" r="3" /><circle cx="707" cy="418.7" r="3" /><circle cx="762.75" cy="418.7" r="3" /><circle cx="818.5" cy="418.7" r="3" /><circle cx="874.25" cy="418.7" r="3" /><circle cx="930" cy="418.7" r="3" /><circle cx="985.75" cy="418.7" r="3" />
+    </g>
+    <g id="row-9">
+      <circle cx="38" cy="473.8" r="3" /><circle cx="93.75" cy="473.8" r="3" /><circle cx="149.5" cy="473.8" r="3" /><circle cx="205.25" cy="473.8" r="3" /><circle cx="261" cy="473.8" r="3" /><circle cx="316.75" cy="473.8" r="3" /><circle cx="372.5" cy="473.8" r="3" /><circle cx="428.25" cy="473.8" r="3" /><circle cx="484" cy="473.8" r="3" /><circle cx="539.75" cy="473.8" r="3" /><circle cx="595.5" cy="473.8" r="3" /><circle cx="651.25" cy="473.8" r="3" /><circle cx="707" cy="473.8" r="3" /><circle cx="762.75" cy="473.8" r="3" /><circle cx="818.5" cy="473.8" r="3" /><circle cx="874.25" cy="473.8" r="3" /><circle cx="930" cy="473.8" r="3" /><circle cx="985.75" cy="473.8" r="3" />
+    </g>
+    <g id="row-10">
+      <circle cx="38" cy="528.9" r="3" /><circle cx="93.75" cy="528.9" r="3" /><circle cx="149.5" cy="528.9" r="3" /><circle cx="205.25" cy="528.9" r="3" /><circle cx="261" cy="528.9" r="3" /><circle cx="316.75" cy="528.9" r="3" /><circle cx="372.5" cy="528.9" r="3" /><circle cx="428.25" cy="528.9" r="3" /><circle cx="484" cy="528.9" r="3" /><circle cx="539.75" cy="528.9" r="3" /><circle cx="595.5" cy="528.9" r="3" /><circle cx="651.25" cy="528.9" r="3" /><circle cx="707" cy="528.9" r="3" /><circle cx="762.75" cy="528.9" r="3" /><circle cx="818.5" cy="528.9" r="3" /><circle cx="874.25" cy="528.9" r="3" /><circle cx="930" cy="528.9" r="3" /><circle cx="985.75" cy="528.9" r="3" />
+    </g>
+    <g id="row-11">
+      <circle cx="38" cy="584" r="3" /><circle cx="93.75" cy="584" r="3" /><circle cx="149.5" cy="584" r="3" /><circle cx="205.25" cy="584" r="3" /><circle cx="261" cy="584" r="3" /><circle cx="316.75" cy="584" r="3" /><circle cx="372.5" cy="584" r="3" /><circle cx="428.25" cy="584" r="3" /><circle cx="484" cy="584" r="3" /><circle cx="539.75" cy="584" r="3" /><circle cx="595.5" cy="584" r="3" /><circle cx="651.25" cy="584" r="3" /><circle cx="707" cy="584" r="3" /><circle cx="762.75" cy="584" r="3" /><circle cx="818.5" cy="584" r="3" /><circle cx="874.25" cy="584" r="3" /><circle cx="930" cy="584" r="3" /><circle cx="985.75" cy="584" r="3" />
+    </g>
+    <g id="row-12">
+      <circle cx="38" cy="639.1" r="3" /><circle cx="93.75" cy="639.1" r="3" /><circle cx="149.5" cy="639.1" r="3" /><circle cx="205.25" cy="639.1" r="3" /><circle cx="261" cy="639.1" r="3" /><circle cx="316.75" cy="639.1" r="3" /><circle cx="372.5" cy="639.1" r="3" /><circle cx="428.25" cy="639.1" r="3" /><circle cx="484" cy="639.1" r="3" /><circle cx="539.75" cy="639.1" r="3" /><circle cx="595.5" cy="639.1" r="3" /><circle cx="651.25" cy="639.1" r="3" /><circle cx="707" cy="639.1" r="3" /><circle cx="762.75" cy="639.1" r="3" /><circle cx="818.5" cy="639.1" r="3" /><circle cx="874.25" cy="639.1" r="3" /><circle cx="930" cy="639.1" r="3" /><circle cx="985.75" cy="639.1" r="3" />
+    </g>
+  </g>
+  <g id="bars">
+    <rect x="201.25" y="139.2" width="119.5" height="8" rx="4" fill="#2561FA" />
+    <rect x="758.75" y="304.5" width="63.75" height="8" rx="4" fill="#15AEB3" />
+    <rect x="424.25" y="469.8" width="119.5" height="8" rx="4" fill="#01113E" />
+  </g>
+</svg>

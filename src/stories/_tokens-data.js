@@ -1371,13 +1371,133 @@ export const ramps = [
       },
       {
         "step": "900",
-        "hex": "#01113E",
+        "hex": "#00123D",
         "varName": "--ds-palette-navy-900"
       },
       {
         "step": "950",
         "hex": "#030A26",
         "varName": "--ds-palette-navy-950"
+      }
+    ]
+  },
+  {
+    "family": "Azure",
+    "steps": [
+      {
+        "step": "50",
+        "hex": "#E8F1FB",
+        "varName": "--ds-palette-azure-50"
+      },
+      {
+        "step": "100",
+        "hex": "#C8DFF6",
+        "varName": "--ds-palette-azure-100"
+      },
+      {
+        "step": "200",
+        "hex": "#A3C9F0",
+        "varName": "--ds-palette-azure-200"
+      },
+      {
+        "step": "300",
+        "hex": "#74AEE9",
+        "varName": "--ds-palette-azure-300"
+      },
+      {
+        "step": "400",
+        "hex": "#4593E0",
+        "varName": "--ds-palette-azure-400"
+      },
+      {
+        "step": "500",
+        "hex": "#2380DA",
+        "varName": "--ds-palette-azure-500"
+      },
+      {
+        "step": "600",
+        "hex": "#1876D2",
+        "varName": "--ds-palette-azure-600"
+      },
+      {
+        "step": "700",
+        "hex": "#1462B0",
+        "varName": "--ds-palette-azure-700"
+      },
+      {
+        "step": "800",
+        "hex": "#114F8E",
+        "varName": "--ds-palette-azure-800"
+      },
+      {
+        "step": "900",
+        "hex": "#0D3D6E",
+        "varName": "--ds-palette-azure-900"
+      },
+      {
+        "step": "950",
+        "hex": "#08284A",
+        "varName": "--ds-palette-azure-950"
+      }
+    ]
+  },
+  {
+    "family": "Graphite",
+    "steps": [
+      {
+        "step": "50",
+        "hex": "#F6F7F8",
+        "varName": "--ds-palette-graphite-50"
+      },
+      {
+        "step": "100",
+        "hex": "#ECEEF0",
+        "varName": "--ds-palette-graphite-100"
+      },
+      {
+        "step": "200",
+        "hex": "#DADDE2",
+        "varName": "--ds-palette-graphite-200"
+      },
+      {
+        "step": "300",
+        "hex": "#C2C6CE",
+        "varName": "--ds-palette-graphite-300"
+      },
+      {
+        "step": "400",
+        "hex": "#A6ABB6",
+        "varName": "--ds-palette-graphite-400"
+      },
+      {
+        "step": "500",
+        "hex": "#8C92A0",
+        "varName": "--ds-palette-graphite-500"
+      },
+      {
+        "step": "600",
+        "hex": "#6F7583",
+        "varName": "--ds-palette-graphite-600"
+      },
+      {
+        "step": "700",
+        "hex": "#565B67",
+        "varName": "--ds-palette-graphite-700"
+      },
+      {
+        "step": "800",
+        "hex": "#3D414A",
+        "varName": "--ds-palette-graphite-800"
+      },
+      {
+        "step": "900",
+        "hex": "#262930",
+        "varName": "--ds-palette-graphite-900"
+      },
+      {
+        "step": "950",
+        "hex": "#15171B",
+        "varName": "--ds-palette-graphite-950"
       }
     ]
   }
@@ -1387,21 +1507,21 @@ export const semanticGroups = {
   "Text": [
     {
       "name": "color.text",
-      "hex": "#0F172A",
+      "hex": "#212529",
       "desc": "Primary text — body copy, headers, buttons.",
-      "primitive": "Slate 900"
+      "primitive": "#212529"
     },
     {
       "name": "color.text.subtle",
-      "hex": "#475569",
+      "hex": "#6C757D",
       "desc": "Secondary text — nav, subtle links, labels.",
-      "primitive": "Slate 600"
+      "primitive": "#6C757D"
     },
     {
       "name": "color.text.subtlest",
-      "hex": "#94A3B8",
+      "hex": "#8C92A0",
       "desc": "Tertiary text — metadata, placeholders.",
-      "primitive": "Slate 400"
+      "primitive": "#8C92A0"
     },
     {
       "name": "color.text.inverse",
@@ -1411,15 +1531,15 @@ export const semanticGroups = {
     },
     {
       "name": "color.text.disabled",
-      "hex": "#CBD5E1",
+      "hex": "#C2C6CE",
       "desc": "Text in a disabled state.",
-      "primitive": "Slate 300"
+      "primitive": "Graphite 300"
     },
     {
       "name": "color.text.brand",
-      "hex": "#01113E",
+      "hex": "#2561FA",
       "desc": "Text that reinforces the brand.",
-      "primitive": "Navy 900"
+      "primitive": "#2561FA"
     },
     {
       "name": "color.text.danger",
@@ -1449,29 +1569,29 @@ export const semanticGroups = {
   "Link": [
     {
       "name": "color.link",
-      "hex": "#01113E",
-      "desc": "Links (default/hover). Navy to match the brand.",
-      "primitive": "Navy 900"
+      "hex": "#2561FA",
+      "desc": "Links, default and hover.",
+      "primitive": "#2561FA"
     },
     {
       "name": "color.link.visited",
-      "hex": "#16265C",
+      "hex": "#114F8E",
       "desc": "Visited links.",
-      "primitive": "Navy 700"
+      "primitive": "Azure 800"
     }
   ],
   "Icon": [
     {
       "name": "color.icon",
-      "hex": "#0F172A",
+      "hex": "#262930",
       "desc": "Default icon color.",
-      "primitive": "Slate 900"
+      "primitive": "Graphite 900"
     },
     {
       "name": "color.icon.subtle",
-      "hex": "#475569",
+      "hex": "#6F7583",
       "desc": "Icons paired with subtle text.",
-      "primitive": "Slate 600"
+      "primitive": "Graphite 600"
     },
     {
       "name": "color.icon.inverse",
@@ -1481,49 +1601,49 @@ export const semanticGroups = {
     },
     {
       "name": "color.icon.disabled",
-      "hex": "#CBD5E1",
+      "hex": "#C2C6CE",
       "desc": "Icons in a disabled state.",
-      "primitive": "Slate 300"
+      "primitive": "Graphite 300"
     }
   ],
   "Border": [
     {
       "name": "color.border",
-      "hex": "#E2E8F0",
+      "hex": "#DADDE2",
       "desc": "Group/separate UI — cards, dividers.",
-      "primitive": "Slate 200"
+      "primitive": "Graphite 200"
     },
     {
       "name": "color.border.bold",
-      "hex": "#94A3B8",
+      "hex": "#A6ABB6",
       "desc": "Stronger border (≥3:1).",
-      "primitive": "Slate 400"
+      "primitive": "Graphite 400"
     },
     {
       "name": "color.border.brand",
-      "hex": "#01113E",
+      "hex": "#2561FA",
       "desc": "Brand/selected borders.",
-      "primitive": "Navy 900"
+      "primitive": "#2561FA"
     },
     {
       "name": "color.border.disabled",
-      "hex": "#E2E8F0",
+      "hex": "#DADDE2",
       "desc": "Borders of disabled elements.",
-      "primitive": "Slate 200"
+      "primitive": "Graphite 200"
     },
     {
       "name": "color.border.focused",
-      "hex": "#01113E",
+      "hex": "#2561FA",
       "desc": "Focus ring.",
-      "primitive": "Navy 900"
+      "primitive": "#2561FA"
     }
   ],
   "Background · neutral": [
     {
       "name": "color.background.neutral",
-      "hex": "#F1F5F9",
+      "hex": "#ECEEF0",
       "desc": "Default neutral element bg (e.g. default buttons).",
-      "primitive": "Slate 100"
+      "primitive": "Graphite 100"
     },
     {
       "name": "color.background.neutral.subtle",
@@ -1533,9 +1653,9 @@ export const semanticGroups = {
     },
     {
       "name": "color.background.neutral.bold",
-      "hex": "#0F172A",
+      "hex": "#262930",
       "desc": "Vibrant neutral bg.",
-      "primitive": "Slate 900"
+      "primitive": "Graphite 900"
     },
     {
       "name": "color.background.input",
@@ -1547,27 +1667,27 @@ export const semanticGroups = {
   "Background · brand & selected": [
     {
       "name": "color.background.brand.subtlest",
-      "hex": "#EEF1F8",
+      "hex": "#E8F1FB",
       "desc": "Subtle brand-tinted bg.",
-      "primitive": "Navy 50"
+      "primitive": "Azure 50"
     },
     {
       "name": "color.background.brand.bold",
-      "hex": "#01113E",
+      "hex": "#2561FA",
       "desc": "Primary buttons / brand emphasis.",
-      "primitive": "Navy 900"
+      "primitive": "#2561FA"
     },
     {
       "name": "color.background.selected",
-      "hex": "#D5DCEC",
+      "hex": "#C8DFF6",
       "desc": "Selected rows, open items.",
-      "primitive": "Navy 100"
+      "primitive": "Azure 100"
     },
     {
       "name": "color.background.selected.bold",
-      "hex": "#01113E",
+      "hex": "#2561FA",
       "desc": "Bold selected bg.",
-      "primitive": "Navy 900"
+      "primitive": "#2561FA"
     }
   ],
   "Background · status": [
@@ -1641,9 +1761,9 @@ export const semanticGroups = {
     },
     {
       "name": "elevation.surface.sunken",
-      "hex": "#F8FAFC",
+      "hex": "#F6F7F8",
       "desc": "Grouped/secondary background.",
-      "primitive": "Slate 50"
+      "primitive": "Graphite 50"
     },
     {
       "name": "elevation.surface.raised",

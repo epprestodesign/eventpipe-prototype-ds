@@ -8,7 +8,7 @@ import { DEFAULT_PRESETS, formatRange } from '../../components/dateRangeMath.js'
 const TODAY = '2026-09-29'
 
 export default {
-  title: 'Components/Forms/Date Range Picker',
+  id: 'components-forms-date-range-picker', title: 'Design System/Components/Forms/Date Range Picker',
   component: DsDateRangePicker,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

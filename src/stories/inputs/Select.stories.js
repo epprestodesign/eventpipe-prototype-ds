@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsSelect from '../../components/DsSelect.vue'
 const roomTypes = ['Standard Queen', 'Deluxe King', 'Twin/Double', 'Ocean View Suite', 'Family Room', 'Executive Suite']
 export default {
-  title: 'Components/Forms/Select',
+  id: 'components-forms-select', title: 'Design System/Components/Forms/Select',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

@@ -35,7 +35,7 @@ const MISSING_ZERO = [
 ]
 
 export default {
-  title: 'Components/Charts/Bar List',
+  id: 'components-charts-bar-list', title: 'Design System/Components/Charts/Bar List',
   component: DsBarList,
   tags: ['autodocs'],
   parameters: {

@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsField from '../../components/DsField.vue'
 
 export default {
-  title: 'Components/Forms/Input Tags',
+  id: 'components-forms-input-tags', title: 'Design System/Components/Forms/Input Tags',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 Free-form tag entry — type a value and press Enter to add a chip. Restyled

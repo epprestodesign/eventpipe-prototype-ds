@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsInput from '../../components/DsInput.vue'
 
 export default {
-  title: 'Components/Forms/Input Number',
+  id: 'components-forms-input-number', title: 'Design System/Components/Forms/Input Number',
   component: DsInput,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

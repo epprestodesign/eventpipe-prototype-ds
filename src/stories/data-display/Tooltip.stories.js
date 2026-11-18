@@ -1,6 +1,6 @@
 /** DATA DISPLAY / Tooltip → Quasar: QTooltip (native) */
 export default {
-  title: 'Components/Typography & Content/Tooltip',
+  id: 'components-typography-content-tooltip', title: 'Design System/Components/Typography & Content/Tooltip',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

@@ -1,0 +1,94 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+import { Go } from '../start-here/_blocks'
+import { Band } from './_specimens'
+import { ramps } from '../_tokens-data.js'
+import art from '../start-here/patterns/hero-hex.svg'
+import logo from '../../assets/logo/eventpipe-logo.svg'
+
+<Meta title="Design System/Foundations/Overview" />
+
+export const strip = (family) => (
+  <div className="fd-mini-ramp" key={family}>
+    {ramps.find((r) => r.family === family).steps.map((s) => <span key={s.step} style={{ background: s.hex }} />)}
+  </div>
+)
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} eyebrow="Design System" title="Foundations">The tokens every component and page is built from: colour, type, symbols, space, shape and motion. Change one here and it changes everywhere.</Band>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Colour</h2>
+  <p className="sh-sub">The Palette holds the raw ramps. Colors gives them a job.</p>
+  <div className="fd-bento">
+    <Go to="foundations-palette--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><div className="fd-mini-ramps">{['Azure', 'Navy', 'Graphite', 'Green', 'Red'].map(strip)}</div></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Palette</span><span className="fd-tile__text">25 colour families, each from 50 to 950.</span></div>
+    </Go>
+    <Go to="foundations-colors--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><div className="fd-dots">{['#2561FA', '#212529', '#6C757D', '#DADDE2', '#ECEEF0', '#16A34A', '#FACC15', '#DC2626'].map((c) => <span key={c} style={{ background: c }} />)}</div></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Colors</span><span className="fd-tile__text">43 roles for text, borders, backgrounds and surfaces.</span></div>
+    </Go>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Type and symbols</h2>
+  <p className="sh-sub">What the interface says, and the marks that go with it.</p>
+  <div className="fd-bento fd-bento--2">
+    <Go to="foundations-typography--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><span style={{ fontSize: 72, fontWeight: 700, color: '#01113E', lineHeight: 1 }}>Aa</span><span style={{ marginLeft: 22, fontSize: 18, color: '#566074', lineHeight: 1.5 }}>Product Sans<br />400 · 500 · 700</span></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Typography</span><span className="fd-tile__text">One typeface, fourteen styles, three weights.</span></div>
+    </Go>
+    <Go to="foundations-icons--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><div className="fd-icons">{['hotel', 'event', 'groups', 'payments', 'search', 'settings'].map((n) => <i key={n} className="material-icons" aria-hidden="true">{n}</i>)}</div></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Icons</span><span className="fd-tile__text">Material Icons, grouped by where they're used.</span></div>
+    </Go>
+    <Go to="foundations-logos--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><img src={logo} alt="EventPipe" style={{ width: 190 }} /></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Logos</span><span className="fd-tile__text">The EventPipe logo and its colour variants.</span></div>
+    </Go>
+    <Go to="foundations-imagery--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><div className="fd-icons">{['king_bed', 'pool', 'restaurant', 'apartment'].map((n) => <i key={n} className="material-icons" aria-hidden="true">{n}</i>)}</div></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Imagery</span><span className="fd-tile__text">The hotel photo library, loaded from its own repo.</span></div>
+    </Go>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Space and shape</h2>
+  <p className="sh-sub">How far apart things sit, how their corners look, and what sits on top.</p>
+  <div className="fd-bento">
+    <Go to="foundations-spacing--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><div style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>{[1, 2, 3, 4, 5, 6].map((n) => <span key={n} style={{ width: 22, height: `calc(var(--ds-space-${n}) * 2.4)`, borderRadius: 4, background: '#2561FA', opacity: 0.35 + n * 0.1 }} />)}</div></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Spacing</span><span className="fd-tile__text">Six steps, from 4px to 32px.</span></div>
+    </Go>
+    <Go to="foundations-border-radius--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><div style={{ display: 'flex', gap: 16 }}><span style={{ width: 78, height: 64, borderRadius: 'var(--ds-radius-md)', border: '2px solid #2561FA', background: '#EAF0FF' }} /><span style={{ width: 110, height: 64, borderRadius: 'var(--ds-radius-pill)', border: '2px solid #2561FA', background: '#EAF0FF' }} /></div></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Border Radius</span><span className="fd-tile__text">A crisp 4px corner, and a pill for chips.</span></div>
+    </Go>
+    <Go to="foundations-elevation--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art" style={{ background: '#F1F4FA' }}><div style={{ display: 'flex', gap: 18 }}>{[1, 2, 3, 4].map((n) => <span key={n} style={{ width: 54, height: 54, borderRadius: 8, background: '#fff', boxShadow: `var(--ds-shadow-${n})` }} />)}</div></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Elevation</span><span className="fd-tile__text">Four shadow levels and the card glow.</span></div>
+    </Go>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Behaviour</h2>
+  <p className="sh-sub">How layouts respond to the screen, and how things move.</p>
+  <div className="fd-bento">
+    <Go to="foundations-breakpoints--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><div style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>{[['xs', 26], ['sm', 40], ['md', 58], ['lg', 78], ['xl', 100]].map(([n, w]) => <span key={n} style={{ width: w, height: w * 0.62, borderRadius: 5, border: '2px solid #2561FA', background: '#EAF0FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12.5, fontWeight: 700, color: '#1B47C2' }}>{n}</span>)}</div></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Breakpoints</span><span className="fd-tile__text">Five screen sizes, xs to xl.</span></div>
+    </Go>
+    <Go to="foundations-motion--docs" className="sh-card fd-tile">
+      <div className="fd-tile__art"><svg width="220" height="90" viewBox="0 0 220 90" aria-hidden="true"><path d="M10 80 C 52 80, 10 10, 210 10" fill="none" stroke="#2561FA" strokeWidth="3" strokeLinecap="round" /><circle cx="10" cy="80" r="6" fill="#01113E" /><circle cx="210" cy="10" r="6" fill="#15AEB3" /></svg></div>
+      <div className="fd-tile__body"><span className="fd-tile__title">Motion</span><span className="fd-tile__text">Four durations and four easing curves.</span></div>
+    </Go>
+  </div>
+</div>
+
+</div>
+</Unstyled>

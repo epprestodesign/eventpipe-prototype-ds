@@ -1,41 +1,198 @@
 import { Meta } from '@storybook/addon-docs/blocks'
+import { Go } from './start-here/_blocks'
+import tilePipes from './start-here/patterns/tile-pipes.svg'
 
-<Meta title="Components/Overview" />
+<Meta title="Design System/Components/Overview" />
 
-# Components
+<div className="sh">
 
-The EventPipe component library, grouped by **function** (Shopify Polaris–style).
-Every component carries the design tokens — Azure primary, Graphite neutrals, 4px
-radius, 40px control height. Foundational tokens live in **Foundations**;
-full-screen app scaffolds live in **App Chrome**.
+<div className="sh-band" style={{ '--sh-art': `url("${tilePipes}")` }}>
+  <div className="sh-eyebrow">Design System</div>
+  <h1 className="sh-h1">Components</h1>
+  <p className="sh-lede">The EventPipe component library, grouped by what each component does. Every one carries the design tokens: Azure primary, Graphite neutrals, a 4px radius and a 40px control height.</p>
+</div>
 
-## Actions
-Triggers and overlays. — **Button · Button Group · Link · Dropdown · Menu · Popover · Modal · Dialog · Backdrop · Side Panel**
+<div className="sh-section">
+  <h2 className="sh-h2">All 97 components</h2>
+  <p className="sh-sub">Click any name to open its page, with usage notes, every variant and the props table.</p>
+  <div className="sh-grid sh-grid--2">
+    <div className="sh-card">
+      <div className="sh-eyebrow">11 components</div>
+      <h3 className="sh-card__title">Actions</h3>
+      <p className="sh-card__text">Triggers and overlays.</p>
+      <div className="sh-pills">
+        <Go to="components-actions-action-menu--docs" className="sh-pill">Action Menu</Go>
+        <Go to="components-actions-link--docs" className="sh-pill">Link</Go>
+        <Go to="components-actions-popover--docs" className="sh-pill">Popover</Go>
+        <Go to="components-actions-backdrop--docs" className="sh-pill">Backdrop</Go>
+        <Go to="components-actions-dialog--docs" className="sh-pill">Dialog</Go>
+        <Go to="components-actions-modal--docs" className="sh-pill">Modal</Go>
+        <Go to="components-actions-button--docs" className="sh-pill">Button</Go>
+        <Go to="components-actions-button-group--docs" className="sh-pill">Button Group</Go>
+        <Go to="components-actions-side-panel--docs" className="sh-pill">Side Panel</Go>
+        <Go to="components-actions-dropdown--docs" className="sh-pill">Dropdown</Go>
+        <Go to="components-actions-menu--docs" className="sh-pill">Menu</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">5 components</div>
+      <h3 className="sh-card__title">Navigation</h3>
+      <p className="sh-card__text">Moving through the app.</p>
+      <div className="sh-pills">
+        <Go to="components-navigation-breadcrumbs--docs" className="sh-pill">Breadcrumbs</Go>
+        <Go to="components-navigation-pagination--docs" className="sh-pill">Pagination</Go>
+        <Go to="components-navigation-search--docs" className="sh-pill">Search</Go>
+        <Go to="components-navigation-stepper--docs" className="sh-pill">Stepper</Go>
+        <Go to="components-navigation-tabs--docs" className="sh-pill">Tabs</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">30 components</div>
+      <h3 className="sh-card__title">Forms</h3>
+      <p className="sh-card__text">Data entry. Every input composes into Form Field, with the label above.</p>
+      <div className="sh-pills">
+        <Go to="components-forms-autocomplete--docs" className="sh-pill">Autocomplete</Go>
+        <Go to="components-forms-checkbox--docs" className="sh-pill">Checkbox</Go>
+        <Go to="components-forms-checkbox-tree--docs" className="sh-pill">Checkbox Tree</Go>
+        <Go to="components-forms-choice-chips--docs" className="sh-pill">Choice Chips</Go>
+        <Go to="components-forms-date-picker--docs" className="sh-pill">Date Picker</Go>
+        <Go to="components-forms-date-range-picker--docs" className="sh-pill">Date Range Picker</Go>
+        <Go to="components-forms-file-field--docs" className="sh-pill">File Field</Go>
+        <Go to="components-forms-form-field--docs" className="sh-pill">Form Field</Go>
+        <Go to="components-forms-input--docs" className="sh-pill">Input</Go>
+        <Go to="components-forms-input-date--docs" className="sh-pill">Input Date</Go>
+        <Go to="components-forms-input-file--docs" className="sh-pill">Input File</Go>
+        <Go to="components-forms-input-group--docs" className="sh-pill">Input Group</Go>
+        <Go to="components-forms-input-number--docs" className="sh-pill">Input Number</Go>
+        <Go to="components-forms-input-payment--docs" className="sh-pill">Input Payment</Go>
+        <Go to="components-forms-input-tags--docs" className="sh-pill">Input Tags</Go>
+        <Go to="components-forms-multi-select--docs" className="sh-pill">Multi-Select</Go>
+        <Go to="components-forms-pin-input--docs" className="sh-pill">Pin Input</Go>
+        <Go to="components-forms-radio-group--docs" className="sh-pill">Radio Group</Go>
+        <Go to="components-forms-range--docs" className="sh-pill">Range</Go>
+        <Go to="components-forms-rating--docs" className="sh-pill">Rating</Go>
+        <Go to="components-forms-select--docs" className="sh-pill">Select</Go>
+        <Go to="components-forms-slider--docs" className="sh-pill">Slider</Go>
+        <Go to="components-forms-switch--docs" className="sh-pill">Switch</Go>
+        <Go to="components-forms-text-area--docs" className="sh-pill">Text Area</Go>
+        <Go to="components-forms-text-field--docs" className="sh-pill">Text Field</Go>
+        <Go to="components-forms-time-picker--docs" className="sh-pill">Time Picker</Go>
+        <Go to="components-forms-transfer-list--docs" className="sh-pill">Transfer List</Go>
+        <Go to="components-forms-url-field--docs" className="sh-pill">URL Field</Go>
+        <Go to="components-forms-file-upload--docs" className="sh-pill">File Upload</Go>
+        <Go to="components-forms-form-example--docs" className="sh-pill">Form Example</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">13 components</div>
+      <h3 className="sh-card__title">Feedback &amp; Status</h3>
+      <p className="sh-card__text">Telling the user what state things are in.</p>
+      <div className="sh-pills">
+        <Go to="components-feedback-status-badge--docs" className="sh-pill">Badge</Go>
+        <Go to="components-feedback-status-badge-group--docs" className="sh-pill">Badge Group</Go>
+        <Go to="components-feedback-status-status--docs" className="sh-pill">Status</Go>
+        <Go to="components-feedback-status-alert--docs" className="sh-pill">Alert</Go>
+        <Go to="components-feedback-status-banner--docs" className="sh-pill">Banner</Go>
+        <Go to="components-feedback-status-loading-indicator--docs" className="sh-pill">Loading Indicator</Go>
+        <Go to="components-feedback-status-notification--docs" className="sh-pill">Notification</Go>
+        <Go to="components-feedback-status-progress--docs" className="sh-pill">Progress</Go>
+        <Go to="components-feedback-status-skeleton--docs" className="sh-pill">Skeleton</Go>
+        <Go to="components-feedback-status-snackbar--docs" className="sh-pill">Snackbar</Go>
+        <Go to="components-feedback-status-toast--docs" className="sh-pill">Toast</Go>
+        <Go to="components-feedback-status-empty-states--docs" className="sh-pill">Empty States</Go>
+        <Go to="components-feedback-status-loading-states--docs" className="sh-pill">Loading States</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">14 components</div>
+      <h3 className="sh-card__title">Layout &amp; Structure</h3>
+      <p className="sh-card__text">Surfaces and structure for content.</p>
+      <div className="sh-pills">
+        <Go to="components-layout-structure-accordion--docs" className="sh-pill">Accordion</Go>
+        <Go to="components-layout-structure-divider--docs" className="sh-pill">Divider</Go>
+        <Go to="components-layout-structure-list--docs" className="sh-pill">List</Go>
+        <Go to="components-layout-structure-list-item--docs" className="sh-pill">List Item</Go>
+        <Go to="components-layout-structure-stat--docs" className="sh-pill">Stat</Go>
+        <Go to="components-layout-structure-table--docs" className="sh-pill">Table</Go>
+        <Go to="components-layout-structure-box--docs" className="sh-pill">Box</Go>
+        <Go to="components-layout-structure-card--docs" className="sh-pill">Card</Go>
+        <Go to="components-layout-structure-card-headers--docs" className="sh-pill">Card Headers</Go>
+        <Go to="components-layout-structure-container--docs" className="sh-pill">Container</Go>
+        <Go to="components-layout-structure-grid--docs" className="sh-pill">Grid</Go>
+        <Go to="components-layout-structure-info-grid--docs" className="sh-pill">Info Grid</Go>
+        <Go to="components-layout-structure-section-header--docs" className="sh-pill">Section Header</Go>
+        <Go to="components-layout-structure-stack--docs" className="sh-pill">Stack</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">5 components</div>
+      <h3 className="sh-card__title">Media &amp; Visuals</h3>
+      <p className="sh-card__text">Imagery and symbols.</p>
+      <div className="sh-pills">
+        <Go to="components-media-visuals-avatar--docs" className="sh-pill">Avatar</Go>
+        <Go to="components-media-visuals-carousel--docs" className="sh-pill">Carousel</Go>
+        <Go to="components-media-visuals-icon--docs" className="sh-pill">Icon</Go>
+        <Go to="components-media-visuals-image-list--docs" className="sh-pill">Image List</Go>
+        <Go to="components-media-visuals-thumbnail--docs" className="sh-pill">Thumbnail</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">5 components</div>
+      <h3 className="sh-card__title">Typography &amp; Content</h3>
+      <p className="sh-card__text">Text-level content.</p>
+      <div className="sh-pills">
+        <Go to="components-typography-content-chip--docs" className="sh-pill">Chip</Go>
+        <Go to="components-typography-content-tooltip--docs" className="sh-pill">Tooltip</Go>
+        <Go to="components-typography-content-heading--docs" className="sh-pill">Heading</Go>
+        <Go to="components-typography-content-paragraph--docs" className="sh-pill">Paragraph</Go>
+        <Go to="components-typography-content-text--docs" className="sh-pill">Text</Go>
+      </div>
+    </div>
+    <div className="sh-card">
+      <div className="sh-eyebrow">14 components</div>
+      <h3 className="sh-card__title">Charts</h3>
+      <p className="sh-card__text">Data visualisation by chart type, plus the shared chart parts.</p>
+      <div className="sh-pills">
+        <Go to="components-charts-line--docs" className="sh-pill">Line</Go>
+        <Go to="components-charts-area--docs" className="sh-pill">Area</Go>
+        <Go to="components-charts-bar--docs" className="sh-pill">Bar</Go>
+        <Go to="components-charts-bar-list--docs" className="sh-pill">Bar List</Go>
+        <Go to="components-charts-stacked-bar--docs" className="sh-pill">Stacked Bar</Go>
+        <Go to="components-charts-donut--docs" className="sh-pill">Donut</Go>
+        <Go to="components-charts-sparkline--docs" className="sh-pill">Sparkline</Go>
+        <Go to="components-charts-metric-card--docs" className="sh-pill">Metric Card</Go>
+        <Go to="components-charts-shared-elements-chart-card--docs" className="sh-pill">Chart Card</Go>
+        <Go to="components-charts-shared-elements-header--docs" className="sh-pill">Header</Go>
+        <Go to="components-charts-shared-elements-legend--docs" className="sh-pill">Legend</Go>
+        <Go to="components-charts-shared-elements-tooltip--docs" className="sh-pill">Tooltip</Go>
+        <Go to="components-charts-shared-elements-states--docs" className="sh-pill">States</Go>
+        <Go to="components-charts-shared-elements-data-table--docs" className="sh-pill">Data Table</Go>
+      </div>
+      <div className="sh-links"><Go to="design-system-components-charts-overview--docs" className="sh-link">Charts overview</Go></div>
+    </div>
+  </div>
+</div>
 
-## Navigation
-Moving through the app. — **Breadcrumbs · Tabs · Pagination · Stepper**
+<div className="sh-section">
+  <h2 className="sh-h2">Around the components</h2>
+  <p className="sh-sub">What sits beside them in the Design System folder.</p>
+  <div className="sh-grid sh-grid--3">
+    <div className="sh-card sh-card--flat">
+      <h3 className="sh-card__title">Foundations</h3>
+      <p className="sh-card__text">The tokens the components are made of: palette, colour roles, type, icons, spacing, radius, elevation and motion.</p>
+      <div className="sh-links"><Go to="design-system-foundations-overview--docs" className="sh-link">Foundations</Go></div>
+    </div>
+    <div className="sh-card sh-card--flat">
+      <h3 className="sh-card__title">App Chrome</h3>
+      <p className="sh-card__text">The frame every page sits in: the app shell with its sidebar, the app bar, the page header and the save bar.</p>
+      <div className="sh-links"><Go to="app-chrome-app-shell--docs" className="sh-link">App Shell</Go></div>
+    </div>
+    <div className="sh-card sh-card--flat">
+      <h3 className="sh-card__title">App Screens</h3>
+      <p className="sh-card__text">Whole pages built from these components, in the app's own menu order.</p>
+      <div className="sh-links"><Go to="pages-02-events--events" story className="sh-link">Events page</Go></div>
+    </div>
+  </div>
+</div>
 
-## Forms
-Data entry — the label-above field system (every input composes into **Form Field**).
-**Form Field · Input · Input Number · Input Payment · Input Date · Input File · Input Tags · Pin Input · Input Group · Text Field · Text Area · Search · URL Field · Autocomplete · Time Picker · Select · Multi-Select · Checkbox · Checkbox Tree · Radio Group · Switch · Choice Chips · Slider · Range · Transfer List · Date Picker · Date Range Picker · File Upload · Rating**
-
-## Feedback & Status
-Communicating state. — **Badge · Badge Group · Alert · Banner · Progress · Skeleton · Loading Indicator · Snackbar · Toast · Empty States**
-
-## Layout & Structure
-Structure and content surfaces. — **Box · Container · Grid · Stack · Divider · Table · Card · Card Headers · Accordion · Section Header · List · List Item · Info Grid**
-
-## Media & Visuals
-Imagery and symbols. — **Avatar · Icon · Thumbnail · Image List · Carousel**
-
-## Typography & Content
-Text-level content. — **Text · Heading · Paragraph · Chip · Tooltip**
-
-## Charts
-Data visualisation, organised by chart type. — **Line · Area · Bar · Stacked Bar · Donut · Sparkline · Metric Card**, plus shared Chart Card, Header, Legend, Tooltip, States and Data Table. Start at [Charts → Overview](?path=/docs/components-charts-overview--docs).
-
----
-
-**Where things live:** tokens → **Foundations**; reusable components (above) →
-**Components**; the sidebar / app bar / page header scaffold → **App Chrome**;
-sign-in flows → **Account**.
+</div>

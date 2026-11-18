@@ -1,6 +1,6 @@
 /** DATA DISPLAY / List → Quasar: QList + QItem + QItemSection (native compound) */
 export default {
-  title: 'Components/Layout & Structure/List',
+  id: 'components-layout-structure-list', title: 'Design System/Components/Layout & Structure/List',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

@@ -1,6 +1,6 @@
 import { Meta } from '@storybook/addon-docs/blocks'
 
-<Meta title="Getting Started/Architecture & Conventions" />
+<Meta title="Start Here/Architecture & Conventions" />
 
 # Architecture & Conventions
 
@@ -14,10 +14,11 @@ existing work.
 
 ## Reading the system efficiently
 
-1. **Find the surface** in the sidebar — a token (`Foundations`), a reusable
-   component (`Components / <function>`), a scaffold (`App Chrome`), or a full
-   screen (`Pages`). See **Introduction** for the section map and **Components →
-   Overview** for the function grouping.
+1. **Find the surface** in the sidebar — a token (`Design System / Foundations`),
+   a reusable component (`Design System / Components / <function>`), a scaffold
+   (`Design System / App Chrome`), or a full screen (`App Screens / Admin Pages`).
+   See **Start Here → How to browse** for the section map and **Components →
+   Overview** for every component by function.
 2. **Locate the source** — every story maps to a component or page (tables below).
 3. **Reuse before rebuilding** — most new screens compose existing `Ds*` primitives.
 4. **Match the conventions** — tokens, naming, and story shape below.
@@ -116,15 +117,25 @@ existing work.
 ## Story conventions
 
 - One `*.stories.js` per component. **`title` decides sidebar placement** — e.g.
-  `title: 'Components/Forms/Input'`, `title: 'Pages/02 Events'`. The source folder
-  is organizational only.
+  `title: 'Design System/Components/Forms/Input'`,
+  `title: 'App Screens/Admin Pages/02 Events'`. The source folder is
+  organizational only.
+- **`id` keeps links stable.** A story's URL comes from its `id`, or from its
+  `title` when no `id` is set. Stories that existed before the 2026-11-18 sidebar
+  reorganisation pin their original `id` in the meta (`id: 'components-forms-input'`),
+  so links shared earlier still open. When you move a story to another folder, keep
+  its `id`. A new story doesn't need one.
 - Add `tags: ['autodocs']` for a generated Docs tab.
 - **Variants are named exports** (`export const Default = …`). Full-page/scaffold
   components set `parameters: { layout: 'fullscreen' }`.
 - Live/interactive demos use a `render()` with a `setup()` returning reactive state.
-- Sidebar order is **explicit** in `preview.js` `storySort` (`Getting Started` →
-  `Foundations` → `Components` → `App Chrome` → `Account` → `Pages` → `Design
-  Requests` → `*`). Add new categories/pages there.
+- Sidebar order is **explicit** in `preview.js` `storySort`: `Start Here` →
+  `Design System` (Foundations, Components, App Chrome) → `App Screens` (Admin
+  Pages, Sign up ∕ Login) → `Design Requests` (newest first) → `Eventpipe Labs`.
+  Add new categories/pages there.
+- **Standalone MDX pages** (an `Overview.mdx` with a `Meta title`) take their URL
+  from the title. If you rename or move one, add the old id to `MOVED` in
+  `.storybook/manager.js` so old links are redirected.
 
 ---
 
@@ -132,8 +143,9 @@ existing work.
 
 1. Create the SFC in `src/components/` (`Ds*` name for a primitive).
 2. Use DS tokens + the prefix naming convention; reuse a shared primitive if one fits.
-3. Add `src/stories/<category>/Name.stories.js` with a `Components/<function>/Name`
-   `title`, `tags: ['autodocs']`, and variants.
+3. Add `src/stories/<category>/Name.stories.js` with a
+   `Design System/Components/<function>/Name` `title`, `tags: ['autodocs']`, and
+   variants.
 4. If it's a new group/page, add it to `storySort` in `.storybook/preview.js`.
 5. Verify with `pnpm build-storybook` (the deploy gate).
 
@@ -149,3 +161,35 @@ existing work.
   floating label) keep their natural height; don't force 40px on those.
 - **`references/` is local-only** (gitignored) — design screenshots live on disk, not in the repo.
 - **Run from a git branch**, not `main`; deploy happens automatically on merge to `main`.
+
+---
+
+## Run, customise, deploy
+
+| What you want to change | File |
+| --- | --- |
+| Brand colors, base font, global radius | `src/css/quasar.variables.scss` |
+| Design tokens (palette, color roles, spacing, radius, type) | `src/css/ds-palette.scss`, `src/css/ds-color-tokens.scss`, `src/css/tokens.scss` |
+| Per-component overrides & global CSS (incl. the 40px control height) | `src/css/app.scss` |
+| Sidebar order | `.storybook/preview.js` (`storySort`) |
+| Sidebar logo, favicon, redirects for moved pages | `.storybook/manager.js`, `.storybook/static/` |
+| The designed docs pages (Start Here and the overviews) | `src/stories/start-here/` (`_blocks.js`, `start-here.css`) |
+| The Foundations pages (one `.mdx` beside each foundations story) | `src/stories/foundations/` (`_specimens.js`, `foundations.css`); they read live token values, and `node scripts/gen-tokens-data.mjs` refreshes the palette and colour data |
+| Components | `src/components/` (`Ds*` primitives + `AppBar` / `AppShell`) |
+| Stories | `src/stories/<category>/*.stories.js` |
+
+1. `pnpm storybook` → open <a href="http://localhost:6006" target="_blank">localhost:6006</a>.
+2. Edit any file above — the canvas hot-reloads.
+3. Use the **Controls** and **Docs** tabs on each story to QA props and variants.
+4. `pnpm build-storybook` produces a static site in `storybook-static/`.
+
+The screenshots inside the device frames on **Start Here**, **Design Requests →
+Overview** and **Eventpipe Labs → Overview** are live stories. With Storybook
+running, refresh them with:
+
+```bash
+node scripts/capture-start-here.mjs --url http://localhost:6006
+```
+
+Pushing to `main` deploys to GitHub Pages via `.github/workflows/deploy.yml` →
+**https://epprestodesign.github.io/eventpipe-prototype-ds/**. See `README.md` for details.

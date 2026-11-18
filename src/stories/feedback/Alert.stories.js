@@ -2,7 +2,7 @@
 import DsAlert from '../../components/DsAlert.vue'
 
 export default {
-  title: 'Components/Feedback & Status/Alert',
+  id: 'components-feedback-status-alert', title: 'Design System/Components/Feedback & Status/Alert',
   component: DsAlert,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

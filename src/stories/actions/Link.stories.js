@@ -2,7 +2,7 @@
 import DsLink from '../../components/DsLink.vue'
 
 export default {
-  title: 'Components/Actions/Link',
+  id: 'components-actions-link', title: 'Design System/Components/Actions/Link',
   component: DsLink,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

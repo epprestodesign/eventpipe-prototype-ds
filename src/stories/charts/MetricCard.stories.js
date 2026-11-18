@@ -7,7 +7,7 @@ import { mobileFrame, DARK } from './_shared.js'
 import { SPARK_UP, SPARK_DOWN, SPARK_PREV, SPARK_FLAT, SPARK_MISSING } from './fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Metric Card',
+  id: 'components-charts-metric-card', title: 'Design System/Components/Charts/Metric Card',
   component: DsMetricCard,
   tags: ['autodocs'],
   parameters: {

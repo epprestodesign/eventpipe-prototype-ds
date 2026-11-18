@@ -13,7 +13,7 @@ const ITEMS = [
 ]
 
 export default {
-  title: 'Components/Charts/Shared Elements/Legend',
+  id: 'components-charts-shared-elements-legend', title: 'Design System/Components/Charts/Shared Elements/Legend',
   component: DsChartLegend,
   tags: ['autodocs'],
   parameters: {

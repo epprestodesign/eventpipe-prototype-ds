@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsSelect from '../../components/DsSelect.vue'
 
 export default {
-  title: 'Components/Forms/Multi-Select',
+  id: 'components-forms-multi-select', title: 'Design System/Components/Forms/Multi-Select',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 Choose several values from a list. Labeled variant via **DsSelect** (\`multiple\`);

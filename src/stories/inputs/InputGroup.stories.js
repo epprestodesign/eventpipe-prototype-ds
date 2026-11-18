@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsField from '../../components/DsField.vue'
 
 export default {
-  title: 'Components/Forms/Input Group',
+  id: 'components-forms-input-group', title: 'Design System/Components/Forms/Input Group',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 Compound fields that combine a control with an add-on — the "Days | value",

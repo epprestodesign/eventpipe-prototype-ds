@@ -1,0 +1,64 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './Spacing.stories.js'
+import { Go } from '../start-here/_blocks'
+import { Band, Ramp, Role, TokenValue, TypeRow, MotionDemo } from './_specimens'
+import art from '../start-here/patterns/tile-dots.svg'
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Spacing">One six-step scale for every gap and padding, so pages keep the same rhythm.</Band>
+
+<div className="sh-section">
+  <h2 className="sh-h2">The scale</h2>
+  <p className="sh-sub">The striped block is the space itself, shown between two elements.</p>
+  <div className="fd-rows">
+    <div className="fd-row">
+      <div className="fd-type__meta"><span className="fd-type__label">Space 1</span><code>--ds-space-1</code></div>
+      <TokenValue name="--ds-space-1" />
+      <div className="fd-gap"><i /><b style={{ width: 'var(--ds-space-1)' }} /><i /></div>
+      <div className="fd-row__use">Icon gaps, dense chips · Quasar <code>xs</code></div>
+    </div>
+    <div className="fd-row">
+      <div className="fd-type__meta"><span className="fd-type__label">Space 2</span><code>--ds-space-2</code></div>
+      <TokenValue name="--ds-space-2" />
+      <div className="fd-gap"><i /><b style={{ width: 'var(--ds-space-2)' }} /><i /></div>
+      <div className="fd-row__use">Gaps between inline elements · Quasar <code>sm</code></div>
+    </div>
+    <div className="fd-row">
+      <div className="fd-type__meta"><span className="fd-type__label">Space 3</span><code>--ds-space-3</code></div>
+      <TokenValue name="--ds-space-3" />
+      <div className="fd-gap"><i /><b style={{ width: 'var(--ds-space-3)' }} /><i /></div>
+      <div className="fd-row__use">Compact stacks</div>
+    </div>
+    <div className="fd-row">
+      <div className="fd-type__meta"><span className="fd-type__label">Space 4</span><code>--ds-space-4</code></div>
+      <TokenValue name="--ds-space-4" />
+      <div className="fd-gap"><i /><b style={{ width: 'var(--ds-space-4)' }} /><i /></div>
+      <div className="fd-row__use">Default padding · Quasar <code>md</code></div>
+    </div>
+    <div className="fd-row">
+      <div className="fd-type__meta"><span className="fd-type__label">Space 5</span><code>--ds-space-5</code></div>
+      <TokenValue name="--ds-space-5" />
+      <div className="fd-gap"><i /><b style={{ width: 'var(--ds-space-5)' }} /><i /></div>
+      <div className="fd-row__use">Section padding · Quasar <code>lg</code></div>
+    </div>
+    <div className="fd-row">
+      <div className="fd-type__meta"><span className="fd-type__label">Space 6</span><code>--ds-space-6</code></div>
+      <TokenValue name="--ds-space-6" />
+      <div className="fd-gap"><i /><b style={{ width: 'var(--ds-space-6)' }} /><i /></div>
+      <div className="fd-row__use">Large gaps between sections</div>
+    </div>
+  </div>
+  <p className="fd-note">Use the tokens in CSS and Quasar's spacing classes (<code>q-pa-md</code>, <code>q-ma-sm</code>, <code>q-gutter-lg</code>) in templates. Quasar's <code>xl</code> is 48px and has no token.</p>
+</div>
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="foundations-border-radius--docs" className="sh-link">Next: Border Radius</Go>
+</div>
+
+</div>
+</Unstyled>

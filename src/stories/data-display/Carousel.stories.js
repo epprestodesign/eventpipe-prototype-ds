@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 export default {
-  title: 'Components/Media & Visuals/Carousel',
+  id: 'components-media-visuals-carousel', title: 'Design System/Components/Media & Visuals/Carousel',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 A slideshow for stepping through a set of panels — onboarding, image galleries,

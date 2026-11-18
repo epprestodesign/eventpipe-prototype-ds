@@ -1,0 +1,63 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './BorderRadius.stories.js'
+import { Go } from '../start-here/_blocks'
+import { Band, Ramp, Role, TokenValue, TypeRow, MotionDemo } from './_specimens'
+import art from '../start-here/patterns/tile-arcs.svg'
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Border Radius">EventPipe uses one crisp 4px corner on cards, inputs and buttons. Only chips and tabs are fully rounded.</Band>
+
+<div className="sh-section">
+  <h2 className="sh-h2">The tokens</h2>
+  <p className="sh-sub">Small, medium and large all resolve to 4px today. The names stay so a future theme can separate them.</p>
+  <div className="fd-tiles">
+    <div className="fd-shape-tile">
+      <div className="fd-shape" style={{ borderRadius: 'var(--ds-radius-sm)' }} />
+      <span className="fd-type__label">Small</span>
+      <code>--ds-radius-sm</code>
+      <TokenValue name="--ds-radius-sm" />
+      <span className="fd-row__use">Inputs, small chips</span>
+    </div>
+    <div className="fd-shape-tile">
+      <div className="fd-shape" style={{ borderRadius: 'var(--ds-radius-md)' }} />
+      <span className="fd-type__label">Medium</span>
+      <code>--ds-radius-md</code>
+      <TokenValue name="--ds-radius-md" />
+      <span className="fd-row__use">Buttons, fields, menus</span>
+    </div>
+    <div className="fd-shape-tile">
+      <div className="fd-shape" style={{ borderRadius: 'var(--ds-radius-lg)' }} />
+      <span className="fd-type__label">Large</span>
+      <code>--ds-radius-lg</code>
+      <TokenValue name="--ds-radius-lg" />
+      <span className="fd-row__use">Cards, sheets, dialogs</span>
+    </div>
+    <div className="fd-shape-tile">
+      <div className="fd-shape" style={{ borderRadius: 'var(--ds-radius-button)' }} />
+      <span className="fd-type__label">Button</span>
+      <code>--ds-radius-button</code>
+      <TokenValue name="--ds-radius-button" />
+      <span className="fd-row__use">Every button</span>
+    </div>
+    <div className="fd-shape-tile">
+      <div className="fd-shape" style={{ borderRadius: 'var(--ds-radius-pill)' }} />
+      <span className="fd-type__label">Pill</span>
+      <code>--ds-radius-pill</code>
+      <TokenValue name="--ds-radius-pill" />
+      <span className="fd-row__use">Chips, tabs, rounded buttons</span>
+    </div>
+  </div>
+  <p className="fd-note">Avatars and floating buttons use a 50% radius applied where needed. Quasar's own radius comes from <code>$generic-border-radius</code> in <code>quasar.variables.scss</code>.</p>
+</div>
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="foundations-elevation--docs" className="sh-link">Next: Elevation</Go>
+</div>
+
+</div>
+</Unstyled>

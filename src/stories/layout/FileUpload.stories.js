@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import DsFileUpload from '../../components/DsFileUpload.vue'
 
 export default {
-  title: 'Components/Forms/File Upload',
+  id: 'components-forms-file-upload', title: 'Design System/Components/Forms/File Upload',
   component: DsFileUpload,
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `

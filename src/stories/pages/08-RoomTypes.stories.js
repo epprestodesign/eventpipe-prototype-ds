@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { page } from './_shell'
 import DsPageToolbar from '../../components/DsPageToolbar.vue'
 
-export default { title: 'Pages/08 Room Types', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
+export default { id: 'pages-08-room-types', title: 'App Screens/Admin Pages/08 Room Types', tags: ['autodocs'], parameters: { layout: 'fullscreen' } }
 
 const columns = [
   { name: 'status', label: '', field: 'status', align: 'center' },

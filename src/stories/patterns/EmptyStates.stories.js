@@ -1,7 +1,7 @@
 /** PATTERNS / Empty States → custom DsEmptyState (composition) */
 import DsEmptyState from '../../components/DsEmptyState.vue'
 export default {
-  title: 'Components/Feedback & Status/Empty States',
+  id: 'components-feedback-status-empty-states', title: 'Design System/Components/Feedback & Status/Empty States',
   tags: ['autodocs'],
   parameters: { docs: { description: { component: `
 ## Overview

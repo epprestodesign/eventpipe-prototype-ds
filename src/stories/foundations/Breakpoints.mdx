@@ -1,0 +1,43 @@
+import { Meta, Unstyled, Canvas } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './Breakpoints.stories.js'
+import { Go } from '../start-here/_blocks'
+import { Band, Ramp, Role, TokenValue, TypeRow, MotionDemo } from './_specimens'
+import art from '../start-here/patterns/tile-pipes.svg'
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Breakpoints">Five screen sizes, from Quasar's breakpoint system. Layout classes and the screen helper both use these names.</Band>
+
+<div className="sh-section">
+  <h2 className="sh-h2">The five sizes</h2>
+  <p className="sh-sub">Widths in pixels. The EventPipe admin is a desktop application and isn't optimized for phones.</p>
+  <div className="fd-ruler">
+    <div className="fd-bp"><div className="fd-bp__name">xs</div><div className="fd-bp__range">0–599px</div><div className="fd-bp__use">Phones</div><div className="fd-bp__bar" /></div>
+    <div className="fd-bp"><div className="fd-bp__name">sm</div><div className="fd-bp__range">600–1023px</div><div className="fd-bp__use">Large phones, small tablets</div><div className="fd-bp__bar" /></div>
+    <div className="fd-bp"><div className="fd-bp__name">md</div><div className="fd-bp__range">1024–1439px</div><div className="fd-bp__use">Tablets, small laptops</div><div className="fd-bp__bar" /></div>
+    <div className="fd-bp"><div className="fd-bp__name">lg</div><div className="fd-bp__range">1440–1919px</div><div className="fd-bp__use">Desktop</div><div className="fd-bp__bar" /></div>
+    <div className="fd-bp"><div className="fd-bp__name">xl</div><div className="fd-bp__range">1920+px</div><div className="fd-bp__use">Large displays</div><div className="fd-bp__bar" /></div>
+  </div>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Using them</h2>
+  <p className="sh-sub">In templates, use grid and visibility classes: <code>col-12 col-md-6 col-lg-4</code>, <code>gt-sm</code>, <code>lt-md</code>, <code>xs-only</code>. In script, use the reactive screen helper: <code>$q.screen.lt.md</code> is true below 1024, and <code>$q.screen.name</code> gives the current size.</p>
+</div>
+
+<div className="sh-section">
+  <h2 className="sh-h2">Live readout</h2>
+  <p className="sh-sub">What the helper reports for this window. Resize to watch it change.</p>
+  <Canvas of={Stories_.LiveScreen} sourceState="none" />
+</div>
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="foundations-motion--docs" className="sh-link">Next: Motion</Go>
+</div>
+
+</div>
+</Unstyled>

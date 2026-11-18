@@ -6,7 +6,7 @@ import { cartesianArgTypes, hiddenSeriesControl, frame, mobileFrame, DARK } from
 import { STATUS_BY_EVENT, STATUS_EDGE_CASES, SHARE_SINGLE, ROOM_TYPES_MONTHLY } from './fixtures/chartFixtures.js'
 
 export default {
-  title: 'Components/Charts/Stacked Bar',
+  id: 'components-charts-stacked-bar', title: 'Design System/Components/Charts/Stacked Bar',
   component: DsStackedBarChart,
   tags: ['autodocs'],
   parameters: {

@@ -5,7 +5,7 @@ import DsPageHeader from '../../components/DsPageHeader.vue'
 import DsInfoGrid from '../../components/DsInfoGrid.vue'
 
 export default {
-  title: 'App Chrome/App Shell',
+  id: 'app-chrome-app-shell', title: 'Design System/App Chrome/App Shell',
   component: AppShell,
   tags: ['autodocs'],
   parameters: {

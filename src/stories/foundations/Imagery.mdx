@@ -1,0 +1,30 @@
+import { Meta, Unstyled, Description, Stories } from '@storybook/addon-docs/blocks'
+import * as Stories_ from './Imagery.stories.js'
+import { Go } from '../start-here/_blocks'
+import { Band } from './_specimens'
+import art from '../start-here/patterns/tile-dots.svg'
+
+<Meta of={Stories_} />
+
+<Unstyled>
+<div className="sh">
+
+<Band art={art} title="Imagery">The hotel photo library, loaded at runtime from its own repo so new photos appear without a rebuild.</Band>
+
+</div>
+</Unstyled>
+
+<Description of={Stories_} />
+
+<Stories title="" />
+
+<Unstyled>
+<div className="sh">
+
+<div className="fd-foot">
+  <Go to="design-system-foundations-overview--docs" className="sh-link">All foundations</Go>
+  <Go to="foundations-spacing--docs" className="sh-link">Next: Spacing</Go>
+</div>
+
+</div>
+</Unstyled>
