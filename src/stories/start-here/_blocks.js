@@ -5,17 +5,14 @@
  *
  *   Go       — a link to another Storybook page that navigates in place
  *   Browser  — a browser-window frame around a screenshot
- *   Laptop   — a photoreal laptop frame with a screenshot in its screen
  *
- * EventPipe is a desktop application, so there is no phone or tablet frame.
+ * EventPipe is a desktop application, so screens are shown in browser windows,
+ * never in a phone or tablet.
  *
  * The screenshots are live stories, captured by scripts/capture-start-here.mjs.
- * The laptop frame (devices/laptop-silver.webp) is a generated product shot
- * with the screen cut out; the screenshot is placed behind that opening.
  */
 import React from 'react'
 import { addons } from 'storybook/preview-api'
-import laptopFrame from './devices/laptop-silver.webp'
 import './start-here.css'
 
 const h = React.createElement
@@ -38,16 +35,4 @@ export function Browser({ src, alt, className = '' }) {
   return h('div', { className: `sh-browser ${className}` },
     h('div', { className: 'sh-browser__bar', 'aria-hidden': true }, h('i'), h('i'), h('i')),
     shot(src, alt))
-}
-
-/* The frame image, its shape, and where its cut-out screen sits, as percentages
- * of the frame (printed by scripts/key-device-frame.mjs). */
-const LAPTOP = { img: laptopFrame, ratio: '1600 / 1039', screen: [3.568, 3.969, 92.864, 88.55], radius: '0.4% / 0.7%' }
-
-/** A photoreal laptop with a screenshot behind its cut-out screen. */
-export function Laptop({ src, alt, className = '' }) {
-  const [left, top, width, height] = LAPTOP.screen
-  return h('div', { className: `sh-device sh-laptop ${className}`, style: { aspectRatio: LAPTOP.ratio } },
-    h('img', { src, alt, className: 'sh-device__screen', style: { left: `${left}%`, top: `${top}%`, width: `${width}%`, height: `${height}%`, borderRadius: LAPTOP.radius } }),
-    h('img', { src: LAPTOP.img, alt: '', 'aria-hidden': true, className: 'sh-device__frame' }))
 }
