@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/addon-docs/blocks'
-import { Go, Browser, Laptop } from './_blocks'
+import { Go, Browser } from './_blocks'
 import heroGlow from './patterns/hero-glow.jpg'
 import tileHex from './patterns/tile-hex.svg'
 import tileDots from './patterns/tile-dots.svg'
@@ -32,12 +32,12 @@ import hotels from './screens/hotels.jpg'
       <Go to="design-requests-overview--docs" className="sh-btn sh-btn--ghost">See what's in review</Go>
     </div>
   </div>
-  <div className="sh-stage">
-    <div className="sh-stage__row">
-      <Laptop src={events} alt="The Events page of the EventPipe admin" />
-    </div>
-  </div>
-  <p className="sh-hero__note">A live screen from this library: the Events page of the admin. All data is sample data.</p>
+  <div className="hx hx--cascade"><div className="hx__canvas">
+    <Browser className="hx__w1" src={hotels} alt="The Hotels page of the EventPipe admin" />
+    <Browser className="hx__w2" src={singleTeam} alt="The Single-Team Add and Delete prototype, on the Compliance list" />
+    <Browser className="hx__w3" src={events} alt="The Events page of the EventPipe admin" />
+  </div></div>
+  <p className="sh-hero__note">Live screens from this library: the Hotels page, a design request prototype and the Events page. All data is sample data.</p>
 </div>
 
 <div className="sh-section">
